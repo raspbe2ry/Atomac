@@ -29,6 +29,7 @@ namespace Atomac.Models
         public int Wins { get; set; }
         public int Draws { get; set; }
         public int Losses { get; set; }
+        public PStatus Status{ get; set; }
 
         //NavigationProperty
         public virtual ICollection<Artifact> Artifacts { get; set; }
@@ -56,6 +57,13 @@ namespace Atomac.Models
             return userIdentity;
         }
 
+    }
+
+    public enum PStatus
+    {
+        Offline=1, 
+        Active=2,
+        InGame=3
     }
 
     public enum Title

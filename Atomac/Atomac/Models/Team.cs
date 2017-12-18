@@ -16,7 +16,7 @@ namespace Atomac.Models
         [StringLength (64)]
         [Required]
         public string Name { get; set; }
-        public bool Activity { get; set; }
+        public TStatus Status { get; set; }
         public int Points { get; set; }
 
         public string CapitenId { get; set; }
@@ -33,5 +33,12 @@ namespace Atomac.Models
         {
             Games = new List<Game>();
         }
+    }
+
+    public enum TStatus
+    {
+        Offline=1,
+        Busy=2,
+        Active=3
     }
 }

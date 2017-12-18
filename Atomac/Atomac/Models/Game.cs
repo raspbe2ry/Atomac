@@ -26,6 +26,8 @@ namespace Atomac.Models
         [Required]
         public int Duration { get; set; }
 
+        public GStatus Status { get; set; }
+
         public int Team1Id { get; set; }
         [ForeignKey ("Team1Id")]
         public virtual Team Team1 { get; set; }
@@ -44,5 +46,11 @@ namespace Atomac.Models
         {
             Moves = new List<Move>();
         }
+    }
+
+    public enum GStatus
+    {
+        Created=1, 
+        Playing=2
     }
 }

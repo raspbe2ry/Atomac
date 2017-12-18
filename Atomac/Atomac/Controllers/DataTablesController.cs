@@ -46,7 +46,7 @@ namespace Atomac.Controllers
                     orderByString += (column.Data) + (column.SortDirection == Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "LastName asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "NickName asc" : orderByString);
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
                 var data = query.Select(user =>

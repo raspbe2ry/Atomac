@@ -1,7 +1,69 @@
-﻿@{
-    ViewBag.Title = "About";
-}
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
+﻿@{ ViewBag.Title = "Igra"; }
 
-<p>Use this area to provide additional information.</p>
+@Styles.Render("~/Content/datatables")
+
+<div id="row">
+    <div class="col-md-4">
+        <table id="korisnici-table" class="table table-hover table-striped table-condensed" >
+            <!-- ovde crta datatable -->
+        </table>
+    </div>
+
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+
+@section scripts
+{
+    
+    @Scripts.Render("~/bundles/datatables")
+
+    <script type="text/javascript">
+
+        var assetListUsers;
+
+        $(() => {
+            assetListUsers = {
+                dt: null,
+                init: () => {
+                    dt = $('#korisnici-table').dataTable({
+                        "serverSide": true,
+                        "processing": true,
+                        //"autoWidth": false,
+                        "pageLength": 10,
+                        "dom": 'ftp',
+                        "language": {
+                            "paginate": {
+                                "next": "<span>→</span>", //Sledeća
+                                "previous": "<span>←</span>" //Prethodna
+                            },
+                            "search": "<span>Pretraži korisnike (po imenu, prezimeni, nadimku): <span>",
+                            "emptyTable": "Nema podataka za prikaz."
+                        },
+                        "ajax": {
+                            "url": "@Url.Action("GetActiveUsers", "DataTables")",
+                        "type": "POST"
+                        },
+                        "columns": [
+                            {
+                                "searchable": true, "sortable": false,
+                                render: (data, type, row) => {
+                                    return "<div class='listItem'>\
+                                        <label>" + row.nickName + "</label>\
+                                        <label>" + row.points + "</label></div>";
+                                }
+                            }
+                        ]
+                });
+        }
+        };
+
+        assetListUsers.init();
+
+        });
+
+    </script>
+
+}

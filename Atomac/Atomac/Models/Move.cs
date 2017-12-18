@@ -28,7 +28,7 @@ namespace Atomac.Models
 
     public enum Board
     {
-        T1 =1,
+        T1=1,
         T2=2
     }
 }

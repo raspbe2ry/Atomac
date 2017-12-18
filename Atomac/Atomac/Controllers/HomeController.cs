@@ -10,7 +10,14 @@ namespace Atomac.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            if (Request.IsAuthenticated)
+            {
+                return RedirectToAction("About", "Home");
+            }
+            else
+            {
+                return View();
+            }
         }
 
         public ActionResult About()

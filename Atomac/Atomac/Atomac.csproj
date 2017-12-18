@@ -171,6 +171,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\TeamsController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -178,9 +179,14 @@
     <Compile Include="Migrations\201711011939354_Initial.Designer.cs">
       <DependentUpon>201711011939354_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711302111398_AddedArtifact_TryWithFiguresAndTablesAsSeparate.cs" />
+    <Compile Include="Migrations\201711302111398_AddedArtifact_TryWithFiguresAndTablesAsSeparate.Designer.cs">
+      <DependentUpon>201711302111398_AddedArtifact_TryWithFiguresAndTablesAsSeparate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AFigure.cs" />
+    <Compile Include="Models\Artifact.cs" />
     <Compile Include="Models\ATable.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -195,10 +201,13 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\RegisterPage.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Resources\IndexUkras.png" />
+    <Content Include="Resources\Sah-pozadina2.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -252,6 +261,11 @@
     <Content Include="Views\Teams\Details.cshtml" />
     <Content Include="Views\Teams\Edit.cshtml" />
     <Content Include="Views\Teams\Index.cshtml" />
+    <Content Include="Views\Test\Create.cshtml" />
+    <Content Include="Views\Test\Delete.cshtml" />
+    <Content Include="Views\Test\Details.cshtml" />
+    <Content Include="Views\Test\Edit.cshtml" />
+    <Content Include="Views\Test\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -267,6 +281,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201711011939354_Initial.resx">
       <DependentUpon>201711011939354_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711302111398_AddedArtifact_TryWithFiguresAndTablesAsSeparate.resx">
+      <DependentUpon>201711302111398_AddedArtifact_TryWithFiguresAndTablesAsSeparate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

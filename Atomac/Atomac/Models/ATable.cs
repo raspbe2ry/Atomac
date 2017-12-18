@@ -7,20 +7,7 @@ using System.Web;
 
 namespace Atomac.Models
 {
-    public class ATable
+    public class ATable: Artifact
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-        [Required]
-        public string Style { get; set; }
-
-        [Required]
-        public bool Activity { get; set; }
-
-        public string OwnerId { get; set; }
-        [ForeignKey("OwnerId")]
-        public virtual ApplicationUser Owner { get; set; }
     }
 }

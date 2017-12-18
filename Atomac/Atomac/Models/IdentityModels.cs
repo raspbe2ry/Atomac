@@ -31,8 +31,7 @@ namespace Atomac.Models
         public int Losses { get; set; }
 
         //NavigationProperty
-        public virtual ICollection<AFigure> FigureStyles { get; set; }
-        public virtual ICollection<ATable> TableStyles { get; set; }
+        public virtual ICollection<Artifact> Artifacts { get; set; }
         public virtual ICollection<Message> Messages { get; set; }
 
         [InverseProperty("TeamMember")]
@@ -43,8 +42,7 @@ namespace Atomac.Models
 
         public ApplicationUser()
         {
-            FigureStyles = new List<AFigure>();
-            TableStyles = new List<ATable>();
+            Artifacts = new List<Artifact>();
             Messages = new List<Message>();
             Teams = new List<Team>();
             AdminedTeams = new List<Team>(); //ako se obrise gore treba da se obrise i ovde
@@ -88,7 +86,7 @@ namespace Atomac.Models
         }
 
         public virtual DbSet<AFigure> AFigures { get; set; }
-        public virtual DbSet<ATable> ATables { get; set; }
+        public virtual DbSet<ATable> ATable { get; set; }
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Move> Moves { get; set; }

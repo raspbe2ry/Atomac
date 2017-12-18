@@ -26,6 +26,14 @@ namespace Atomac
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/datatables").Include(
+                        "~/Content/juery.dataTables.min.css",
+                        "~/Content/dataTables.bootstrap.min.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
+                        "~/Scripts/jquery.dataTables.min.js",
+                        "~/Scripts/dataTables.bootstrap.min.js"));
         }
     }
 }

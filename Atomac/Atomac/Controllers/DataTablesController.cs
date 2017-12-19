@@ -61,5 +61,117 @@ namespace Atomac.Controllers
                 return Json(new DataTablesResponse(requestModel.Draw, data, filteredCount, totalCount));
             }
         }
+
+        [HttpPost]
+        public JsonResult GetRecentTeams([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel)
+        {
+            IQueryable<Team> query = null;
+            int totalCount = 0;
+            int filteredCount = 0;
+
+            string userId = Request.Form["userId"];
+
+            using (ApplicationDbContext hfdb = new ApplicationDbContext())
+            {
+                query = from teams in hfdb.Teams
+                        where (teams.CapitenId == userId || teams.TeamMemberId == userId)
+                        select teams;
+
+                totalCount = query.Count();
+
+                if (requestModel.Search.Value != string.Empty)
+                {
+                    string value = requestModel.Search.Value.Trim();
+                    query = query.Where(teams => teams.Name.Contains(value) ||
+                                                teams.Points == Int32.Parse(value) ||
+                                                teams.Status.ToString() == value 
+                                       );
+                }
+
+                filteredCount = query.Count();
+
+                IOrderedEnumerable<Column> sortedColumns = requestModel.Columns.GetSortedColumns();
+                string orderByString = string.Empty;
+
+                foreach (Column column in sortedColumns)
+                {
+                    orderByString += orderByString != string.Empty ? "," : "";
+                    orderByString += (column.Data) + (column.SortDirection == Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "Points desc" : orderByString);
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                var data = query.Select(team =>
+                    new {
+                        id = team.Id,
+                        name = team.Name,
+                        status = team.Status,
+                        points = team.Points,
+                        capiten = team.Capiten,
+                        capitenId = team.CapitenId,
+                        teamMember = team.TeamMember,
+                        teamMemberId = team.TeamMemberId
+                    }).ToList();
+
+                return Json(new DataTablesResponse(requestModel.Draw, data, filteredCount, totalCount));
+            }
+        }
+
+
+        [HttpPost]
+        public JsonResult GetActiveTeams([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel)
+        {
+            IQueryable<Team> query = null;
+            int totalCount = 0;
+            int filteredCount = 0;
+
+            string userId = Request.Form["userId"];
+
+            using (ApplicationDbContext hfdb = new ApplicationDbContext())
+            {
+                query = from teams in hfdb.Teams
+                        where teams.Status == TStatus.Active
+                        select teams;
+
+                totalCount = query.Count();
+
+                if (requestModel.Search.Value != string.Empty)
+                {
+                    string value = requestModel.Search.Value.Trim();
+                    query = query.Where(teams => teams.Name.Contains(value) ||
+                                                teams.Points == Int32.Parse(value)
+                                       );
+                }
+
+                filteredCount = query.Count();
+
+                IOrderedEnumerable<Column> sortedColumns = requestModel.Columns.GetSortedColumns();
+                string orderByString = string.Empty;
+
+                foreach (Column column in sortedColumns)
+                {
+                    orderByString += orderByString != string.Empty ? "," : "";
+                    orderByString += (column.Data) + (column.SortDirection == Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "Points desc" : orderByString);
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                var data = query.Select(team =>
+                    new {
+                        id = team.Id,
+                        name = team.Name,
+                        status = team.Status,
+                        points = team.Points,
+                        capiten = team.Capiten,
+                        capitenId = team.CapitenId,
+                        teamMember = team.TeamMember,
+                        teamMemberId = team.TeamMemberId
+                    }).ToList();
+
+                return Json(new DataTablesResponse(requestModel.Draw, data, filteredCount, totalCount));
+            }
+        }
     }
 }

@@ -129,7 +129,7 @@
                             "url": "@Url.Action("GetRecentTeams", "DataTables")",
                             "type": "POST",
                             "data": (d) => {
-                                d.userEmail = @Context.User.Identity.Name;
+                                d.userEmail = "@Context.User.Identity.Name";
                             }
                         },
                         "columns": [

@@ -1,7 +1,20 @@
 ﻿@{
     ViewBag.Title = "About";
 }
+
 <h2>@ViewBag.Title.</h2>
 <h3>@ViewBag.Message</h3>
 
-<p>Use this area to provide additional information.</p>
+<div class="container">
+    <input type="text" id="message" />
+    <input type="button" id="sendmessage" value="Send" />
+    <input type="hidden" id="displayname" />
+    @*<input type="hidden" id="uName" value=@User.Identity.Name/>*@
+    <ul id="discussion"></ul>
+</div>
+
+
+@section scripts
+{
+    let uName = @User.Identity.Name;
+}

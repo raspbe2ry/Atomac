@@ -15,6 +15,14 @@
     </div>
 </div>
 
+<div class="container" style="float:right; background-color:aquamarine">
+    <input type="text" id="message" />
+    <input type="button" id="sendmessage" value="Send" />
+    <input type="hidden" id="displayname" />
+    <input type="hidden" id="uName" value=@ViewBag.NickName />
+    <ul id="discussion"></ul>
+</div>
+
 @section scripts
 {
     
@@ -65,10 +73,4 @@
 
     </script>
 
-}
-
-
-@section scripts
-{
-    let uName = @User.Identity.Name;
 }

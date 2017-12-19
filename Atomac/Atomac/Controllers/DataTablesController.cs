@@ -123,7 +123,8 @@ namespace Atomac.Controllers
                 return Json(new DataTablesResponse(requestModel.Draw, data, filteredCount, totalCount));
             }
         }
-        
+
+
         [HttpPost]
         public JsonResult GetActiveTeams([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel)
         {

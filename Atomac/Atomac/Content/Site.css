@@ -31,17 +31,3 @@ textarea {
     margin: 5px;
     background-color: lightblue;
 }
-
-.teamOffline {
-    background-color: darkgray;
-    opacity: 0.1;
-}
-
-.teamBusy {
-    background-color: red;
-    opacity: 0.3;
-}
-
-.teamActive {
-    background-color: lightgreen;
-}

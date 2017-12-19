@@ -37,8 +37,8 @@ namespace Atomac.Models
 
     public enum TStatus
     {
-        Offline = 1,
-        Busy = 2,
-        Active = 3
+        Offline=1,
+        Busy=2,
+        Active=3
     }
 }

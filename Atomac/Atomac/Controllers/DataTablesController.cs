@@ -11,6 +11,7 @@ namespace Atomac.Controllers
 {
     public class DataTablesController : Controller
     {
+
         [HttpPost]
         public JsonResult GetActiveUsers([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel)
         {
@@ -69,12 +70,12 @@ namespace Atomac.Controllers
             int totalCount = 0;
             int filteredCount = 0;
 
-            string userId = Request.Form["userId"];
+            string userEmail = Request.Form["userEmail"];
 
-            using (ApplicationDbContext hfdb = new ApplicationDbContext())
+            using (ApplicationDbContext dbContext = new ApplicationDbContext())
             {
-                query = from teams in hfdb.Teams
-                        where (teams.CapitenId == userId || teams.TeamMemberId == userId)
+                query = from teams in dbContext.Teams
+                        where (teams.Capiten.Email == userEmail || teams.TeamMember.Email == userEmail)
                         select teams;
 
                 totalCount = query.Count();
@@ -83,7 +84,7 @@ namespace Atomac.Controllers
                 {
                     string value = requestModel.Search.Value.Trim();
                     query = query.Where(teams => teams.Name.Contains(value) ||
-                                                teams.Points == Int32.Parse(value) ||
+                                                teams.Points < int.Parse(value) || // dodati dobar kriterijum
                                                 teams.Status.ToString() == value 
                                        );
                 }
@@ -108,17 +109,18 @@ namespace Atomac.Controllers
                         name = team.Name,
                         status = team.Status,
                         points = team.Points,
-                        capiten = team.Capiten,
+                        //capiten = team.Capiten,
                         capitenId = team.CapitenId,
-                        teamMember = team.TeamMember,
-                        teamMemberId = team.TeamMemberId
+                        capitenNick = team.Capiten.NickName,
+                        //teamMember = team.TeamMember,
+                        teamMemberId = team.TeamMemberId,
+                        teamMemberNick = team.TeamMember.NickName
                     }).ToList();
 
                 return Json(new DataTablesResponse(requestModel.Draw, data, filteredCount, totalCount));
             }
         }
-
-
+        
         [HttpPost]
         public JsonResult GetActiveTeams([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel)
         {
@@ -126,11 +128,9 @@ namespace Atomac.Controllers
             int totalCount = 0;
             int filteredCount = 0;
 
-            string userId = Request.Form["userId"];
-
-            using (ApplicationDbContext hfdb = new ApplicationDbContext())
+            using (ApplicationDbContext dbContext = new ApplicationDbContext())
             {
-                query = from teams in hfdb.Teams
+                query = from teams in dbContext.Teams
                         where teams.Status == TStatus.Active
                         select teams;
 
@@ -164,10 +164,12 @@ namespace Atomac.Controllers
                         name = team.Name,
                         status = team.Status,
                         points = team.Points,
-                        capiten = team.Capiten,
+                        //capiten = team.Capiten,
                         capitenId = team.CapitenId,
-                        teamMember = team.TeamMember,
-                        teamMemberId = team.TeamMemberId
+                        capitenNick = team.Capiten.NickName,
+                        //teamMember = team.TeamMember,
+                        teamMemberId = team.TeamMemberId,
+                        teamMemberNick = team.TeamMember.NickName
                     }).ToList();
 
                 return Json(new DataTablesResponse(requestModel.Draw, data, filteredCount, totalCount));

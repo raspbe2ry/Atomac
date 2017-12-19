@@ -33,7 +33,7 @@ namespace Atomac.Models
         public virtual Team Team1 { get; set; }
 
         public int Team2Id { get; set; }
-        [ForeignKey("Team1Id")]
+        [ForeignKey("Team2Id")]
         public virtual Team Team2 { get; set; }
 
         public int RulesId { get; set; }
@@ -50,7 +50,7 @@ namespace Atomac.Models
 
     public enum GStatus
     {
-        Created=1, 
-        Playing=2
+        Created = 1, 
+        Playing = 2
     }
 }

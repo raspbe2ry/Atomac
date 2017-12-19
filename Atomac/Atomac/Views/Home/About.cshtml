@@ -80,7 +80,7 @@
                                     return "<div class='listItem'>\
                                         <label>" + row.nickName + "</label>\
                                         <label>" + row.points + "</label>\
-                                        <button id='" + row.id + "' class='btn btn-success' onclick='pozoviUTim(this)'>\
+                                        <button id='" + row.email + "' class='btn btn-success' onclick='pozoviUTim(this)'>\
                                         <span class='glyphicon glyphicon-plus'></span>\
                                         <span>Pozovi u tim</span></button></div>";
                                 }
@@ -129,7 +129,7 @@
                             "url": "@Url.Action("GetRecentTeams", "DataTables")",
                             "type": "POST",
                             "data": (d) => {
-                                d.userEmail = @Context.User.Identity.Name;
+                                d.userEmail = "@Context.User.Identity.Name";
                             }
                         },
                         "columns": [
@@ -140,7 +140,7 @@
                                         <label>" + row.name + " - " + row.capitenNick + " & "
                                             + row.teamMemberNick + "</label>\
                                         <label>" + row.points + "</label>\
-                                        <button id='" + row.id + "' class='btn btn-success'\
+                                        <button id='" + row.capitenEmail + "' class='btn btn-success'\
                                             onclick='aktivirajTim(this)'>\
                                         <span class='glyphicon glyphicon-plus'></span>\
                                         <span>Aktiviraj tim</span></button></div>";
@@ -187,7 +187,7 @@
                                         <label>" + row.name + " - " + row.capitenNick + " & "
                                             + row.teamMemberNick + "</label>\
                                         <label>" + row.points + "</label>\
-                                        <button id='" + row.id + "' class='btn btn-success' onclick='izazoviTim(this)'>\
+                                        <button id='" + row.capitenEmail + "' class='btn btn-success' onclick='izazoviTim(this)'>\
                                         <span class='glyphicon glyphicon-plus'></span>\
                                         <span>Izazovi tim</span></button></div>";
                                 }

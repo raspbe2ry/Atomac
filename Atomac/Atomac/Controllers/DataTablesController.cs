@@ -53,6 +53,7 @@ namespace Atomac.Controllers
                 var data = query.Select(user =>
                     new {
                         id = user.Id,
+                        email = user.Email,
                         firstName = user.FirstName,
                         lastName = user.LastName,
                         nickName = user.NickName,
@@ -111,9 +112,11 @@ namespace Atomac.Controllers
                         points = team.Points,
                         //capiten = team.Capiten,
                         capitenId = team.CapitenId,
+                        capitenEmail = team.Capiten.Email,
                         capitenNick = team.Capiten.NickName,
                         //teamMember = team.TeamMember,
                         teamMemberId = team.TeamMemberId,
+                        teamMemberEmail = team.TeamMember.Email,
                         teamMemberNick = team.TeamMember.NickName
                     }).ToList();
 
@@ -166,9 +169,11 @@ namespace Atomac.Controllers
                         points = team.Points,
                         //capiten = team.Capiten,
                         capitenId = team.CapitenId,
+                        capitenEmail = team.Capiten.Email,
                         capitenNick = team.Capiten.NickName,
                         //teamMember = team.TeamMember,
                         teamMemberId = team.TeamMemberId,
+                        teamMemberEmail = team.TeamMember.Email,
                         teamMemberNick = team.TeamMember.NickName
                     }).ToList();
 

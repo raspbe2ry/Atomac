@@ -8,14 +8,14 @@
             + '</strong>: ' + htmlEncode(message) + '</li>');
     };
     // Get the user name and store it to prepend to messages.
-    $('#displayname').val(prompt('Enter your name:', ''));
+    //$('#displayname').val(prompt('Enter your name:', ''));
     // Set initial focus to message input box.  
     $('#message').focus();
     // Start the connection.
     $.connection.hub.start().done(function () {
         $('#sendmessage').click(function () {
             // Call the Send method on the hub. 
-            chat.server.send($('#displayname').val(),uName);
+            chat.server.send($('#uName').val(), $('#message').val());
             // Clear text box and reset focus for next comment. 
             $('#message').val('').focus();
         });

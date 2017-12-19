@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Atomac.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,6 +9,8 @@ namespace Atomac.Controllers
 {
     public class HomeController : Controller
     {
+        private ApplicationDbContext dbContext = new ApplicationDbContext();
+
         public ActionResult Index()
         {
             if (Request.IsAuthenticated)
@@ -23,6 +26,9 @@ namespace Atomac.Controllers
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
+            string mail = User.Identity.Name;
+            string nick = dbContext.Users.Where(b => b.Email == mail).FirstOrDefault().NickName;
+            ViewBag.NickName = nick;
 
             return View();
         }

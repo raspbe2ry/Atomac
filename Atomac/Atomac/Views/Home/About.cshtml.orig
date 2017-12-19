@@ -1,0 +1,219 @@
+﻿@{ ViewBag.Title = "Igra"; }
+
+@Styles.Render("~/Content/datatables")
+
+<div id="row">
+    <div class="col-md-4">
+        <table id="korisnici-table" class="table table-hover table-striped table-condensed" >
+            <!-- ovde crta datatable -->
+        </table>
+    </div>
+
+    <div class="col-md-4">
+        <table id="recent-table" class="table table-hover table-striped table-condensed">
+            <!-- ovde crta datatable -->
+        </table>
+    </div>
+
+    <div class="col-md-4">
+        <table id="aktivni-table" class="table table-hover table-striped table-condensed">
+            <!-- ovde crta datatable -->
+        </table>
+    </div>
+</div>
+
+<<<<<<< HEAD
+<div class="container" style="float:right; background-color:aquamarine">
+    <input type="text" id="message" />
+    <input type="button" id="sendmessage" value="Send" />
+    <input type="hidden" id="displayname" />
+    <input type="hidden" id="uName" value=@ViewBag.NickName />
+    <ul id="discussion"></ul>
+=======
+<div class="container" style="float:right; background-color:aquamarine">
+    <input type="text" id="message" />
+    <input type="button" id="sendmessage" value="Send" />
+    <input type="hidden" id="displayname" />
+    <input type="hidden" id="uName" value=@ViewBag.NickName />
+    <ul id="discussion"></ul>
+>>>>>>> 5833a5b32964f42450c4ebe4e41fc52cb934203e
+</div>
+
+@section scripts
+{
+    
+    @Scripts.Render("~/bundles/datatables")
+
+    <script type="text/javascript">
+
+        function pozoviUTim(e) {
+            
+        }
+
+        function aktivirajTim(e) {
+
+        }
+
+        function izazoviTim(e) {
+
+        }
+
+        var assetListUsers;
+
+        $(() => {
+            assetListUsers = {
+                dt: null,
+                init: () => {
+                    dt = $('#korisnici-table').dataTable({
+                        "serverSide": true,
+                        "processing": true,
+                        //"autoWidth": false,
+                        "pageLength": 10,
+                        "dom": 'ftp',
+                        "language": {
+                            "paginate": {
+                                "next": "<span>→</span>", //Sledeća
+                                "previous": "<span>←</span>" //Prethodna
+                            },
+                            "search": "<span>Pretraži korisnike (po imenu, prezimeni, nadimku): <span>",
+                            "emptyTable": "Nema podataka za prikaz."
+                        },
+                        "ajax": {
+                            "url": "@Url.Action("GetActiveUsers", "DataTables")",
+                            "type": "POST"
+                        },
+                        "columns": [
+                            {
+                                "searchable": true, "sortable": false,
+                                render: (data, type, row) => {
+                                    return "<div class='listItem'>\
+                                        <label>" + row.nickName + "</label>\
+                                        <label>" + row.points + "</label>\
+                                        <button id='" + row.id + "' class='btn btn-success' onclick='pozoviUTim(this)'>\
+                                        <span class='glyphicon glyphicon-plus'></span>\
+                                        <span>Pozovi u tim</span></button></div>";
+                                }
+                            }
+                        ]
+                    });
+                }
+            };
+
+            assetListUsers.init();
+
+        });
+
+        function addStatusClass(status) {
+            switch (status) {
+                case 0: return "teamOffline";
+                    break;
+                case 1: return "teamBusy";
+                    break;
+                case 2: return "teamActive";
+                    break;
+            }
+        }
+
+        var assetListRecentTeams;
+
+        $(() => {
+            assetListRecentTeams = {
+                dt: null,
+                init: () => {
+                    dt = $('#recent-table').dataTable({
+                        "serverSide": true,
+                        "processing": true,
+                        //"autoWidth": false,
+                        "pageLength": 10,
+                        "dom": 'ftp',
+                        "language": {
+                            "paginate": {
+                                "next": "<span>→</span>", //Sledeća
+                                "previous": "<span>←</span>" //Prethodna
+                            },
+                            "search": "<span>Pretraži prethodne timove (po nazivu ili statusu tima): <span>",
+                            "emptyTable": "Nema podataka za prikaz."
+                        },
+                        "ajax": {
+                            "url": "@Url.Action("GetRecentTeams", "DataTables")",
+                            "type": "POST",
+                            "data": (d) => {
+                                d.userEmail = @Context.User.Identity.Name;
+                            }
+                        },
+                        "columns": [
+                            {
+                                "searchable": true, "sortable": false,
+                                render: (data, type, row) => {
+                                    return "<div class='listItem " + addStatusClass(row.status) + "'>\
+                                        <label>" + row.name + " - " + row.capitenNick + " & "
+                                            + row.teamMemberNick + "</label>\
+                                        <label>" + row.points + "</label>\
+                                        <button id='" + row.id + "' class='btn btn-success'\
+                                            onclick='aktivirajTim(this)'>\
+                                        <span class='glyphicon glyphicon-plus'></span>\
+                                        <span>Aktiviraj tim</span></button></div>";
+                                }
+                            }
+                        ]
+                    });
+                }
+            };
+
+            assetListRecentTeams.init();
+
+        });
+
+        var assetListActiveTeams;
+
+<<<<<<< HEAD
+}
+=======
+        $(() => {
+            assetListActiveTeams = {
+                dt: null,
+                init: () => {
+                    dt = $('#aktivni-table').dataTable({
+                        "serverSide": true,
+                        "processing": true,
+                        //"autoWidth": false,
+                        "pageLength": 10,
+                        "dom": 'ftp',
+                        "language": {
+                            "paginate": {
+                                "next": "<span>→</span>", //Sledeća
+                                "previous": "<span>←</span>" //Prethodna
+                            },
+                            "search": "<span>Pretraži aktivne timove (po nazivu tima): <span>",
+                            "emptyTable": "Nema podataka za prikaz."
+                        },
+                        "ajax": {
+                            "url": "@Url.Action("GetActiveTeams", "DataTables")",
+                            "type": "POST"
+                        },
+                        "columns": [
+                            {
+                                "searchable": true, "sortable": false,
+                                render: (data, type, row) => {
+                                    return "<div class='listItem " + addStatusClass(row.status) + "'>\
+                                        <label>" + row.name + " - " + row.capitenNick + " & "
+                                            + row.teamMemberNick + "</label>\
+                                        <label>" + row.points + "</label>\
+                                        <button id='" + row.id + "' class='btn btn-success' onclick='izazoviTim(this)'>\
+                                        <span class='glyphicon glyphicon-plus'></span>\
+                                        <span>Izazovi tim</span></button></div>";
+                                }
+                            }
+                        ]
+                    });
+                }
+            };
+
+            assetListActiveTeams.init();
+
+        });
+
+    </script>
+
+}
+>>>>>>> 5833a5b32964f42450c4ebe4e41fc52cb934203e

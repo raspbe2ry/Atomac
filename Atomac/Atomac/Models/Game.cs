@@ -50,7 +50,7 @@ namespace Atomac.Models
 
     public enum GStatus
     {
-        Created=1, 
-        Playing=2
+        Created = 1, 
+        Playing = 2
     }
 }

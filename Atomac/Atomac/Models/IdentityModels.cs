@@ -83,7 +83,7 @@ namespace Atomac.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("BazaAtomac", throwIfV1Schema: false)
+            : base("BazaAtomac1", throwIfV1Schema: false)
         {
 
         }

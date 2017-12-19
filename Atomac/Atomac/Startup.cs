@@ -1,5 +1,6 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using System.Net;
 
 [assembly: OwinStartupAttribute(typeof(Atomac.Startup))]
 namespace Atomac
@@ -8,8 +9,8 @@ namespace Atomac
     {
         public void Configuration(IAppBuilder app)
         {
-            app.MapSignalR();
             ConfigureAuth(app);
+            app.MapSignalR();
         }
     }
 }

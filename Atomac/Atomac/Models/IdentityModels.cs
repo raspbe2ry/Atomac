@@ -100,5 +100,7 @@ namespace Atomac.Models
         public virtual DbSet<Move> Moves { get; set; }
         public virtual DbSet<Rules> Ruless { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
+
+        public System.Data.Entity.DbSet<Atomac.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }

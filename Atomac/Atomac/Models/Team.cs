@@ -27,11 +27,16 @@ namespace Atomac.Models
         [ForeignKey("TeamMemberId")]
         public virtual ApplicationUser TeamMember { get; set; }
 
-        public virtual ICollection<Game> Games { get; set; }
+        [InverseProperty ("Team1")]
+        public virtual ICollection<Game> GamesAsFirst { get; set; }
+
+        [InverseProperty("Team2")]
+        public virtual ICollection<Game> GamesAsSecond { get; set; }
 
         public Team()
         {
-            Games = new List<Game>();
+            GamesAsFirst = new List<Game>();
+            GamesAsSecond = new List<Game>();
         }
     }
 

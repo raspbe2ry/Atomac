@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Atomac.Models;
+using System.Data.Entity;
 
 namespace Atomac.Controllers
 {
@@ -70,7 +71,7 @@ namespace Atomac.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                    return View(model);
             }
 
             // This doesn't count login failures towards account lockout
@@ -79,7 +80,15 @@ namespace Atomac.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    {
+                        using (ApplicationDbContext db = new ApplicationDbContext())
+                        {
+                            ApplicationUser user = db.Users.Where(m => m.Email == model.Email).First();
+                            user.Status = PStatus.Active;
+                            db.SaveChanges();
+                        }
+                        return RedirectToLocal(returnUrl);
+                    }
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:

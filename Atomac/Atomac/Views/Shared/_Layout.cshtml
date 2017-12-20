@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
 
-        <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-        @Scripts.Render("~/bundles/jquery")
-        <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
-        <script src="~/signalr/hubs"></script>
-        <script src="/signalr/js"></script>
-        <script src="~/Scripts/PublicChat.js"></script>
+
 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -43,6 +38,12 @@
             <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
         </footer>
     </div>
+
+        <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+        @Scripts.Render("~/bundles/jquery")
+        <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+        <script src="~/signalr/hubs"></script>
+        <script src="/signalr/js"></script>
 
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)

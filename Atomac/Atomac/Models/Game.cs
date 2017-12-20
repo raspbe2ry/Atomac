@@ -32,11 +32,11 @@ namespace Atomac.Models
         [ForeignKey ("Team1Id")]
         public virtual Team Team1 { get; set; }
 
-        public int Team2Id { get; set; }
+        public int? Team2Id { get; set; }
         [ForeignKey("Team2Id")]
         public virtual Team Team2 { get; set; }
 
-        public int RulesId { get; set; }
+        public int? RulesId { get; set; }
         [ForeignKey("RulesId")]
         public virtual Rules Rules { get; set; }
 

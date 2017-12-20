@@ -27,7 +27,6 @@ namespace Atomac.Controllers
             dbContext.SaveChanges();
 
              return Clients.All.addNewMessageToPage(nick, message);
-            //return Clients.User("mare@yahoo.com").addNewMessageToPage(nick, message);
         }
 
         public Task SendTeamRequest(string receiverMail, string teamName)
@@ -45,9 +44,24 @@ namespace Atomac.Controllers
             lista.Add(teamMemberName);
             lista.Add(userName);
 
-            //ako je potvrdio zahtev, treba da se kreira tim i sacuva u bazu
+            if (result == "yes")
+            {
+                Team team = new Team();
+                ApplicationUser capiten = dbContext.Users.Where(p => p.Email == teamMemberName).First();
+                ApplicationUser player2 = dbContext.Users.Where(p => p.Email == userName).First();
+                team.Capiten = capiten;
+                team.TeamMember = player2;
+                team.Name = teamName;
+                team.Points = 0;
+                team.Status = TStatus.Active;
+                capiten.Status = PStatus.Active;
+                player2.Status = PStatus.Active;
+                capiten.AdminedTeams.Add(team);
+                player2.Teams.Add(team);
+                dbContext.SaveChanges();
+            }
 
-            return Clients.Users(lista).ActivateTeam();
+            return Clients.Users(lista).ActivateTeam(result, teamName);
         }
     }
 }

@@ -1,0 +1,58 @@
+﻿@model Atomac.DTO.DTOMove
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Move</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Game.Id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Game.Id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Board)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Board)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.State)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.State)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.White)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.White)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Black)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Black)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

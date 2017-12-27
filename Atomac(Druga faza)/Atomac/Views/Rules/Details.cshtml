@@ -1,0 +1,58 @@
+﻿@model Atomac.DTO.DTORules
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Rules</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DroppedCheck)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DroppedCheck)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DroppedCheckMate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DroppedCheckMate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DroppedPawnOnFirstLine)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DroppedPawnOnFirstLine)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DroppedPawnOnLastLine)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DroppedPawnOnLastLine)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DroppedFigureOnLastLine)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DroppedFigureOnLastLine)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -1,0 +1,79 @@
+﻿body {
+   background-image: url('../Resources/Sah-pozadina2.jpg');
+   display:flex;
+}
+
+.log-reg
+{
+    width: 25%;
+    height: 35%;
+    background-color: white;
+    opacity: 0.8;
+    border-radius: 5%;
+    margin:auto;
+    z-index: 10;
+}
+
+#figura{
+    height: 50%;
+    margin: auto;
+    margin-top: 10%;
+    margin-left:-42%;
+    z-index: 20;
+}
+
+
+#registerLink {
+    font-size: 36px;
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: none;
+    color: black;
+    text-align: center;
+    box-shadow: 10px 10px 5px #888888;
+}
+
+ #ul-li{
+    background-color: none;
+    text-decoration: none;
+    list-style-type : none;
+    margin: 30px 30px 30px 40px;
+    position: center;
+    height: 50px;
+    width: 120px;
+    opacity: 1.0;
+}
+
+#loginLink {
+    font-size: 36px;
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: none;  
+    color: black; 
+    text-align: center;
+    box-shadow: 10px 10px 5px #888888;
+}
+
+ #loginLink:hover{
+    font-size: 36px;
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: underline;
+    color: black;
+ }
+
+ #registerLink:hover {
+    font-size: 36px;
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: underline;
+    color: black;
+}
+
+ #h21 {
+    color: black;
+    font-size: 30px;
+    text-align: center;
+    width: 200px;
+    margin: 0px;
+}

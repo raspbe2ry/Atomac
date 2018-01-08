@@ -56,17 +56,29 @@ function htmlEncode(value) {
     return encodedValue;
 }
 
+//provera se vrsi da li se u listi skorasnjih timova ne nalazi rcvMail kao kapiten tima(NE VRSIMO PROVERU DA LI SE NALAZI KAO TEAM MEMBER!!!)
 function Validacija(rcvMail) {
-    let divovi = $('#recent-table .listItem > button');
+    let captainIds = $('#recent-table .listItem > button');
     var indikator = false;
-    divovi.each((el, num) => {
-        console.log(divovi[el].id);
-        if (rcvMail == divovi[el].id) {
+    captainIds.each((el, num) => {
+        //console.log(divovi[el].id);
+        if (rcvMail == captainIds[el].id) {
             indikator = true;
         }
     });
     if (indikator == true)
         return false;
     else
-        return true;
+    {
+        let teamMemberIds = $('#recent-table .listItem .teamMember');
+        teamMemberIds.each((el, num) => {
+            //console.log(divovi[el].id);
+            if (rcvMail == teamMemberIds[el].id) {
+                indikator = true;
+            }
+        });
+        if (indikator == true)
+            return false;
+        else return true;
+    }
 }

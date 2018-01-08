@@ -1,4 +1,5 @@
-﻿@model Atomac.DTO.DTOAppUser
+﻿@using Atomac.DTO
+@model Atomac.DTO.DTOAppUser
 
 @{
     ViewBag.Title = "Details";
@@ -105,10 +106,18 @@
         <dd>
             @Html.DisplayFor(model => model.Email)
         </dd>
-
        
     </dl>
 </div>
+
+@{
+    foreach (DTOTeam t in Model.Teams)
+    {
+        <p>
+            @t.Name
+        </p>
+    }
+}
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")

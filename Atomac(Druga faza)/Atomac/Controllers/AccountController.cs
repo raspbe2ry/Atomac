@@ -401,6 +401,12 @@ namespace Atomac.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            using (ApplicationDbContext db = new ApplicationDbContext())
+            {
+                ApplicationUser user = db.Users.Where(m => m.Email == User.Identity.Name).First();
+                user.Status = PStatus.Offline;
+                db.SaveChanges();
+            }
             return RedirectToAction("Index", "Home");
         }
 

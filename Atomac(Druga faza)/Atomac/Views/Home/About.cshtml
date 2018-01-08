@@ -142,6 +142,7 @@
                                         <label>" + row.points + "</label>\
                                         <button id='" + row.capitenEmail + "' class='btn btn-success'\
                                             onclick='aktivirajTim(this)'>\
+                                        <span id='" + row.teamMemberId + "' style='display: none' class='teamMember'> </span>\
                                         <span class='glyphicon glyphicon-plus'></span>\
                                         <span>Aktiviraj tim</span></button></div>";
                                 }
@@ -177,7 +178,10 @@
                         },
                         "ajax": {
                             "url": "@Url.Action("GetActiveTeams", "DataTables")",
-                            "type": "POST"
+                            "type": "POST",
+                            "data": (d) => {
+                                d.userEmail = "@Context.User.Identity.Name";
+                            }
                         },
                         "columns": [
                             {

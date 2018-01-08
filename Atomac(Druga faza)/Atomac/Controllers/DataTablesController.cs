@@ -22,7 +22,7 @@ namespace Atomac.Controllers
             using (ApplicationDbContext hfdb = new ApplicationDbContext())
             {
                 query = from user in hfdb.Users
-                        where user.Status == PStatus.Active
+                        where (user.Status == PStatus.Active && user.Email!= User.Identity.Name)
                         select user;
 
                 totalCount = query.Count();
@@ -131,10 +131,12 @@ namespace Atomac.Controllers
             int totalCount = 0;
             int filteredCount = 0;
 
+            string userEmail = Request.Form["userEmail"];
+
             using (ApplicationDbContext dbContext = new ApplicationDbContext())
             {
                 query = from teams in dbContext.Teams
-                        where teams.Status == TStatus.Active
+                        where (teams.Status == TStatus.Active && !(teams.Capiten.Email == userEmail || teams.TeamMember.Email == userEmail))
                         select teams;
 
                 totalCount = query.Count();

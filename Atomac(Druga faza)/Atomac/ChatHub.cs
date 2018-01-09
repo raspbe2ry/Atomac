@@ -6,6 +6,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Atomac.Models;
 using System.Threading.Tasks;
+using Atomac.DTO;
 
 namespace Atomac.Controllers
 {
@@ -27,7 +28,7 @@ namespace Atomac.Controllers
             dbContext.SaveChanges();
 
              return Clients.All.addNewMessageToPage(nick, message);
-        }
+        } 
 
         public Task SendTeamRequest(string receiverMail, string teamName)
         {
@@ -112,5 +113,8 @@ namespace Atomac.Controllers
 
             return Clients.Users(lista).ActivateTeam(result, teamName);
         }
+
+
+
     }
 }

@@ -17,16 +17,17 @@ namespace Atomac.Models
         [Required]
         public DateTime Date { get; set; }
 
-        [Required]
         public int Points { get; set; }
 
-        [Required]
         public int Tokens { get; set; }
 
-        [Required]
         public int Duration { get; set; }
 
         public GStatus Status { get; set; }
+
+        public GTStatus StatusT1 { get; set; }
+
+        public GTStatus StatusT2 { get; set; }
 
         public int Team1Id { get; set; }
         [ForeignKey ("Team1Id")]
@@ -48,9 +49,17 @@ namespace Atomac.Models
         }
     }
 
-    public enum GStatus
+    public enum GStatus  //game status
     {
         Created = 1, 
         Playing = 2
+    }
+
+    public enum GTStatus  //game team status
+    {
+        Prepare=1, //admin selektuje zeljena pravila
+        Ready=2, // admin je selektovao pravila
+        Winner=3, 
+        Losser=4
     }
 }

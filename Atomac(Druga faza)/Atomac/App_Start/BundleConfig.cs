@@ -34,6 +34,14 @@ namespace Atomac
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
                         "~/Scripts/jquery.dataTables.min.js",
                         "~/Scripts/dataTables.bootstrap.min.js"));
+
+            bundles.Add(new StyleBundle("~/Content/chessboard").Include(
+                        "~/Content/chessboard-0.3.0.min.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/chessboard").Include(
+                        "~/Scripts/chess.min.js",
+                        "~/Scripts/chessboard-0.3.0.min.js"));
+            
         }
     }
 }

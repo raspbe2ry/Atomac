@@ -1,24 +1,38 @@
 ﻿@{ ViewBag.Title = "Igra"; }
 
 @Styles.Render("~/Content/datatables")
+<input type="hidden" value=@User.Identity.Name id="userEmail" />
+<div class="container">
+    <div id="row">
+        <div class="col-md-4">
+            <table id="korisnici-table" class="table table-hover table-striped table-condensed" >
+                <!-- ovde crta datatable -->
+            </table>
+        </div>
 
-<div id="row">
-    <div class="col-md-4">
-        <table id="korisnici-table" class="table table-hover table-striped table-condensed" >
-            <!-- ovde crta datatable -->
-        </table>
+        <div class="col-md-4">
+            <table id="recent-table" class="table table-hover table-striped table-condensed">
+                <!-- ovde crta datatable -->
+            </table>
+        </div>
+
+        <div class="col-md-4">
+            <table id="opponents-table" class="table table-hover table-striped table-condensed">
+                <!-- ovde crta datatable -->
+            </table>
+        </div>
     </div>
 
-    <div class="col-md-4">
-        <table id="recent-table" class="table table-hover table-striped table-condensed">
-            <!-- ovde crta datatable -->
-        </table>
-    </div>
-
-    <div class="col-md-4">
-        <table id="opponents-table" class="table table-hover table-striped table-condensed">
-            <!-- ovde crta datatable -->
-        </table>
+    <div id="row">
+        <div class="col-md-4">
+            <div id="ZahteviZaTim"></div>
+        </div>
+        <div class="col-md-4">
+            <div id="ZahteviZaAktivacijuTima"></div>
+        </div>
+        <div class="col-md-4">
+            <div id="ZahteviZaIgru"></div>
+        </div>
     </div>
 </div>
 
@@ -49,11 +63,11 @@
 
         }
 
-        var duga = document.createElement('input');
-        duga.type = 'hidden';
-        duga.innerText = 'Protisak';
-        duga.onclick = document.location("http://localhost:59310/NewGame/Index");
-        document.body.appendChild(duga);
+        //var duga = document.createElement('input');
+        //duga.type = 'hidden';
+        //duga.innerText = 'Protisak';
+        //duga.onclick = document.location("http://localhost:59310/NewGame/Index");
+        //document.body.appendChild(duga);
 
         var assetListUsers;
 
@@ -143,13 +157,13 @@
                                 "searchable": true, "sortable": false,
                                 render: (data, type, row) => {
                                     //row.name je teamname
-                                    if (row.status == "Active")
+                                    if (row.status == 4)
                                     {
                                         return "<div class='listItem " + addStatusClass(row.status) + "'>\
                                         <label>" + row.name + " - " + row.capitenNick + " & "
                                                  + row.teamMemberNick + "</label>\
                                         <label>" + row.points + "</label>\
-                                        <button id='" + row.capitenEmail + "' class='btn btn-success' data-teamname='" + row.name + "'>\
+                                        <button id='" + row.capitenEmail + "' class='btn btn-primary disabled currentTeam' data-teamname='" + row.name + "'>\
                                         <span id='" + row.teamMemberEmail + "' style='display: none' class='teamMember'> </span>\
                                         <span>Tim je aktivan</span></button></div>";
                                     }
@@ -209,7 +223,7 @@
                                         <label>" + row.name + " - " + row.capitenNick + " & "
                                             + row.teamMemberNick + "</label>\
                                         <label>" + row.points + "</label>\
-                                        <button id='" + row.capitenEmail + "' class='btn btn-success' onclick='izazoviTim(this)'>\
+                                        <button id='" + row.capitenEmail + "' class='btn btn-success gameRequest' data-oppteamname='"+row.name+"'>\
                                         <span class='glyphicon glyphicon-plus'></span>\
                                         <span>Izazovi tim</span></button></div>";
                                 }

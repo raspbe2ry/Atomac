@@ -112,5 +112,14 @@ namespace Atomac.Controllers
 
             return Clients.Users(lista).ActivateTeam(result, teamName);
         }
+
+        public Task SendGameRequest(string sndTeamName, string sndCptEmail,string rcvTeamName, string rcvCptEmail)
+        {
+            return Clients.User(rcvCptEmail).sendGameRequest(sndTeamName, sndCptEmail, rcvTeamName);
+        }
+
+        public Task ApproveGameRequest(string sndTeamName, string sndCptName,string oppTeamName, string result)
+        {
+        }
     }
 }

@@ -204,7 +204,7 @@ namespace Atomac.Controllers
                     using (ApplicationDbContext db = new ApplicationDbContext())
                     {
                         ApplicationUser user1 = db.Users.Where(m => m.Email == model.Email).First();
-                        user.Status = PStatus.Active;
+                        user1.Status = PStatus.Active;
                         db.SaveChanges();
                         IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
                         List<Team> teamList = db.Teams.Where(p => p.Capiten.Email == model.Email || p.TeamMember.Email == model.Email).ToList();

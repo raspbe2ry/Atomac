@@ -7,8 +7,8 @@
     };
 
     chat.client.sendTeamRequest = function (username, teamName) {
-        var elm = '<div id="prijemZahtevaZaTim" style="width:300px; height:200px; background-color:#aabbcc"></div>';
-        $('body').append(elm);
+        var elm = '<div id="prijemZahtevaZaTim" style="width:300px; height:200px; background-color:#aabbcc">New invitation</div>';
+        $('#ZahteviZaTim').append(elm);
         $('#prijemZahtevaZaTim').append('<p>User ' + htmlEncode(username)
             + ' has sent you team invitation. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
             + 'Do you accept it? <button class="prihvatiZahtev" value="Yes">Yes</button>'
@@ -27,10 +27,9 @@
     };
 
     chat.client.sendActivateTeamRequest = function (username, teamName) {
-        var elm = '<div id="prijemZahtevaZaAktivacijuTima" style="width:300px; height:200px; background-color:#aabbcc"></div>';
-        $('body').append(elm);
+        $('#ZahteviZaAktivacijuTima').append('<div id="prijemZahtevaZaAktivacijuTima" style="width:300px; height:200px; background-color:#aabbcc">New invitation</div>');
         $('#prijemZahtevaZaAktivacijuTima').append('<p>User ' + htmlEncode(username)
-            + ' has sent you team invitation for team activation. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
+            + ' has sent you team activation invite. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
             + 'Do you accept it? <button class="prihvatiZahtev" value="Yes">Yes</button>'
             + ' <button class="prihvatiZahtev" value="No">No</button>');
         $('.prihvatiZahtev').click(function () {
@@ -41,6 +40,26 @@
             else {
                 $('#prijemZahtevaZaAktivacijuTima').remove();
                 chat.server.approveActivateTeamRequest(username, teamName, "no");
+            }
+
+        });
+    };
+
+    chat.client.sendGameRequest = function (teamName, username, oppTeamName) {
+        var elm = '<div id="prijemZahtevaZaIgru" style="width:300px; height:200px; background-color:#aabbcc">New invitation</div>';
+        $('#ZahteviZaIgru').append(elm);
+        $('#prijemZahtevaZaIgru').append('<p>User ' + htmlEncode(username)
+            + ' has sent you game invitation. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
+            + 'Do you accept it? <button class="prihvatiZahtev" value="Yes">Yes</button>'
+            + ' <button class="prihvatiZahtev" value="No">No</button>');
+        $('.prihvatiZahtev').click(function () {
+            if (this.value == "Yes") {
+                $('#prijemZahtevaZaIgru').remove();
+                chat.server.approveGameRequest(teamName, username, oppTeamName, "yes");
+            }
+            else {
+                $('#prijemZahtevaZaIgru').remove();
+                chat.server.approveGameRequest(teamName, username, oppTeamName, "no");
             }
 
         });
@@ -105,13 +124,28 @@ function poveziDugmiceZaOnlineKorisnike(chat) {
     //pDugme je dugme za slanje zahteva igracu za kreiranje tima
     $('.pDugme').click(function () {
         //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
-        if (Validacija(this.id)) {
-
-            document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
+        if (ValidacijaRecentTable(this.id)) {
+            let popup = document.getElementById('myModal');
+            if (popup != undefined || popup != null) {
+                popup.remove();
+                document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
+            }
+            else {
+                document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
+            }
         }
-        else
-            document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
-                "You two are already teammates.", false));
+        else {
+            let popup = document.getElementById('myModal');
+            if (popup != undefined || popup != null) {
+                popup.remove();
+                document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
+                    "You two are already teammates.", false));
+            }
+            else {
+                document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
+                    "You two are already teammates.", false));
+            }
+        }
     });
 }
 
@@ -132,7 +166,16 @@ function poveziDugmiceZaRecentTeams(chat) {
 }
 
 function poveziDugmiceZaOpponentTeams(chat) {
-
+    $('.gameRequest').click(function () {
+        let userEmail = $('#userEmail').val();
+        if (ValidacijaGameRequest(userEmail)) {
+            let oppButton = $('.gameRequest');
+            let opponentTeamName = oppButton.dataset.oppteamname;
+            let opponentCptEmail = oppButton.id;
+            let teamName = $('.currentTeam').dataset.teamname;
+            chat.server.sendGameRequest(teamName, userEmail, opponentTeamName, opponentCptEmail);
+        }
+    });
 }
 
 function htmlEncode(value) {
@@ -141,7 +184,7 @@ function htmlEncode(value) {
 }
 
 //provera se vrsi da li se u listi skorasnjih timova ne nalazi rcvMail kao kapiten tima(NE VRSIMO PROVERU DA LI SE NALAZI KAO TEAM MEMBER!!!)
-function Validacija(rcvMail) {
+function ValidacijaRecentTable(rcvMail) {
     let captainIds = $('#recent-table .listItem > button');
     var indikator = false;
     captainIds.each((el, num) => {
@@ -165,6 +208,13 @@ function Validacija(rcvMail) {
     }
 }
 
+function ValidacijaGameRequest(userEmail) {
+    let captainIds = $('.currentTeam').id;
+    if (userEmail == captainIds)
+        return true;
+    return false;
+}
+
 function SendRequest(chat, rcvMail)
 {
     let teamName = $('#teamName').val();
@@ -173,10 +223,12 @@ function SendRequest(chat, rcvMail)
 
 function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
 {
+    let boolButtonText = buttonText;
     var div1=document.createElement('div');
     div1.id="myModal";
     div1.className="modal fade";
     div1.setAttribute('role', 'dialog');
+    div1.setAttribute('data', 'deletePopUp: true');
     var div2=document.createElement('div');
     div2.className="modal-dialog";
     div1.appendChild(div2);
@@ -189,7 +241,7 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     btn1.type='button';
     btn1.class="close";
     btn1.dataset.dismiss='modal';
-    btn1.value = htmlEncode("&times;");
+   // btn1.value = htmlEncode("&times;");
     div4.appendChild(btn1);
     var h4=document.createElement('h4');
     h4.innerHTML=name;
@@ -197,7 +249,7 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     div3.appendChild(div4);
     var div5=document.createElement('div');
     div5.class = "modal-body";
-    if (buttonText)
+    if (boolButtonText)
     {
         var inputText = document.createElement('input');
         inputText.type = 'text';
@@ -217,7 +269,7 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     btn2.class="btn btn-default";
     btn2.dataset.dismiss='modal';
     btn2.value = "Close";
-    if (buttonText) {
+    if (boolButtonText) {
         var btn3 = document.createElement('input');
         btn3.type = 'button';
         btn3.class = "btn btn-default";

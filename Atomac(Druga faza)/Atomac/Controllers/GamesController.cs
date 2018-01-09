@@ -15,6 +15,12 @@ namespace Atomac.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        [HttpGet]
+        public ActionResult Igra()
+        {
+            return View("~/Views/Games/Gameplay.cshtml");
+        }
+
         // GET: Games
         public ActionResult Index()
         {
@@ -27,7 +33,7 @@ namespace Atomac.Controllers
             }
             return View(lista);
         }
-
+        
         // GET: Games/Details/5
         public ActionResult Details(int? id)
         {

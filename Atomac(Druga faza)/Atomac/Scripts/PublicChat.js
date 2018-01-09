@@ -26,20 +26,32 @@
         });
     };
 
+    chat.client.sendActivateTeamRequest = function (username, teamName) {
+        var elm = '<div id="prijemZahtevaZaAktivacijuTima" style="width:300px; height:200px; background-color:#aabbcc"></div>';
+        $('body').append(elm);
+        $('#prijemZahtevaZaAktivacijuTima').append('<p>User ' + htmlEncode(username)
+            + ' has sent you team invitation for team activation. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
+            + 'Do you accept it? <button class="prihvatiZahtev" value="Yes">Yes</button>'
+            + ' <button class="prihvatiZahtev" value="No">No</button>');
+        $('.prihvatiZahtev').click(function () {
+            if (this.value == "Yes") {
+                $('#prijemZahtevaZaAktivacijuTima').remove();
+                chat.server.approveActivateTeamRequest(username, teamName, "yes");
+            }
+            else {
+                $('#prijemZahtevaZaAktivacijuTima').remove();
+                chat.server.approveActivateTeamRequest(username, teamName, "no");
+            }
+
+        });
+    };
+
     chat.client.reloadRecentByLogIn = function () {
         $('#korisnici-table').DataTable().ajax.reload(null, false);
         $('#recent-table').DataTable().ajax.reload(null, false);
         setTimeout(function () {
-            $('.pDugme').click(function () {
-                //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
-                if (Validacija(this.id)) {
-
-                    document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
-                }
-                else
-                    document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
-                        "You two are already teammates.", false));
-            });
+            poveziDugmiceZaOnlineKorisnike(chat);
+            poveziDugmiceZaRecentTeams(chat);
         }, 3000);
     };
 
@@ -49,22 +61,30 @@
         $('#opponents-table').DataTable().ajax.reload(null, false);
         //da sprecimo W-R hazarde-> da se prvo veze dugme pa da se obrise tabela i osvezi
         setTimeout(function () {
-            $('.pDugme').click(function () {
-                //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
-                if (Validacija(this.id)) {
-
-                    document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
-                }
-                else
-                    document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
-                        "You two are already teammates.", false));
-            });
+            poveziDugmiceZaOnlineKorisnike(chat);
+            poveziDugmiceZaRecentTeams(chat);
+            poveziDugmiceZaOpponentTeams(chat);
         }, 3000);
     };
 
-    chat.client.activateTeam = function (result, teamName) {
-        if(result == "yes")
+    chat.client.makeTeam = function (result, teamName) {
+        if (result == "yes") {
             $('#recent-table').DataTable().ajax.reload(null, false);
+            setTimeout(function () {
+                poveziDugmiceZaRecentTeams(chat);
+            }, 3000);
+        }
+    };
+
+    chat.client.activateTeam = function (result, teamName) {
+        if (result == "yes") {
+            $('#recent-table').DataTable().ajax.reload(null, false);
+            $('#opponents-table').DataTable().ajax.reload(null, false);
+            setTimeout(function () {
+                poveziDugmiceZaRecentTeams(chat);
+                poveziDugmiceZaOpponentTeams(chat);
+            }, 3000);
+        }
     };
 
     $('#message').focus();
@@ -74,24 +94,46 @@
             chat.server.send($('#uName').val(), $('#message').val());
             $('#message').val('').focus();
         });
-
-        //pDugme je dugme za slanje zahteva igracu za kreiranje tima
-        $('.pDugme').click(function () { 
-            //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
-            if (Validacija(this.id)) {
-
-                document.body.appendChild(CreatePopUp(chat, this.id,"proba", "Send request", true));
-            }
-            else
-                document.body.appendChild(CreatePopUp(null, this.id,"proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
-                    "You two are already teammates.", false));
-        });
-
-        
+        poveziDugmiceZaOnlineKorisnike(chat);
+        poveziDugmiceZaRecentTeams(chat);
+        poveziDugmiceZaOpponentTeams(chat);
     });
 
 });
 
+function poveziDugmiceZaOnlineKorisnike(chat) {
+    //pDugme je dugme za slanje zahteva igracu za kreiranje tima
+    $('.pDugme').click(function () {
+        //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
+        if (Validacija(this.id)) {
+
+            document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
+        }
+        else
+            document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
+                "You two are already teammates.", false));
+    });
+}
+
+function poveziDugmiceZaRecentTeams(chat) {
+    $('.activateTeam').click(function () {
+        let teamName = this.dataset.teamname;
+        let teamMember;
+        for (var i = 0; i < this.childNodes.length; i++) {
+            if (this.childNodes[i].className == "teamMember") {
+                //vadim span element koji sadrzi mejl u id
+                teamMember = this.childNodes[i];
+                break;
+            }
+        }
+        //this.id je captainMail 
+        chat.server.sendActivateTeamRequest(this.id, teamMember.id, teamName);
+    });
+}
+
+function poveziDugmiceZaOpponentTeams(chat) {
+
+}
 
 function htmlEncode(value) {
     var encodedValue = $('<div />').text(value).html();
@@ -188,4 +230,3 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     div3.appendChild(div6);
     return div1;
 }
-

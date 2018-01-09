@@ -53,11 +53,60 @@ namespace Atomac.Controllers
                 team.TeamMember = player2;
                 team.Name = teamName;
                 team.Points = 0;
-                team.Status = TStatus.Active;
-                capiten.Status = PStatus.Active;
-                player2.Status = PStatus.Active;
+                team.Status = TStatus.Online;
                 capiten.AdminedTeams.Add(team);
                 player2.Teams.Add(team);
+                dbContext.SaveChanges();
+            }
+
+            return Clients.Users(lista).MakeTeam(result, teamName);
+        }
+
+        public Task SendActivateTeamRequest(string captainMail, string teamMemberMail, string teamName)
+        {
+            string userName = Context.Request.User.Identity.Name;
+            if(userName == captainMail)
+            {
+                //mi smo kapiten pa saljemo zahtev drugom clanu tima
+                return Clients.User(teamMemberMail).sendActivateTeamRequest(userName, teamName);
+            }
+            else
+            {
+                return Clients.User(captainMail).sendActivateTeamRequest(userName, teamName);
+            }
+        }
+
+        public Task ApproveActivateTeamRequest(string teamMemberName, string teamName, string result)
+        {
+            string userName = Context.Request.User.Identity.Name;
+
+            List<string> lista = new List<String>();
+            lista.Add(teamMemberName);
+            lista.Add(userName);
+
+            if (result == "yes")
+            {
+                List<Team> teamsPl1 = dbContext.Teams.Where(p => (p.Capiten.Email == teamMemberName || p.TeamMember.Email == teamMemberName)).ToList();
+                List<Team> teamsPl2 = dbContext.Teams.Where(p => (p.Capiten.Email == userName || p.TeamMember.Email == userName)).ToList();
+                foreach (Team t in teamsPl1)
+                {
+                    if (t.Status == TStatus.Active)
+                    {
+                        t.Status = TStatus.Online;
+                        break; //samo 1 je aktivan-> ne moze vise
+                    }
+                }
+                foreach (Team t in teamsPl2)
+                {
+                    if (t.Status == TStatus.Active)
+                    {
+                        t.Status = TStatus.Online;
+                        break; //samo 1 je aktivan-> ne moze vise
+                    }
+                }
+                Team team = dbContext.Teams.Where(p => (p.Capiten.Email == teamMemberName && p.TeamMember.Email == userName) ||
+                                        (p.TeamMember.Email == teamMemberName && p.TeamMember.Email == userName)).First();
+                team.Status = TStatus.Active;
                 dbContext.SaveChanges();
             }
 

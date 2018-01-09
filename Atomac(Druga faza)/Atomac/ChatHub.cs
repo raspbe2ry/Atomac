@@ -119,8 +119,125 @@ namespace Atomac.Controllers
             return Clients.User(rcvCptEmail).sendGameRequest(sndTeamName, sndCptEmail, rcvTeamName);
         }
 
-        public Task ApproveGameRequest(string sndTeamName, string sndCptName,string oppTeamName, string result)
+        public Task ApproveGameRequest(string sndTeamName, string sndCptName, string oppTeamName, string result)
         {
+            string oppCptName = Context.Request.User.Identity.Name;
+            Team c1 = dbContext.Teams.Where(t => t.Capiten.Email == sndCptName && t.Name == sndTeamName && t.Status == TStatus.Active).ToList().First(); //tim izazivac
+            Team c2 = dbContext.Teams.Where(t => t.Capiten.Email == oppCptName && t.Name == oppTeamName && t.Status == TStatus.Active).ToList().First(); //tim koji se izaziva
+            int challenger = c1.Id; //id tima izazivaca
+            int challenged = c2.Id; //id izazvanog tima
+
+            if (result == "yes")
+            {
+                Game game = new Game();
+                game.Team1Id = challenger;
+                game.Team2Id = challenged;
+                game.StatusT1 = GTStatus.Prepare;
+                game.StatusT2 = GTStatus.Prepare;
+                game.Date = DateTime.Now;
+                game.Status = GStatus.Created;
+                dbContext.Games.Add(game);
+                dbContext.SaveChanges();
+
+                DTOGame dGame = new DTOGame();
+                dGame.GetById(game.Id);
+                List<DTOAppUser> playersInfos = GetUsersInfos(challenger, challenger);
+                List<string> playersEmails = new List<string>();
+                foreach (DTOAppUser au in playersInfos)
+                {
+                    playersEmails.Add(au.Email);
+                }
+
+                return Clients.Users(playersEmails).GameCreationConfirmationApprove(dGame);
+            }
+            else
+            {
+                List<string> pE = new List<string>();
+                pE.Add(sndCptName);
+                pE.Add(oppCptName);
+                return Clients.Users(pE).GameCreationConfirmationDisapprove();
+            }
+        }
+
+        public List<DTOAppUser> GetUsersInfos(int id1, int id2)  //nije serverska funkcija, vec pomocna funkcija
+        {
+            List<Team> tList = dbContext.Teams.Where(t => t.Id == id1 || t.Id == id2).ToList();
+            List<DTOAppUser> rList = new List<DTOAppUser>();
+            foreach (Team t in tList)
+            {
+                DTOAppUser cap = new DTOAppUser();
+                cap.GetById(t.CapitenId);
+                DTOAppUser tm = new DTOAppUser();
+                tm.GetById(t.TeamMemberId);
+            }
+            return rList;
+        }
+
+        public Task SendMessage(string nick, string message, string gameId) //poruke tokom kreiranje igre i partije, chat je tranzijentni
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).SendGameMessage(nick, message);
+        }
+
+        public List<string> EmailsFromPlayersInGame(int gameId)
+        {
+            Game game = dbContext.Games.Find(gameId);
+            List<Team> tList = dbContext.Teams.Where(t => t.Id == game.Team1Id || t.Id == game.Team2Id).ToList();
+            List<string> rList = new List<string>();
+            foreach (Team t in tList)
+            {
+                rList.Add(t.Capiten.Email);
+                rList.Add(t.TeamMember.Email);
+            }
+            return rList;
+        }
+
+        public Task SendDroppedCheck(string value, string senderTeamId, string gameId)
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).ReturnDroppedCheck(value, senderTeamId);
+        }
+
+        public Task SendDroppedCheckMate(string value, string senderTeamId, string gameId)
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).ReturnDroppedCheckMate(value, senderTeamId);
+        }
+
+        public Task SendDroppedPawnOnFirstLine(string value, string senderTeamId, string gameId)
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).ReturnDroppedPawnOnFirstLine(value, senderTeamId);
+        }
+
+        public Task SendDroppedPawnOnLastLine(string value, string senderTeamId, string gameId)
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).ReturnDroppedPawnOnLastLine(value, senderTeamId);
+        }
+
+        public Task SendDroppedFigureOnLastLine(string value, string senderTeamId, string gameId)
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).ReturnDroppedFigureOnLastLine(value, senderTeamId);
+        }
+
+        public Task SendGameDuration(string value, string senderTeamId, string gameId)
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).ReturnGameDuration(value, senderTeamId);
+        }
+
+        public Task SendGamePoints(string value, string senderTeamId, string gameId)
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).ReturnGamePoints(value, senderTeamId);
+        }
+
+        public Task SendGameTokens(string value, string senderTeamId, string gameId)
+        {
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
+            return Clients.Users(playersEmails).ReturnGameTokens(value, senderTeamId);
         }
     }
 }

@@ -7,26 +7,64 @@
     };
 
     chat.client.sendTeamRequest = function (username, teamName) {
-        //treba i hidden polja za username, teamName -> tu da se upise username i teamName
-        //$('#un').text(username);
-        //$('#tn').text(teamName);
         var elm = '<div id="prijemZahtevaZaTim" style="width:300px; height:200px; background-color:#aabbcc"></div>';
         $('body').append(elm);
         $('#prijemZahtevaZaTim').append('<p>User ' + htmlEncode(username)
             + ' has sent you team invitation. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
-            + 'Do you accept it? <button id="prihvatiZahtev" value="Yes">Yes</button>'
-            + ' <button id="prihvatiZahtev" value="No">No</button>');
-        $('#prihvatiZahtev').click(function () {
-            if(this.value=="Yes")
+            + 'Do you accept it? <button class="prihvatiZahtev" value="Yes">Yes</button>'
+            + ' <button class="prihvatiZahtev" value="No">No</button>');
+        $('.prihvatiZahtev').click(function () {
+            if (this.value == "Yes") {
+                $('#prijemZahtevaZaTim').remove();
                 chat.server.approveTeamRequest(username, teamName, "yes");
-            else
+            }
+            else {
+                $('#prijemZahtevaZaTim').remove();
                 chat.server.approveTeamRequest(username, teamName, "no");
+            }
+
         });
     };
 
+    chat.client.reloadRecentByLogIn = function () {
+        $('#korisnici-table').DataTable().ajax.reload(null, false);
+        $('#recent-table').DataTable().ajax.reload(null, false);
+        setTimeout(function () {
+            $('.pDugme').click(function () {
+                //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
+                if (Validacija(this.id)) {
+
+                    document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
+                }
+                else
+                    document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
+                        "You two are already teammates.", false));
+            });
+        }, 3000);
+    };
+
+    chat.client.reloadRecentByLogOut = function () {
+        $('#korisnici-table').DataTable().ajax.reload(null, false);
+        $('#recent-table').DataTable().ajax.reload(null, false);
+        $('#opponents-table').DataTable().ajax.reload(null, false);
+        //da sprecimo W-R hazarde-> da se prvo veze dugme pa da se obrise tabela i osvezi
+        setTimeout(function () {
+            $('.pDugme').click(function () {
+                //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
+                if (Validacija(this.id)) {
+
+                    document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
+                }
+                else
+                    document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
+                        "You two are already teammates.", false));
+            });
+        }, 3000);
+    };
+
     chat.client.activateTeam = function (result, teamName) {
-        $('#aktivni-table').DataTable().ajax.reload(null, false);
-        //assetListRecentTeams.init();
+        if(result == "yes")
+            $('#recent-table').DataTable().ajax.reload(null, false);
     };
 
     $('#message').focus();
@@ -37,12 +75,16 @@
             $('#message').val('').focus();
         });
 
-        $('.pDugme').click(function () { //mozda this umesto e
+        //pDugme je dugme za slanje zahteva igracu za kreiranje tima
+        $('.pDugme').click(function () { 
             //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
             if (Validacija(this.id)) {
-                let teamName = $('#teamName').text();
-                chat.server.sendTeamRequest(this.id, "ime tima");
+
+                document.body.appendChild(CreatePopUp(chat, this.id,"proba", "Send request", true));
             }
+            else
+                document.body.appendChild(CreatePopUp(null, this.id,"proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
+                    "You two are already teammates.", false));
         });
 
         
@@ -61,7 +103,6 @@ function Validacija(rcvMail) {
     let captainIds = $('#recent-table .listItem > button');
     var indikator = false;
     captainIds.each((el, num) => {
-        //console.log(divovi[el].id);
         if (rcvMail == captainIds[el].id) {
             indikator = true;
         }
@@ -72,7 +113,6 @@ function Validacija(rcvMail) {
     {
         let teamMemberIds = $('#recent-table .listItem .teamMember');
         teamMemberIds.each((el, num) => {
-            //console.log(divovi[el].id);
             if (rcvMail == teamMemberIds[el].id) {
                 indikator = true;
             }
@@ -82,3 +122,70 @@ function Validacija(rcvMail) {
         else return true;
     }
 }
+
+function SendRequest(chat, rcvMail)
+{
+    let teamName = $('#teamName').val();
+    chat.server.sendTeamRequest(rcvMail, teamName);
+}
+
+function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
+{
+    var div1=document.createElement('div');
+    div1.id="myModal";
+    div1.className="modal fade";
+    div1.setAttribute('role', 'dialog');
+    var div2=document.createElement('div');
+    div2.className="modal-dialog";
+    div1.appendChild(div2);
+    var div3=document.createElement('div');
+    div3.className="modal-content";
+    div2.appendChild(div3);
+    var div4=document.createElement('div');
+    div4.className="modal-header";
+    var btn1=document.createElement('input');
+    btn1.type='button';
+    btn1.class="close";
+    btn1.dataset.dismiss='modal';
+    btn1.value = htmlEncode("&times;");
+    div4.appendChild(btn1);
+    var h4=document.createElement('h4');
+    h4.innerHTML=name;
+    div4.appendChild(h4);
+    div3.appendChild(div4);
+    var div5=document.createElement('div');
+    div5.class = "modal-body";
+    if (buttonText)
+    {
+        var inputText = document.createElement('input');
+        inputText.type = 'text';
+        inputText.id = "teamName";
+        div5.appendChild(inputText);
+    }
+    else {
+        var p = document.createElement('p');
+        p.innerHTML = modalText;
+        div5.appendChild(p);
+    }
+    div3.appendChild(div5);
+    var div6=document.createElement('div');
+    div6.className="modal-footer";
+    var btn2=document.createElement('input');
+    btn2.type='button';
+    btn2.class="btn btn-default";
+    btn2.dataset.dismiss='modal';
+    btn2.value = "Close";
+    if (buttonText) {
+        var btn3 = document.createElement('input');
+        btn3.type = 'button';
+        btn3.class = "btn btn-default";
+        btn3.dataset.dismiss = 'modal';
+        btn3.value = modalText;
+        btn3.addEventListener('click', function () { SendRequest(chat, rcvMail) });
+        div6.appendChild(btn3);
+    }
+    div6.appendChild(btn2);
+    div3.appendChild(div6);
+    return div1;
+}
+

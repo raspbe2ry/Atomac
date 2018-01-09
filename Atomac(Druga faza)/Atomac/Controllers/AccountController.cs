@@ -10,10 +10,12 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Atomac.Models;
 using System.Data.Entity;
+using Microsoft.AspNet.SignalR;
+using System.Collections.Generic;
 
 namespace Atomac.Controllers
 {
-    [Authorize]
+    [System.Web.Mvc.Authorize]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
@@ -86,6 +88,40 @@ namespace Atomac.Controllers
                             ApplicationUser user = db.Users.Where(m => m.Email == model.Email).First();
                             user.Status = PStatus.Active;
                             db.SaveChanges();
+
+                            IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+                            
+                            List<Team> teamList = db.Teams.Where(p => p.Capiten.Email == model.Email || p.TeamMember.Email == model.Email).ToList();
+                            foreach (Team t in teamList)
+                            {
+                                if (t.Capiten.Email == model.Email)
+                                {
+                                    if (t.TeamMember.Status == PStatus.InGame)
+                                    {
+                                        t.Status = TStatus.Busy;
+                                        db.SaveChanges();
+                                    }
+                                    else if (t.TeamMember.Status == PStatus.Active)
+                                    {
+                                        t.Status = TStatus.Online;
+                                        db.SaveChanges();
+                                    }
+                                }
+                                else
+                                {
+                                    if (t.Capiten.Status == PStatus.InGame)
+                                    {
+                                        t.Status = TStatus.Busy;
+                                        db.SaveChanges();
+                                    }
+                                    else if (t.Capiten.Status == PStatus.Active)
+                                    {
+                                        t.Status = TStatus.Online;
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
+                            hubContext.Clients.All.ReloadRecentByLogIn();
                         }
                         return RedirectToLocal(returnUrl);
                     }
@@ -165,7 +201,44 @@ namespace Atomac.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    using (ApplicationDbContext db = new ApplicationDbContext())
+                    {
+                        ApplicationUser user1 = db.Users.Where(m => m.Email == model.Email).First();
+                        user.Status = PStatus.Active;
+                        db.SaveChanges();
+                        IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+                        List<Team> teamList = db.Teams.Where(p => p.Capiten.Email == model.Email || p.TeamMember.Email == model.Email).ToList();
+                        foreach (Team t in teamList)
+                        {
+                            if (t.Capiten.Email == model.Email)
+                            {
+                                if (t.TeamMember.Status == PStatus.InGame)
+                                {
+                                    t.Status = TStatus.Busy;
+                                    db.SaveChanges();
+                                }
+                                else if (t.TeamMember.Status == PStatus.Active)
+                                {
+                                    t.Status = TStatus.Online;
+                                    db.SaveChanges();
+                                }
+                            }
+                            else
+                            {
+                                if (t.Capiten.Status == PStatus.InGame)
+                                {
+                                    t.Status = TStatus.Busy;
+                                    db.SaveChanges();
+                                }
+                                else if (t.Capiten.Status == PStatus.Active)
+                                {
+                                    t.Status = TStatus.Online;
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+                        hubContext.Clients.All.ReloadRecentByLogIn();
+                    }
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -406,6 +479,16 @@ namespace Atomac.Controllers
                 ApplicationUser user = db.Users.Where(m => m.Email == User.Identity.Name).First();
                 user.Status = PStatus.Offline;
                 db.SaveChanges();
+                IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+                string userName = User.Identity.Name;
+
+                List<Team> teamList = db.Teams.Where(p => p.Capiten.Email == userName || p.TeamMember.Email == userName).ToList();
+                foreach (Team t in teamList)
+                {
+                    t.Status = TStatus.Offline;
+                    db.SaveChanges();
+                }
+                hubContext.Clients.All.ReloadRecentByLogOut();
             }
             return RedirectToAction("Index", "Home");
         }

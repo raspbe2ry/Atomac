@@ -39,11 +39,12 @@ namespace Atomac.Models
             GamesAsSecond = new List<Game>();
         }
     }
-
+    
     public enum TStatus
     {
-        Offline=1,
-        Busy=2,
-        Active=3
+        Offline=1,//bar jedan od igraca igraca je offline
+        Online=2,//oba igraca su aktivna
+        Busy=3,//makar 1 igrac je InGame, a drugi je aktivan
+        Active=4//oba igraca su aktivna + oba igraca su selektovala da igraju u njemu
     }
 }

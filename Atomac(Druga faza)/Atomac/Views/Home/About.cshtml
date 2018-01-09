@@ -16,7 +16,7 @@
     </div>
 
     <div class="col-md-4">
-        <table id="aktivni-table" class="table table-hover table-striped table-condensed">
+        <table id="opponents-table" class="table table-hover table-striped table-condensed">
             <!-- ovde crta datatable -->
         </table>
     </div>
@@ -80,7 +80,7 @@
                                     return "<div class='listItem'>\
                                         <label>" + row.nickName + "</label>\
                                         <label>" + row.points + "</label>\
-                                        <button id='" + row.email + "' class='btn btn-success pDugme'>\
+                                        <button id='" + row.email + "' class='btn btn-success pDugme' data-nickname='"+ row.nickName +"' data-toggle='modal' data-target='#myModal'>\
                                         <span class='glyphicon glyphicon-plus'></span>\
                                         <span>Pozovi u tim</span></button></div>";
                                 }
@@ -142,7 +142,7 @@
                                         <label>" + row.points + "</label>\
                                         <button id='" + row.capitenEmail + "' class='btn btn-success'\
                                             onclick='aktivirajTim(this)'>\
-                                        <span id='" + row.teamMemberId + "' style='display: none' class='teamMember'> </span>\
+                                        <span id='" + row.teamMemberEmail + "' style='display: none' class='teamMember'> </span>\
                                         <span class='glyphicon glyphicon-plus'></span>\
                                         <span>Aktiviraj tim</span></button></div>";
                                 }
@@ -162,7 +162,7 @@
             assetListActiveTeams = {
                 dt: null,
                 init: () => {
-                    dt = $('#aktivni-table').dataTable({
+                    dt = $('#opponents-table').dataTable({
                         "serverSide": true,
                         "processing": true,
                         //"autoWidth": false,
@@ -173,7 +173,7 @@
                                 "next": "<span>→</span>", //Sledeća
                                 "previous": "<span>←</span>" //Prethodna
                             },
-                            "search": "<span>Pretraži aktivne timove (po nazivu tima): <span>",
+                            "search": "<span>Pretraži protivnicke timove (po nazivu tima): <span>",
                             "emptyTable": "Nema podataka za prikaz."
                         },
                         "ajax": {

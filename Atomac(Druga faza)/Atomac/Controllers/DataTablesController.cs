@@ -76,7 +76,7 @@ namespace Atomac.Controllers
             using (ApplicationDbContext dbContext = new ApplicationDbContext())
             {
                 query = from teams in dbContext.Teams
-                        where (teams.Capiten.Email == userEmail || teams.TeamMember.Email == userEmail)
+                        where (teams.Capiten.Email == userEmail || teams.TeamMember.Email == userEmail) && teams.Status!=TStatus.Offline
                         select teams;
 
                 totalCount = query.Count();

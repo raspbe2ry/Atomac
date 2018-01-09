@@ -23,11 +23,22 @@ textarea {
     max-width: 280px;
 }
 
-
 .listItem {
     display: block;
     height: 50px;
     padding: 5px;
     margin: 5px;
     background-color: lightblue;
+}
+
+.velikaTabla, .malaTabla {
+    margin: 0 auto;
+}
+
+.velikaTabla {
+    width: 75%;
+}
+
+.chatContainer {
+    background-color: lightyellow;
 }

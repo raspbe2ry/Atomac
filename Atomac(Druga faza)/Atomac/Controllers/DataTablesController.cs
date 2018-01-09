@@ -176,9 +176,8 @@ namespace Atomac.Controllers
                         //teamMember = team.TeamMember,
                         teamMemberId = team.TeamMemberId,
                         teamMemberEmail = team.TeamMember.Email,
-                        teamMemberNick = team.TeamMember.NickName
+                        teamMemberNick = team.TeamMember.NickName,
                     }).ToList();
-
                 return Json(new DataTablesResponse(requestModel.Draw, data, filteredCount, totalCount));
             }
         }

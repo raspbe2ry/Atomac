@@ -6,6 +6,7 @@ using System.Web;
 
 namespace Atomac.DTO
 {
+    [Serializable]
     public class DTOArtifact
     {
     }

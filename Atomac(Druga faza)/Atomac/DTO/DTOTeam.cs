@@ -7,6 +7,7 @@ using AutoMapper;
 
 namespace Atomac.DTO
 {
+    [Serializable]
     public class DTOTeam
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -16,12 +17,9 @@ namespace Atomac.DTO
         public TStatus Status { get; set; }
         public int Points { get; set; }
         public string CapitenId { get; set; }
-        public virtual DTOAppUser Capiten { get; set; }
+        public virtual DTOAppUserMini Capiten { get; set; }
         public string TeamMemberId { get; set; }
-        public DTOAppUser TeamMember { get; set; }
-        public IList<DTOGame> GamesAsFirst { get; set; }
-        public IList<DTOGame> GamesAsSecond { get; set; }
-        public IList<DTOGame> AllGames { get; set; }
+        public DTOAppUserMini TeamMember { get; set; }
 
         public DTOTeam GetById(int id)
         {

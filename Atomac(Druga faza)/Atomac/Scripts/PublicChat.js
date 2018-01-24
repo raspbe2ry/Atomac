@@ -106,6 +106,16 @@
         }
     };
 
+    chat.client.gameCreationConfirmationApprove = function (result) {
+        setTimeout(function () {
+            var objResult = JSON.parse(result);
+            var id = objResult.Id;
+            var query = "http://localhost:59310/NewGame/Index" + "//?id=" + id;
+            document.location.href=query;
+        }, 3000);
+    };
+    //duga.onclick = document.location("http://localhost:59310/NewGame/Index");
+
     $('#message').focus();
 
     $.connection.hub.start().done(function () {
@@ -170,10 +180,21 @@ function poveziDugmiceZaOpponentTeams(chat) {
         let userEmail = $('#userEmail').val();
         if (ValidacijaGameRequest(userEmail)) {
             let oppButton = $('.gameRequest');
-            let opponentTeamName = oppButton.dataset.oppteamname;
-            let opponentCptEmail = oppButton.id;
-            let teamName = $('.currentTeam').dataset.teamname;
+            let opponentTeamName = oppButton.data('oppteamname');
+            let opponentCptEmail = oppButton.attr('id');
+            let teamName = $('.currentTeam').data('teamname');
             chat.server.sendGameRequest(teamName, userEmail, opponentTeamName, opponentCptEmail);
+        }
+        else
+        {
+            let popup = document.getElementById('myModal');
+            if (popup != undefined || popup != null) {
+                popup.remove();
+                document.body.appendChild(CreatePopUp(null, null, "Impossible to send request", "You are not capiten of the selected team or you don't have activated team", false));
+            }
+            else {
+                document.body.appendChild(CreatePopUp(null, null, "Impossible to send request", "You are not capiten of the selected team or you don't have activated team", false));
+            }
         }
     });
 }
@@ -209,7 +230,7 @@ function ValidacijaRecentTable(rcvMail) {
 }
 
 function ValidacijaGameRequest(userEmail) {
-    let captainIds = $('.currentTeam').id;
+    let captainIds = $('.currentTeam').attr('id');
     if (userEmail == captainIds)
         return true;
     return false;
@@ -225,7 +246,7 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
 {
     let boolButtonText = buttonText;
     var div1=document.createElement('div');
-    div1.id="myModal";
+    div1.id = "myModal";
     div1.className="modal fade";
     div1.setAttribute('role', 'dialog');
     div1.setAttribute('data', 'deletePopUp: true');
@@ -269,6 +290,7 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     btn2.class="btn btn-default";
     btn2.dataset.dismiss='modal';
     btn2.value = "Close";
+    //btn2.addEventListener('click', function () { $('#myModal').remove()});
     if (boolButtonText) {
         var btn3 = document.createElement('input');
         btn3.type = 'button';

@@ -7,6 +7,7 @@ using AutoMapper;
 
 namespace Atomac.DTO
 {
+    [Serializable]
     public class DTOMove
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -17,7 +18,6 @@ namespace Atomac.DTO
         public string White { get; set; }  //koje figure beli ima u rezervi
         public string Black { get; set; }  //koje figure crni ima u rezervi
         public int GameId { get; set; }
-        public DTOGame Game { get; set; }
 
         public DTOMove GetById(int id)
         {

@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Atomac.Models;
+using AutoMapper;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Atomac.Models;
-using AutoMapper;
 
 namespace Atomac.DTO
 {
-    [Serializable]
-    public class DTOAppUser
+    public class DTOAppUserMini
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
@@ -25,14 +25,11 @@ namespace Atomac.DTO
         public int Draws { get; set; }
         public int Losses { get; set; }
         public PStatus Status { get; set; }
-        public ICollection<DTOArtifact> Artifacts { get; set; }
-        public ICollection<DTOTeam> Teams { get; set; }
-        public ICollection<DTOTeam> AdminedTeams { get; set; }
 
-        public DTOAppUser GetById(string id)
+        public DTOAppUserMini GetById(string id)
         {
             var user = db.Users.Find(id);
-            return Mapper.Map<DTOAppUser>(user);
+            return Mapper.Map<DTOAppUserMini>(user);
         }
     }
 }

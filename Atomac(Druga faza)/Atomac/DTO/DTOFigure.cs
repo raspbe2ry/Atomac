@@ -7,6 +7,7 @@ using System.Web;
 
 namespace Atomac.DTO
 {
+    [Serializable]
     public class DTOFigure
     {
         private ApplicationDbContext dbContext = new ApplicationDbContext();
@@ -15,7 +16,6 @@ namespace Atomac.DTO
         public string Style { get; set; }
         public bool Activity { get; set; }
         public string OwnerId { get; set; }
-        public DTOAppUser Owner { get; set; }
 
         public DTOFigure GetById(int id)
         {

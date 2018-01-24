@@ -7,6 +7,7 @@ using AutoMapper;
 
 namespace Atomac.DTO
 {
+    [Serializable]
     public class DTORules
     {
         private ApplicationDbContext dbContext = new ApplicationDbContext();

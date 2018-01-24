@@ -7,6 +7,7 @@ using AutoMapper;
 
 namespace Atomac.DTO
 {
+    [Serializable]
     public class DTOGame
     {
         private ApplicationDbContext db = new ApplicationDbContext();

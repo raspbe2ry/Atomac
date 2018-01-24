@@ -7,6 +7,7 @@ using Microsoft.AspNet.SignalR.Hubs;
 using Atomac.Models;
 using System.Threading.Tasks;
 using Atomac.DTO;
+using System.Web.Script.Serialization;
 
 namespace Atomac.Controllers
 {
@@ -94,6 +95,10 @@ namespace Atomac.Controllers
                     if (t.Status == TStatus.Active)
                     {
                         t.Status = TStatus.Online;
+                        if (t.TeamMember.Email == teamMemberName)
+                            lista.Add(t.Capiten.Email);
+                        else
+                            lista.Add(t.TeamMember.Email);
                         break; //samo 1 je aktivan-> ne moze vise
                     }
                 }
@@ -102,11 +107,15 @@ namespace Atomac.Controllers
                     if (t.Status == TStatus.Active)
                     {
                         t.Status = TStatus.Online;
+                        if (t.TeamMember.Email == userName)
+                            lista.Add(t.Capiten.Email);
+                        else
+                            lista.Add(t.TeamMember.Email);
                         break; //samo 1 je aktivan-> ne moze vise
                     }
                 }
                 Team team = dbContext.Teams.Where(p => (p.Capiten.Email == teamMemberName && p.TeamMember.Email == userName) ||
-                                        (p.TeamMember.Email == teamMemberName && p.TeamMember.Email == userName)).First();
+                                        (p.TeamMember.Email == teamMemberName && p.Capiten.Email == userName)).First();
                 team.Status = TStatus.Active;
                 dbContext.SaveChanges();
             }
@@ -126,29 +135,33 @@ namespace Atomac.Controllers
             Team c2 = dbContext.Teams.Where(t => t.Capiten.Email == oppCptName && t.Name == oppTeamName && t.Status == TStatus.Active).ToList().First(); //tim koji se izaziva
             int challenger = c1.Id; //id tima izazivaca
             int challenged = c2.Id; //id izazvanog tima
-
             if (result == "yes")
             {
                 Game game = new Game();
                 game.Team1Id = challenger;
                 game.Team2Id = challenged;
+                game.Team1 = c1;
+                game.Team2 = c2;
                 game.StatusT1 = GTStatus.Prepare;
                 game.StatusT2 = GTStatus.Prepare;
                 game.Date = DateTime.Now;
                 game.Status = GStatus.Created;
                 dbContext.Games.Add(game);
+
+                c1.Status = TStatus.Busy;
+                c2.Status = TStatus.Busy;
                 dbContext.SaveChanges();
 
                 DTOGame dGame = new DTOGame();
-                dGame.GetById(game.Id);
-                List<DTOAppUser> playersInfos = GetUsersInfos(challenger, challenger);
+                dGame=dGame.GetById(game.Id);
+                List<DTOAppUser> playersInfos = GetUsersInfos(challenger, challenged);
                 List<string> playersEmails = new List<string>();
                 foreach (DTOAppUser au in playersInfos)
                 {
                     playersEmails.Add(au.Email);
                 }
-
-                return Clients.Users(playersEmails).GameCreationConfirmationApprove(dGame);
+                var json = new JavaScriptSerializer().Serialize(dGame);
+                return Clients.Users(playersEmails).GameCreationConfirmationApprove(json);
             }
             else
             {
@@ -166,9 +179,11 @@ namespace Atomac.Controllers
             foreach (Team t in tList)
             {
                 DTOAppUser cap = new DTOAppUser();
-                cap.GetById(t.CapitenId);
+                cap=cap.GetById(t.CapitenId);
+                rList.Add(cap);
                 DTOAppUser tm = new DTOAppUser();
-                tm.GetById(t.TeamMemberId);
+                tm=tm.GetById(t.TeamMemberId);
+                rList.Add(tm);
             }
             return rList;
         }

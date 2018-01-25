@@ -30,15 +30,3 @@ textarea {
     margin: 5px;
     background-color: lightblue;
 }
-
-.velikaTabla, .malaTabla {
-    margin: 0 auto;
-}
-
-.velikaTabla {
-    width: 75%;
-}
-
-.chatContainer {
-    background-color: lightyellow;
-}

@@ -49,6 +49,7 @@ namespace Atomac.Models
         }
     }
 
+    //dodati status za zavrsenu igru
     public enum GStatus  //game status
     {
         Created = 1, 

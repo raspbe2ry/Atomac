@@ -39,17 +39,19 @@
             </div>
         </div>
     </div>
-    
-    <div class="body-content">
+
+    <div class="bodyPart">
         @RenderBody()
     </div>
 
-        <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-        @Scripts.Render("~/bundles/jquery")
-        <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
-        <script src="~/signalr/hubs"></script>
-        <script src="/signalr/js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script src="/signalr/js"></script>
 
+
+    @Styles.Render("~/Content/gamePlace")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

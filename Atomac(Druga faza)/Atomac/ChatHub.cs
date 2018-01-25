@@ -8,12 +8,17 @@ using Atomac.Models;
 using System.Threading.Tasks;
 using Atomac.DTO;
 using System.Web.Script.Serialization;
+using RedisDataLayer;
+using System.IO;
+using System.Text;
+using System.Runtime.Serialization.Json;
 
 namespace Atomac.Controllers
 {
     public class ChatHub : Hub
     {
         ApplicationDbContext dbContext = new ApplicationDbContext();
+        RedisFunctions rf = new RedisFunctions();
 
         public Task Send(string nick, string message)
         {
@@ -152,6 +157,8 @@ namespace Atomac.Controllers
                 c2.Status = TStatus.Busy;
                 dbContext.SaveChanges();
 
+                AddGameToRedisDB(game);
+
                 DTOGame dGame = new DTOGame();
                 dGame=dGame.GetById(game.Id);
                 List<DTOAppUser> playersInfos = GetUsersInfos(challenger, challenged);
@@ -253,6 +260,166 @@ namespace Atomac.Controllers
         {
             List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
             return Clients.Users(playersEmails).ReturnGameTokens(value, senderTeamId);
+        }
+
+        public Task SubmitChanges(string json)
+        {
+            DTOGameMini gm = new DTOGameMini();
+            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(gm.GetType());
+            gm = ser.ReadObject(ms) as DTOGameMini;
+            ms.Close();
+
+            int res =  AddSubmitedGameChangesToRedisDB(gm);
+            //treba da se vidi status da li da se redirektujemo ili da se vrati stranica
+            if(res==1)
+            {
+                //poslati svima submit prvog
+            }
+            else if(res==2)
+            {
+                //poslati svima da je sve ok->prelazak na igru
+            }
+            else if(res==0)
+            {
+                //poslati svima da se ne poklapaju pravila i vracaju se u prepare stanje
+            }
+            //ovo cisto zbog return
+            return Clients.All.NekaFunkcija("");
+        }
+
+        public Task StartGame(string json)
+        {
+            DTOGameMini gm = new DTOGameMini();
+            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(gm.GetType());
+            gm = ser.ReadObject(ms) as DTOGameMini;
+            ms.Close();
+
+            DeleteGameFromRedisDB(gm);
+            //ovde posle ide redirekcija
+            return Clients.All.NekaFunkcija("");
+        }
+
+        private void DeleteGameFromRedisDB(DTOGameMini g)
+        {
+            string hashGame = rf.MakeHashId("game", g.Id.ToString());
+            string keyT1 = rf.GetHashAttributeValue(hashGame, "t1");
+            string keyT2 = rf.GetHashAttributeValue(hashGame, "t2");
+            rf.DeleteKey(hashGame);
+            DeleteTeam(keyT1);
+            DeleteTeam(keyT2);
+        }
+
+        private void DeleteTeam(string keyT)
+        {
+            string rules = rf.GetHashAttributeValue(keyT, "rules");
+            rf.DeleteKey(keyT);
+            rf.DeleteKey(rules);
+        }
+
+        private void AddGameToRedisDB(Game g)
+        {
+            string hashGame = rf.MakeHashId("game", g.Id.ToString());
+            if (!rf.CheckIfKeyExists(hashGame))
+            {
+                string keyT1 = rf.MakeHashId("team", g.Team1Id.ToString());
+                string keyT2 = rf.MakeHashId("team", g.Team2Id.ToString());
+                rf.CreateGameHash(hashGame, keyT1, keyT2);
+                rf.CreateTeamHash(hashGame, keyT1);
+                rf.CreateTeamHash(hashGame, keyT2);
+            }
+        }
+
+        //cuvamo tim dok igra, tako da je jedinstven uvek team:id
+        //hashTeam je team koji vrsi submit trenutno
+        //return: 
+        //1->prvi tim je izvrsio submit; 
+        //2->drugi tim je izvrsio submit i pravila se poklapaju; 
+        //0->drugi tim je izvrsio submit, pravila se ne poklapaju pa su oba tima vracena u prepare stanje(pravila su i dalje selektovana)
+        private int AddSubmitedGameChangesToRedisDB(DTOGameMini gm)
+        {
+            string hashTeam = rf.MakeHashId("team", gm.TeamId);
+            string hashGame = rf.MakeHashId("game", gm.Id);
+            string team1 = rf.GetHashAttributeValue(hashGame, "t1");
+            string team2 = rf.GetHashAttributeValue(hashGame, "t2");
+            string statusT1 = rf.GetHashAttributeValue(team1, "status");
+            string statusT2 = rf.GetHashAttributeValue(team2, "status");
+            rf.SetHashAttributeValue(hashTeam, "status", "ready");
+            if (String.Equals(statusT1, statusT2))
+            {
+                DeleteSetOfRules(hashTeam);
+                SubmitFirstSetOfRules(gm, hashTeam);
+                return 1;
+            }
+            else
+            {
+                bool res = SubmitSecondSetOfRules(gm, hashTeam, team1, team2);
+                if (res)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        private void SubmitFirstSetOfRules(DTOGameMini gm, string hashTeam)
+        {
+            string listOfRules = rf.GetHashAttributeValue(hashTeam, "rules");
+            rf.PushItemToList(listOfRules, gm.Points);
+            rf.PushItemToList(listOfRules, gm.Tokens);
+            rf.PushItemToList(listOfRules, gm.Duration);
+            rf.PushItemToList(listOfRules, gm.DroppedCheck);
+            rf.PushItemToList(listOfRules, gm.DroppedCheckMate);
+            rf.PushItemToList(listOfRules, gm.DroppedPawnOnFirstLine);
+            rf.PushItemToList(listOfRules, gm.DroppedPawnOnLastLine);
+            rf.PushItemToList(listOfRules, gm.DroppedFigureOnLastLine);
+        }
+        //neko je vec submitovao
+        private bool SubmitSecondSetOfRules(DTOGameMini gm, string hashTeam, string team1, string team2)
+        {
+            DeleteSetOfRules(hashTeam);
+            SubmitFirstSetOfRules(gm, hashTeam);
+            bool res = false;
+            if (String.Equals(hashTeam, team1))
+            {
+                res = CheckRules(hashTeam, team2);
+            }
+            else
+            {
+                res = CheckRules(hashTeam, team1);
+            }
+            if (!res)
+            {
+                rf.SetHashAttributeValue(team1, "status", "prepare");
+                rf.SetHashAttributeValue(team2, "status", "prepare");
+            }
+            return res;
+        }
+
+        private bool CheckRules(string team1, string team2)
+        {
+            int length = (int)rf.GetListCount(team1);
+            for(int i=0; i<length; i++)
+            {
+                string ruleT1 = rf.GetItemFromList(team1, i);
+                string ruleT2 = rf.GetItemFromList(team2, i);
+                if(!String.Equals(ruleT1,ruleT2))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void DeleteSetOfRules(string hashTeam)
+        {
+            string listOfRules = rf.GetHashAttributeValue(hashTeam, "rules");
+            if(rf.CheckIfKeyExists(listOfRules))
+                rf.RemoveAllFromList(listOfRules);
         }
     }
 }

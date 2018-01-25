@@ -1,45 +1,79 @@
 ﻿@model Atomac.DTO.DTOGame
 
 @{
+    Layout = "~/Views/Shared/_LayoutGame.cshtml";
+}
+
+@{
     ViewBag.Title = "Atomac - Nova Igra";
 }
 
-<h2>Nova igra</h2>
-    
-<div class="row">
-    <div class="col-md-4">
-        <div>
-            <div class="teamInfoContainer">
-                <h4>Izazivaci: @Model.Team1.Name</h4>
-                <h5>Clanovi:</h5>
-                <ul>
-                    <li>@Model.Team1.Capiten.FirstName @Model.Team1.Capiten.LastName (@Model.Team1.Capiten.NickName)</li>
-                    <li>@Model.Team1.TeamMember.FirstName @Model.Team1.TeamMember.LastName (@Model.Team1.TeamMember.NickName)</li>
-                </ul>
-                <h5>Poeni: @Model.Team1.Points</h5>
+<div id="leftSide">
+    <table id="ruleTable">
+        <thead>
+            <tr>
+                <td>
+                    Pravilo
+                </td>
+                <td>
+                    Moj izbor
+                </td>
+                <td>
+                    @Model.Team1.Name
+                </td>
+                <td>
+                    @Model.Team2.Name
+                </td>
+            </tr>
+        </thead>
+        <tbody id="tableBody" style="background-color: white">
+        </tbody>
+    </table>
+</div>
+
+<div id="rightTop">
+    <div class="row">
+        <div class="col-md-4">
+            <div>
+                <div class="teamInfoContainer">
+                    <h4>Izazivaci: @Model.Team1.Name</h4>
+                    <h5>Clanovi:</h5>
+                    <ul>
+                        <li>@Model.Team1.Capiten.FirstName @Model.Team1.Capiten.LastName (@Model.Team1.Capiten.NickName)</li>
+                        <li>@Model.Team1.TeamMember.FirstName @Model.Team1.TeamMember.LastName (@Model.Team1.TeamMember.NickName)</li>
+                    </ul>
+                    <h5>Poeni: @Model.Team1.Points</h5>
+                </div>
+                <div class="teamInfoContainer">
+                    <h4>Izazvani: @Model.Team2.Name</h4>
+                    <h5>Clanovi:</h5>
+                    <ul>
+                        <li>@Model.Team2.Capiten.FirstName @Model.Team2.Capiten.LastName (@Model.Team2.Capiten.NickName)</li>
+                        <li>@Model.Team2.TeamMember.FirstName @Model.Team2.TeamMember.LastName (@Model.Team2.TeamMember.NickName)</li>
+                    </ul>
+                    <h5>Poeni: @Model.Team2.Points</h5>
+                </div>
             </div>
-            <div class="teamInfoContainer">
-                <h4>Izazvani: @Model.Team2.Name</h4>
-                <h5>Clanovi:</h5>
-                <ul>
-                    <li>@Model.Team2.Capiten.FirstName @Model.Team2.Capiten.LastName (@Model.Team2.Capiten.NickName)</li>
-                    <li>@Model.Team2.TeamMember.FirstName @Model.Team2.TeamMember.LastName (@Model.Team2.TeamMember.NickName)</li>
-                </ul>
-                <h5>Poeni: @Model.Team2.Points</h5>
-            </div>
-        </div>
-        <!-- ovaj cet da se prepravi da bude samo za partiju -->
-        <div class="container" style="float:right; background-color:aquamarine">
-            <input type="text" id="message" />
-            <input type="button" id="sendmessage" value="Send" />
-            <input type="hidden" id="displayname" />
-            <input type="hidden" id="uName" value=@ViewBag.NickName />
-            <ul id="discussion"></ul>
         </div>
     </div>
 </div>
 
+            <!-- ovaj cet da se prepravi da bude samo za partiju -->
+<div id="rightBottom">
+        <input type="text" id="message" />
+        <input type="button" id="sendmessage" value="Send" />
+        <input type="hidden" id="displayname" />
+        <input type="hidden" id="uName" value=@ViewBag.NickName />
+        <ul id="discussion"></ul>
+</div>
+
+<input type="hidden" id="myCapitenId" value=@ViewBag.CapId />
+<input type="hidden" id="myGameId" value=@Model.Id />
+<input type="hidden" id="myTeamId" value=@ViewBag.MyTeamId />
+
+
 @section Scripts
 {
-
+<script src="~/Scripts/PublicChat.js"></script>
+<script src="~/Scripts/NewGame.js"></script>
 }

@@ -1,5 +1,7 @@
-﻿$(function () {
-    var chat = $.connection.chatHub;
+﻿var chat;
+
+$(function () {
+    chat = $.connection.chatHub;
 
     chat.client.addNewMessageToPage = function (name, message) {
         $('#discussion').append('<li><strong>' + htmlEncode(name)

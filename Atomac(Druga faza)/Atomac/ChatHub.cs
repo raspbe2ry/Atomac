@@ -125,7 +125,8 @@ namespace Atomac.Controllers
                 dbContext.SaveChanges();
             }
 
-            return Clients.Users(lista).ActivateTeam(result, teamName);
+            //return Clients.Users(lista).ActivateTeam(result, teamName);
+            return Clients.All.ActivateTeam(result);
         }
 
         public Task SendGameRequest(string sndTeamName, string sndCptEmail,string rcvTeamName, string rcvCptEmail)

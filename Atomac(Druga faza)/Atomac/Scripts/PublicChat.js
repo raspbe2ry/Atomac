@@ -97,7 +97,7 @@ $(function () {
         }
     };
 
-    chat.client.activateTeam = function (result, teamName) {
+    chat.client.activateTeam = function (result) {
         if (result == "yes") {
             $('#recent-table').DataTable().ajax.reload(null, false);
             $('#opponents-table').DataTable().ajax.reload(null, false);

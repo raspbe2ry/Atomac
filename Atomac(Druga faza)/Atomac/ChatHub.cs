@@ -262,13 +262,13 @@ namespace Atomac.Controllers
             return Clients.Users(playersEmails).ReturnGameTokens(value, senderTeamId);
         }
 
-        public Task SubmitChanges(string json)
+        public Task SubmitChanges(DTOGameMini gm)
         {
-            DTOGameMini gm = new DTOGameMini();
-            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(gm.GetType());
-            gm = ser.ReadObject(ms) as DTOGameMini;
-            ms.Close();
+            //DTOGameMini gm = new DTOGameMini();
+            //MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            //DataContractJsonSerializer ser = new DataContractJsonSerializer(gm.GetType());
+            //gm = ser.ReadObject(ms) as DTOGameMini;
+            //ms.Close();
 
             int res =  AddSubmitedGameChangesToRedisDB(gm);
             //treba da se vidi status da li da se redirektujemo ili da se vrati stranica
@@ -384,14 +384,12 @@ namespace Atomac.Controllers
             DeleteSetOfRules(hashTeam);
             SubmitFirstSetOfRules(gm, hashTeam);
             bool res = false;
-            if (String.Equals(hashTeam, team1))
-            {
-                res = CheckRules(hashTeam, team2);
-            }
-            else
-            {
-                res = CheckRules(hashTeam, team1);
-            }
+            string hashGame = rf.MakeHashId("game", gm.Id);
+            string hashTeam1 = rf.MakeHashId("team", team1);
+            string hashTeam2 = rf.MakeHashId("team", team2);
+            string rules1 = rf.MakeHashId(rf.MakeHashId(hashGame, hashTeam1), "rules");
+            string rules2 = rf.MakeHashId(rf.MakeHashId(hashGame, hashTeam2), "rules");
+            res = CheckRules(rules1, rules2);
             if (!res)
             {
                 rf.SetHashAttributeValue(team1, "status", "prepare");

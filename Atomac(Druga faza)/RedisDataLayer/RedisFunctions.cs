@@ -36,7 +36,7 @@ namespace RedisDataLayer
         public void CreateTeamHash(string keyGame, string keyTeam)
         {
             Dictionary<string, string> dictionary = new Dictionary<string, string>();
-            dictionary.Add(keyTeam, "prepare");
+            dictionary.Add("status", "prepare");
             string rules = MakeHashId(keyGame, MakeHashId(keyTeam, "rules"));
             dictionary.Add("rules", rules);
             redis.SetRangeInHash(keyTeam, dictionary);

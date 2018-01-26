@@ -1,14 +1,14 @@
 ﻿function DTOGameCreationObject() {
-    this.id = $('#myGameId').val();
-    this.points = "";
-    this.tokens = $('#tokens').val();
-    this.duration = $('#duration').val();
-    this.teamId = $('#myTeamId').val();
-    this.droppedCheck = document.querySelector('input[name="check"]:checked').value;
-    this.droppedCheckMate = document.querySelector('input[name="checkMate"]:checked').value;
-    this.droppedPawnOnFirstLine = document.querySelector('input[name="pawnFirstLine"]:checked').value;
-    this.droppedPawnOnLastLine = document.querySelector('input[name="pawnLastLine"]:checked').value;
-    this.droppedFigureOnLastLine = document.querySelector('input[name="figureLastLine"]:checked').value;
+    this.Id = $('#myGameId').val();
+    this.Points = "";
+    this.Tokens = $('#tokens').val();
+    this.Duration = $('#duration').val();
+    this.TeamId = $('#myTeamId').val();
+    this.DroppedCheck = document.querySelector('input[name="check"]:checked').value;
+    this.DroppedCheckMate = document.querySelector('input[name="checkMate"]:checked').value;
+    this.DroppedPawnOnFirstLine = document.querySelector('input[name="pawnFirstLine"]:checked').value;
+    this.DroppedPawnOnLastLine = document.querySelector('input[name="pawnLastLine"]:checked').value;
+    this.DroppedFigureOnLastLine = document.querySelector('input[name="figureLastLine"]:checked').value;
 }
 
 function ValidateGameObject()
@@ -51,8 +51,8 @@ function AddSubmitGameRules() {
     button.addEventListener('click', function () {
         if (ValidateGameObject()) {
             let obj = new DTOGameCreationObject();
-            let obj1 = JSON.stringify(obj);
-            chat.server.submitChanges(obj1);
+            //let obj1 = JSON.stringify(obj);
+            chat.server.submitChanges(obj);
         }
     });
     $('#leftSide').append(button);

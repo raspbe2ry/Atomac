@@ -125,6 +125,10 @@ $(function () {
             chat.server.send($('#uName').val(), $('#message').val());
             $('#message').val('').focus();
         });
+        $('#sendmessageInGame').click(function () {
+            chat.server.sendMessageInGame($('#uName').val(), $('#messageInGame').val());
+            $('#messageInGame').val('').focus();
+        });
         poveziDugmiceZaOnlineKorisnike(chat);
         poveziDugmiceZaRecentTeams(chat);
         poveziDugmiceZaOpponentTeams(chat);

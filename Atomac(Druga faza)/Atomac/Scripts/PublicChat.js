@@ -113,7 +113,7 @@ $(function () {
             var objResult = JSON.parse(result);
             var id = objResult.Id;
             var query = "http://localhost:59310/NewGame/Index" + "//?id=" + id;
-            document.location.href=query;
+            document.location.href = query;
         }, 3000);
     };
 
@@ -124,32 +124,32 @@ $(function () {
         }
     };
 
-    chat.client.sendSubmitOfOne = function(){
+    chat.client.sendSubmitOfOne = function () {
         var controls = document.getElementsByClassName('control');
         for (var i = 0; i < controls.length; i++) {
             controls[i].disabled = true;
         }
     };
 
-    chat.client.sendStartGame = function (dtoGame) {
-        $('#rightTop').empty();
-    };
+        chat.client.sendStartGame = function (dtoGame) {
+            $('#rightTop').empty();
+        };
 
-    $('#message').focus();
+        $('#message').focus();
 
-    $.connection.hub.start().done(function () {
-        $('#sendmessage').click(function () {
-            chat.server.send($('#uName').val(), $('#message').val());
-            $('#message').val('').focus();
+        $.connection.hub.start().done(function () {
+            $('#sendmessage').click(function () {
+                chat.server.send($('#uName').val(), $('#message').val());
+                $('#message').val('').focus();
+            });
+            $('#sendmessageInGame').click(function () {
+                chat.server.sendMessageInGame($('#uName').val(), $('#messageInGame').val());
+                $('#messageInGame').val('').focus();
+            });
+            poveziDugmiceZaOnlineKorisnike(chat);
+            poveziDugmiceZaRecentTeams(chat);
+            poveziDugmiceZaOpponentTeams(chat);
         });
-        $('#sendmessageInGame').click(function () {
-            chat.server.sendMessageInGame($('#uName').val(), $('#messageInGame').val());
-            $('#messageInGame').val('').focus();
-        });
-        poveziDugmiceZaOnlineKorisnike(chat);
-        poveziDugmiceZaRecentTeams(chat);
-        poveziDugmiceZaOpponentTeams(chat);
-    });
 
 });
 

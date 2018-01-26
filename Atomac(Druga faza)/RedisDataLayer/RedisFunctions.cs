@@ -24,11 +24,12 @@ namespace RedisDataLayer
             else return true;
         }
 
-        public void CreateGameHash(string hashGame, string keyT1, string keyT2)
+        public void CreateGameHash(string hashGame, string keyT1, string keyT2, string keyMessages)
         {
             Dictionary<string, string> dictionary = new Dictionary<string, string>();
             dictionary.Add("t1", keyT1);
             dictionary.Add("t2", keyT2);
+            dictionary.Add("msg", keyMessages);
             redis.SetRangeInHash(hashGame, dictionary);
         }
 

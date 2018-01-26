@@ -378,6 +378,7 @@ namespace Atomac.Controllers
             rf.PushItemToList(listOfRules, gm.DroppedPawnOnLastLine);
             rf.PushItemToList(listOfRules, gm.DroppedFigureOnLastLine);
         }
+
         //neko je vec submitovao
         private bool SubmitSecondSetOfRules(DTOGameMini gm, string hashTeam, string team1, string team2)
         {
@@ -385,10 +386,8 @@ namespace Atomac.Controllers
             SubmitFirstSetOfRules(gm, hashTeam);
             bool res = false;
             string hashGame = rf.MakeHashId("game", gm.Id);
-            string hashTeam1 = rf.MakeHashId("team", team1);
-            string hashTeam2 = rf.MakeHashId("team", team2);
-            string rules1 = rf.MakeHashId(rf.MakeHashId(hashGame, hashTeam1), "rules");
-            string rules2 = rf.MakeHashId(rf.MakeHashId(hashGame, hashTeam2), "rules");
+            string rules1 = rf.MakeHashId(rf.MakeHashId(hashGame, team1), "rules");
+            string rules2 = rf.MakeHashId(rf.MakeHashId(hashGame, team2), "rules");
             res = CheckRules(rules1, rules2);
             if (!res)
             {

@@ -120,7 +120,7 @@ $(function () {
     chat.client.resetControl = function () {
         var controls = document.getElementsByClassName('control');
         for (var i = 0; i < controls.length; i++) {
-            controls[i].enabled = true;
+            controls[i].disabled = false;
         }
     };
 
@@ -132,6 +132,7 @@ $(function () {
     };
 
         chat.client.sendStartGame = function (dtoGame) {
+            $('#leftSide').empty();
             $('#rightTop').empty();
         };
 

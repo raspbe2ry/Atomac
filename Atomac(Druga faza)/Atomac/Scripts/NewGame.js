@@ -47,6 +47,7 @@ function AddSubmitGameRules() {
     button.type = 'button';
     button.value = "OK";
     button.id = "okButton";
+    button.className = "control";
 
     button.addEventListener('click', function () {
         if (ValidateGameObject()) {
@@ -84,7 +85,8 @@ function RadioButtons(name, idName)
     no.type = 'radio';
     no.value = 'no';
     no.name = idName;
-    no.className = idName;  //mozda treba idName+"No"
+    no.classList.add(idName);  //mozda treba idName+"No"
+    no.classList.add("control");
     var labelNo = document.createElement('label');
     labelNo.innerHTML = "No";
     div.appendChild(labelNo);
@@ -93,7 +95,8 @@ function RadioButtons(name, idName)
     yes.type = 'radio';
     yes.value = 'yes';
     yes.name = idName;
-    yes.className = idName;  //
+    yes.classList(idName);  //
+    yes.classList.add("control");
     var labelYes = document.createElement('label');
     labelYes.innerHTML = "Yes";
     div.appendChild(labelYes);
@@ -148,6 +151,7 @@ function AddTokensForRow() {
     var token = document.createElement('input');
     token.type = 'number';
     token.id = "tokens";
+    token.classList.add("control");
     token.addEventListener('change', function (e) { if (e.currentTarget.value != "") { chat.server.sendGameDuration(e.currentTarget.value, $('#myTeamId').val(), $('#myGameId').val()) } });
     td2.appendChild(token);
     row.appendChild(td2);
@@ -172,6 +176,7 @@ function AddDurationForRow() {
     var td2 = document.createElement('td');
     var duration = document.createElement('select');
     duration.id = "duration";
+    duration.classList.add("control");
     for (let i = 0; i < array.length; i++) {
         var option = document.createElement("option");
         option.value = array[i];

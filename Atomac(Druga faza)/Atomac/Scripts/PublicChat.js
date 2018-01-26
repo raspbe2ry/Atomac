@@ -116,7 +116,23 @@ $(function () {
             document.location.href=query;
         }, 3000);
     };
-    //duga.onclick = document.location("http://localhost:59310/NewGame/Index");
+
+    chat.client.resetControl() = function () {
+        var controls = document.getElementsByClassName('control');
+        for (var i = 0; i < controls.length; i++) {
+            controls[i].enabled = true;
+        }
+    };
+
+    chat.client.sendSubmitOfOne = function(){
+        var controls = document.getElementsByClassName('control');
+        for (var i = 0; i < controls.length; i++) {
+            controls[i].disabled = true;
+    };
+
+    chat.client.sendStartGame = function (dtoGame) {
+        $('#rightTop').empty();
+    };
 
     $('#message').focus();
 

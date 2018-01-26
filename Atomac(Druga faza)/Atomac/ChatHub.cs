@@ -195,8 +195,9 @@ namespace Atomac.Controllers
             return rList;
         }
 
-        public Task SendMessage(string nick, string message, string gameId) //poruke tokom kreiranje igre i partije, chat je tranzijentni
+        public Task SendMessageInGame(string nick, string message, string gameId) //poruke tokom kreiranje igre i partije, chat je tranzijentni
         {
+            //dodaj u redis
             List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
             return Clients.Users(playersEmails).SendGameMessage(nick, message);
         }
@@ -262,6 +263,15 @@ namespace Atomac.Controllers
             return Clients.Users(playersEmails).ReturnGameTokens(value, senderTeamId);
         }
 
+        private List<string> GetPlayersEmailsForTeam(string teamId)
+        {
+            Team team = dbContext.Teams.Find(teamId);
+            List<string> rList = new List<string>();
+            rList.Add(team.Capiten.Email);
+            rList.Add(team.TeamMember.Email);
+            return rList;
+        }
+
         public Task SubmitChanges(DTOGameMini gm)
         {
             //DTOGameMini gm = new DTOGameMini();
@@ -275,27 +285,29 @@ namespace Atomac.Controllers
             if(res==1)
             {
                 //poslati svima submit prvog
+                List<string> playersEmails = GetPlayersEmailsForTeam(gm.TeamId);
+                return Clients.Users(playersEmails).SendSubmitOfOne();
             }
             else if(res==2)
             {
                 //poslati svima da je sve ok->prelazak na igru
+                //dodati pravila iz redisa u bazu(staviti i status igre->to mozda u start game)
+                List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gm.Id));
+                DTOGame dGame = new DTOGame();
+                dGame = dGame.GetById(Int32.Parse(gm.Id));
+                return Clients.Users(playersEmails).SendStartGame(dGame);
             }
-            else if(res==0)
+            else//res=0
             {
                 //poslati svima da se ne poklapaju pravila i vracaju se u prepare stanje
+                List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gm.Id));
+                return Clients.Users(playersEmails).ResetControl();
             }
-            //ovo cisto zbog return
-            return Clients.All.NekaFunkcija("");
         }
 
-        public Task StartGame(string json)
+        public Task StartGame(DTOGameMini gm)
         {
-            DTOGameMini gm = new DTOGameMini();
-            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(gm.GetType());
-            gm = ser.ReadObject(ms) as DTOGameMini;
-            ms.Close();
-
+            //mozda staviti status igre ako nije vec
             DeleteGameFromRedisDB(gm);
             //ovde posle ide redirekcija
             return Clients.All.NekaFunkcija("");

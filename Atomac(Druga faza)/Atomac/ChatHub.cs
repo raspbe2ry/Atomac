@@ -197,7 +197,11 @@ namespace Atomac.Controllers
 
         public Task SendMessageInGame(string nick, string message, string gameId) //poruke tokom kreiranje igre i partije, chat je tranzijentni
         {
-            //dodaj u redis
+            string hashGame = rf.MakeHashId("game", gameId);
+            string messageList = rf.GetHashAttributeValue(hashGame, "msg");
+            string messageValue = nick + ": " + message;
+            rf.PushItemToList(messageList, messageValue);
+
             List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
             return Clients.Users(playersEmails).SendGameMessage(nick, message);
         }
@@ -263,7 +267,7 @@ namespace Atomac.Controllers
             return Clients.Users(playersEmails).ReturnGameTokens(value, senderTeamId);
         }
 
-        private List<string> GetPlayersEmailsForTeam(string teamId)
+        private List<string> GetPlayersEmailsForTeam(int teamId)
         {
             Team team = dbContext.Teams.Find(teamId);
             List<string> rList = new List<string>();
@@ -274,18 +278,12 @@ namespace Atomac.Controllers
 
         public Task SubmitChanges(DTOGameMini gm)
         {
-            //DTOGameMini gm = new DTOGameMini();
-            //MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            //DataContractJsonSerializer ser = new DataContractJsonSerializer(gm.GetType());
-            //gm = ser.ReadObject(ms) as DTOGameMini;
-            //ms.Close();
-
             int res =  AddSubmitedGameChangesToRedisDB(gm);
             //treba da se vidi status da li da se redirektujemo ili da se vrati stranica
             if(res==1)
             {
                 //poslati svima submit prvog
-                List<string> playersEmails = GetPlayersEmailsForTeam(gm.TeamId);
+                List<string> playersEmails = GetPlayersEmailsForTeam(Int32.Parse(gm.TeamId));
                 return Clients.Users(playersEmails).SendSubmitOfOne();
             }
             else if(res==2)
@@ -337,7 +335,8 @@ namespace Atomac.Controllers
             {
                 string keyT1 = rf.MakeHashId("team", g.Team1Id.ToString());
                 string keyT2 = rf.MakeHashId("team", g.Team2Id.ToString());
-                rf.CreateGameHash(hashGame, keyT1, keyT2);
+                string keyMessages = rf.MakeHashId(hashGame, "messages");
+                rf.CreateGameHash(hashGame, keyT1, keyT2, keyMessages);
                 rf.CreateTeamHash(hashGame, keyT1);
                 rf.CreateTeamHash(hashGame, keyT2);
             }
@@ -381,7 +380,6 @@ namespace Atomac.Controllers
         private void SubmitFirstSetOfRules(DTOGameMini gm, string hashTeam)
         {
             string listOfRules = rf.GetHashAttributeValue(hashTeam, "rules");
-            rf.PushItemToList(listOfRules, gm.Points);
             rf.PushItemToList(listOfRules, gm.Tokens);
             rf.PushItemToList(listOfRules, gm.Duration);
             rf.PushItemToList(listOfRules, gm.DroppedCheck);

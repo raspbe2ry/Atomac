@@ -95,7 +95,7 @@ function RadioButtons(name, idName)
     yes.type = 'radio';
     yes.value = 'yes';
     yes.name = idName;
-    yes.classList(idName);  //
+    yes.classList.add(idName);  //
     yes.classList.add("control");
     var labelYes = document.createElement('label');
     labelYes.innerHTML = "Yes";

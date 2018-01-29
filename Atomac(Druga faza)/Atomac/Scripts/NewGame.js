@@ -70,10 +70,12 @@ function AddRowForRule(name, idName)
     row.appendChild(td2);
     td2.appendChild(RadioButtons(name, idName));
     var td3 = document.createElement('td');
-    td3.style.backgroundColor = "red";
+    //td3.style.backgroundColor = "red";
+    td3.id = "t1" + idName;
     row.appendChild(td3);
     var td4 = document.createElement('td');
-    td4.style.backgroundColor = "red";
+    //td4.style.backgroundColor = "red";
+    td4.id = "t2" + idName;
     row.appendChild(td4);
     $('#tableBody').append(row);
 }
@@ -152,7 +154,7 @@ function AddTokensForRow() {
     token.type = 'number';
     token.id = "tokens";
     token.classList.add("control");
-    token.addEventListener('change', function (e) { if (e.currentTarget.value != "") { chat.server.sendGameDuration(e.currentTarget.value, $('#myTeamId').val(), $('#myGameId').val()) } });
+    token.addEventListener('change', function (e) { if (e.currentTarget.value != "") { chat.server.sendGameTokens(e.currentTarget.value, $('#myTeamId').val(), $('#myGameId').val()) } });
     td2.appendChild(token);
     row.appendChild(td2);
     var td3 = document.createElement('td');

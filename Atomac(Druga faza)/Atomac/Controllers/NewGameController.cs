@@ -15,6 +15,9 @@ namespace Atomac.Controllers
             int gameId = Int32.Parse(id);
             DTOGame dtoGame = new DTOGame();
             dtoGame = dtoGame.GetById(gameId);
+            ViewBag.FirstTeam = dtoGame.Team1Id; ;
+            ViewBag.SecondTeam = dtoGame.Team2Id;
+
 
             if (dtoGame.Team1.Capiten.Email == User.Identity.Name || dtoGame.Team1.TeamMember.Email == User.Identity.Name)
             {

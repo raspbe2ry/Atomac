@@ -70,10 +70,36 @@
 <input type="hidden" id="myCapitenId" value=@ViewBag.CapId />
 <input type="hidden" id="myGameId" value=@Model.Id />
 <input type="hidden" id="myTeamId" value=@ViewBag.MyTeamId />
+<input type="hidden" id="firstTeam" value=@ViewBag.FirstTeam />
+<input type="hidden" id="secondTeam" value=@ViewBag.SecondTeam />
 
 
 @section Scripts
-{
+{   
+    @Styles.Render("~/Content/chessboard")
+    @Scripts.Render("~/bundles/chessboardGamePlay")
+    @Scripts.Render("~/bundles/chessboard")
 <script src="~/Scripts/PublicChat.js"></script>
 <script src="~/Scripts/NewGame.js"></script>
+
+    @*<script>
+    let mainBoard = new MainChessBoard(
+	'glavnaTabla',
+     '@Url.Content("~/Content/img/chesspieces/wikipedia/{piece}.png")',
+    ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
+    ['bP', 'bQ', 'bP']
+    );
+
+    let sideBoard = new SideChessBoard(
+    'sporednaTabla',
+    '@Url.Content("~/Content/img/chesspieces/wikipedia/{piece}.png")',
+    ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
+    ['bP', 'bQ', 'bP']
+    );
+
+    $(window).resize(() => {
+    mainBoard.resize();
+    sideBoard.resize();
+    });
+</script>*@
 }

@@ -1,4 +1,6 @@
 ﻿var chat;
+var mainBoard;
+var sideBoard;
 
 $(function () {
     chat = $.connection.chatHub;
@@ -131,9 +133,158 @@ $(function () {
         }
     };
 
+    chat.client.returnDroppedCheck = function (value, senderTeamId) {
+        let firstTeam = $('#firstTeam').val();
+        if(firstTeam==senderTeamId)
+        {
+            if(value=="no")
+            {
+                $('#t1check').css('background-color', 'red');
+            }
+            else
+            {
+                $('#t1check').css('background-color', 'green');
+            }
+        }
+        else
+        {
+            if (value == "no") {
+                $('#t2check').css('background-color', 'red');
+            }
+            else {
+                $('#t2check').css('background-color', 'green');
+            }
+        }
+    };
+
+    chat.client.returnDroppedCheckMate = function (value, senderTeamId) {
+        let firstTeam = $('#firstTeam').val();
+        if (firstTeam == senderTeamId) {
+            if (value == "no") {
+                $('#t1checkMate').css('background-color', 'red');
+            }
+            else {
+                $('#t1checkMate').css('background-color', 'green');
+            }
+        }
+        else {
+            if (value == "no") {
+                $('#t2checkMate').css('background-color', 'red');
+            }
+            else {
+                $('#t2checkMate').css('background-color', 'green');
+            }
+        }
+    };
+
+    chat.client.returnDroppedPawnOnFirstLine = function (value, senderTeamId) {
+        let firstTeam = $('#firstTeam').val();
+        if (firstTeam == senderTeamId) {
+            if (value == "no") {
+                $('#t1pawnFirstLine').css('background-color', 'red');
+            }
+            else {
+                $('#t1pawnFirstLine').css('background-color', 'green');
+            }
+        }
+        else {
+            if (value == "no") {
+                $('#t2pawnFirstLine').css('background-color', 'red');
+            }
+            else {
+                $('#t2pawnFirstLine').css('background-color', 'green');
+            }
+        }
+    };
+
+    chat.client.returnDroppedPawnOnLastLine = function (value, senderTeamId) {
+        let firstTeam = $('#firstTeam').val();
+        if (firstTeam == senderTeamId) {
+            if (value == "no") {
+                $('#t1pawnLastLine').css('background-color', 'red');
+            }
+            else {
+                $('#t1pawnLastLine').css('background-color', 'green');
+            }
+        }
+        else {
+            if (value == "no") {
+                $('#t2pawnLastLine').css('background-color', 'red');
+            }
+            else {
+                $('#t2pawnLastLine').css('background-color', 'green');
+            }
+        }
+    };
+
+    chat.client.returnDroppedFigureOnLastLine = function (value, senderTeamId) {
+        let firstTeam = $('#firstTeam').val();
+        if (firstTeam == senderTeamId) {
+            if (value == "no") {
+                $('#t1figureLastLine').css('background-color', 'red');
+            }
+            else {
+                $('#t1figureLastLine').css('background-color', 'green');
+            }
+        }
+        else {
+            if (value == "no") {
+                $('#t2figureLastLine').css('background-color', 'red');
+            }
+            else {
+                $('#t2figureLastLine').css('background-color', 'green');
+            }
+        }
+    };
+
+    chat.client.returnGameDuration = function (value, senderTeamId) {
+        let firstTeam = $('#firstTeam').val();
+        if (firstTeam == senderTeamId)
+        {
+            $('#t1Duration').val(value);
+            $('#t1Duration').html(value);
+        }
+        else
+        {
+            $('#t2Duration').val(value);
+            $('#t2Duration').html(value);
+        }
+    };
+
+    chat.client.returnGameTokens = function (value, senderTeamId) {
+        let firstTeam = $('#firstTeam').val();
+        if (firstTeam == senderTeamId) {
+            $('#t1Tokens').val(value);
+            $('#t1Tokens').html(value);
+        }
+        else {
+            $('#t2Tokens').val(value);
+            $('#t2Tokens').html(value);
+        }
+    };
+
         chat.client.sendStartGame = function (dtoGame) {
             $('#leftSide').empty();
             $('#rightTop').empty();
+            //ovo ispod odvojiti u posebnu funkciju
+            var leftSide = document.getElementById('leftSide');
+            leftSide.classList.add("mainContainer");
+            var glavnaTabla=document.createElement("div");
+            glavnaTabla.className = "bigBoardContainer";
+            glavnaTabla.id = "glavnaTabla";
+            leftSide.appendChild(glavnaTabla);
+
+            var rightTop = document.getElementById("rightTop");
+            rightTop.classList.add("sideContainer");
+            var malaTabla = document.createElement("div");
+            malaTabla.className = "smallBoardContainer";
+            malaTabla.id = "sporednaTabla";
+            rightTop.appendChild(malaTabla);
+
+            var rightBottom = document.getElementById("rightBottom");
+            rightBottom.classList.add("chatContainer");
+
+            LoadTables();
         };
 
         $('#message').focus();
@@ -327,4 +478,26 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     div6.appendChild(btn2);
     div3.appendChild(div6);
     return div1;
+}
+
+function LoadTables()
+{
+    mainBoard = new MainChessBoard(
+                    'glavnaTabla',
+                     '/Content/img/chesspieces/wikipedia/{piece}.png',
+                    ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
+                    ['bP', 'bQ', 'bP']
+                );
+
+    sideBoard = new SideChessBoard(
+                    'sporednaTabla',
+                    '/Content/img/chesspieces/wikipedia/{piece}.png',
+                    ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
+                    ['bP', 'bQ', 'bP']
+                );
+
+    $(window).resize(() => {
+        mainBoard.resize();
+        sideBoard.resize();
+    });
 }

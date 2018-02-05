@@ -196,15 +196,23 @@ namespace Atomac.Controllers
             return rList;
         }
 
-        public Task SendMessageInGame(string nick, string message, string gameId) //poruke tokom kreiranje igre i partije, chat je tranzijentni
+        public Task SendMessageInGame(string nick, string message, string gameId, string teamId) //poruke tokom kreiranje igre i partije, chat je tranzijentni
         {
             string hashGame = rf.MakeHashId("game", gameId);
             string messageList = rf.GetHashAttributeValue(hashGame, "msg");
             string messageValue = nick + ": " + message;
             rf.PushItemToList(messageList, messageValue);
 
+            string team = "team:" + teamId;
+            string color = "";
+            if (team.Equals(rf.GetHashAttributeValue(hashGame, "t1")))
+            {
+                color = "blue";
+            }
+            else color = "red";
+
             List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gameId));
-            return Clients.Users(playersEmails).SendGameMessage(nick, message);
+            return Clients.Users(playersEmails).AddNewMessageToGamePane(nick, message, color);
         }
 
         public List<string> EmailsFromPlayersInGame(int gameId)
@@ -304,6 +312,7 @@ namespace Atomac.Controllers
             }
         }
 
+        //metoda se ne zove jer se ne prelazi na drugi view
         public Task StartGame(DTOGameMini gm)
         {
             //mozda staviti status igre ako nije vec

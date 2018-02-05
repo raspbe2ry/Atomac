@@ -10,14 +10,17 @@ namespace Atomac.Controllers
 {
     public class NewGameController : Controller
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
+
         public ActionResult Index(string id)
         {
             int gameId = Int32.Parse(id);
             DTOGame dtoGame = new DTOGame();
             dtoGame = dtoGame.GetById(gameId);
-            ViewBag.FirstTeam = dtoGame.Team1Id; ;
+            ViewBag.FirstTeam = dtoGame.Team1Id;
             ViewBag.SecondTeam = dtoGame.Team2Id;
-
+            string userEmail = User.Identity.Name;
+            ViewBag.NickName = db.Users.Where(x => x.Email.Equals(userEmail)).First().NickName;
 
             if (dtoGame.Team1.Capiten.Email == User.Identity.Name || dtoGame.Team1.TeamMember.Email == User.Identity.Name)
             {

@@ -417,8 +417,6 @@ var Chess = function(fen) {
     var piece = board[SQUARES[square]];
     return (piece) ? {type: piece.type, color: piece.color} : null;
   }
-
-  /////	LUGIC: ODAVDE NASTAVITI EDIT/PREGLED /////
   
   function put(piece, square) {
     /* check for valid piece object */
@@ -654,6 +652,10 @@ var Chess = function(fen) {
 
     var output = '';
 
+	if (move.from === 'spare') {
+	  output += 's';
+	}
+	
     if (move.flags & BITS.KSIDE_CASTLE) {
       output = 'O-O';
     } else if (move.flags & BITS.QSIDE_CASTLE) {
@@ -847,78 +849,82 @@ var Chess = function(fen) {
     var us = turn;
     var them = swap_color(us);
     push(move);
+	
+	if (move.from === 'spare') {
+	  board[move.to] = { type: move.piece, color: move.color };
+	} else {
+	  board[move.to] = board[move.from];
+	  board[move.from] = null;
 
-    board[move.to] = board[move.from];
-    board[move.from] = null;
-
-    /* if ep capture, remove the captured pawn */
-    if (move.flags & BITS.EP_CAPTURE) {
-      if (turn === BLACK) {
-        board[move.to - 16] = null;
-      } else {
-        board[move.to + 16] = null;
-      }
-    }
-
-    /* if pawn promotion, replace with new piece */
-    if (move.flags & BITS.PROMOTION) {
-      board[move.to] = {type: move.promotion, color: us};
-    }
-
-    /* if we moved the king */
-    if (board[move.to].type === KING) {
-      kings[board[move.to].color] = move.to;
-
-      /* if we castled, move the rook next to the king */
-      if (move.flags & BITS.KSIDE_CASTLE) {
-        var castling_to = move.to - 1;
-        var castling_from = move.to + 1;
-        board[castling_to] = board[castling_from];
-        board[castling_from] = null;
-      } else if (move.flags & BITS.QSIDE_CASTLE) {
-        var castling_to = move.to + 1;
-        var castling_from = move.to - 2;
-        board[castling_to] = board[castling_from];
-        board[castling_from] = null;
-      }
-
-      /* turn off castling */
-      castling[us] = '';
-    }
-
-    /* turn off castling if we move a rook */
-    if (castling[us]) {
-      for (var i = 0, len = ROOKS[us].length; i < len; i++) {
-        if (move.from === ROOKS[us][i].square &&
-            castling[us] & ROOKS[us][i].flag) {
-          castling[us] ^= ROOKS[us][i].flag;
-          break;
+      /* if ep capture, remove the captured pawn */
+      if (move.flags & BITS.EP_CAPTURE) {
+        if (turn === BLACK) {
+          board[move.to - 16] = null;
+        } else {
+          board[move.to + 16] = null;
         }
       }
-    }
 
-    /* turn off castling if we capture a rook */
-    if (castling[them]) {
-      for (var i = 0, len = ROOKS[them].length; i < len; i++) {
-        if (move.to === ROOKS[them][i].square &&
-            castling[them] & ROOKS[them][i].flag) {
-          castling[them] ^= ROOKS[them][i].flag;
-          break;
+      /* if pawn promotion, replace with new piece */
+      if (move.flags & BITS.PROMOTION) {
+        board[move.to] = {type: move.promotion, color: us};
+      }
+
+      /* if we moved the king */
+      if (board[move.to].type === KING) {
+        kings[board[move.to].color] = move.to;
+
+        /* if we castled, move the rook next to the king */
+        if (move.flags & BITS.KSIDE_CASTLE) {
+          var castling_to = move.to - 1;
+          var castling_from = move.to + 1;
+          board[castling_to] = board[castling_from];
+          board[castling_from] = null;
+        } else if (move.flags & BITS.QSIDE_CASTLE) {
+          var castling_to = move.to + 1;
+          var castling_from = move.to - 2;
+          board[castling_to] = board[castling_from];
+          board[castling_from] = null;
+        }
+
+        /* turn off castling */
+        castling[us] = '';
+      }
+
+      /* turn off castling if we move a rook */
+      if (castling[us]) {
+        for (var i = 0, len = ROOKS[us].length; i < len; i++) {
+          if (move.from === ROOKS[us][i].square &&
+              castling[us] & ROOKS[us][i].flag) {
+            castling[us] ^= ROOKS[us][i].flag;
+            break;
+          }
         }
       }
-    }
 
-    /* if big pawn move, update the en passant square */
-    if (move.flags & BITS.BIG_PAWN) {
-      if (turn === 'b') {
-        ep_square = move.to - 16;
-      } else {
-        ep_square = move.to + 16;
+      /* turn off castling if we capture a rook */
+      if (castling[them]) {
+        for (var i = 0, len = ROOKS[them].length; i < len; i++) {
+          if (move.to === ROOKS[them][i].square &&
+              castling[them] & ROOKS[them][i].flag) {
+            castling[them] ^= ROOKS[them][i].flag;
+            break;
+          }
+        }
       }
-    } else {
-      ep_square = EMPTY;
-    }
 
+      /* if big pawn move, update the en passant square */
+      if (move.flags & BITS.BIG_PAWN) {
+        if (turn === 'b') {
+          ep_square = move.to - 16;
+        } else {
+          ep_square = move.to + 16;
+        }
+      } else {
+        ep_square = EMPTY;
+      }
+	}
+	
     /* reset the 50 move counter if a pawn is moved or a piece is captured */
     if (move.piece === PAWN) {
       half_moves = 0;
@@ -949,8 +955,10 @@ var Chess = function(fen) {
     var us = turn;
     var them = swap_color(turn);
 
-    board[move.from] = board[move.to];
-    board[move.from].type = move.piece;  // to undo any promotions
+	if (move.from !== 'spare') {
+	  board[move.from] = board[move.to];
+      board[move.from].type = move.piece;  // to undo any promotions
+	}
     board[move.to] = null;
 
     if (move.flags & BITS.CAPTURE) {
@@ -1106,7 +1114,10 @@ var Chess = function(fen) {
     return null;
   }
 
-
+  function legalInsertionMove(destination) {
+	return board[destination] === null || board[destination] === undefined;
+  }
+  
   /*****************************************************************************
    * UTILITY FUNCTIONS
    ****************************************************************************/
@@ -1118,9 +1129,13 @@ var Chess = function(fen) {
     return i & 15;
   }
 
-  function algebraic(i){
-    var f = file(i), r = rank(i);
-    return 'abcdefgh'.substring(f,f+1) + '87654321'.substring(r,r+1);
+  function algebraic(i) {
+	if (i === 'spare') {
+	  return i;
+	} else {
+	  var f = file(i), r = rank(i);
+      return 'abcdefgh'.substring(f,f+1) + '87654321'.substring(r,r+1);
+	}
   }
 
   function swap_color(c) {
@@ -1167,7 +1182,7 @@ var Chess = function(fen) {
   function trim(str) {
     return str.replace(/^\s+|\s+$/g, '');
   }
-
+  
   /*****************************************************************************
    * DEBUGGING UTILITIES
    ****************************************************************************/
@@ -1565,35 +1580,53 @@ var Chess = function(fen) {
        *      })
        */
 
-      // allow the user to specify the sloppy move parser to work around over
-      // disambiguation bugs in Fritz and Chessbase
-      var sloppy = (typeof options !== 'undefined' && 'sloppy' in options) ?
-                    options.sloppy : false;
+	  var move_obj = null;
+		
+	  if (move.from === 'spare') {
+		var columnInd = 'abcdefgh'.indexOf(move.to[0]);
+		var rowInd = parseInt(move.to[1]);
+		var dest = (8 - rowInd) * 16 + columnInd;
+		
+		if (isNaN(dest) || !legalInsertionMove(dest)) {
+		  return null;
+		}
+		
+		move_obj = {
+		  color: move.color,
+		  flags: 1, // bitan je jos i PROMOTION (16) flag
+		  from: 'spare',
+		  piece: move.piece,
+		  to: dest
+		};
+	  } else {
+	    // allow the user to specify the sloppy move parser to work around over
+	    // disambiguation bugs in Fritz and Chessbase
+	    var sloppy = (typeof options !== 'undefined' && 'sloppy' in options) ?
+					  options.sloppy : false;
 
-      var move_obj = null;
+	    if (typeof move === 'string') {
+		  move_obj = move_from_san(move, sloppy);
+	    } else if (typeof move === 'object') {
+		  var moves = generate_moves();
 
-      if (typeof move === 'string') {
-        move_obj = move_from_san(move, sloppy);
-      } else if (typeof move === 'object') {
-        var moves = generate_moves();
+		  /* convert the pretty move object to an ugly move object */
+		  for (var i = 0, len = moves.length; i < len; i++) {
+		    if (move.from === algebraic(moves[i].from) &&
+			    move.to === algebraic(moves[i].to) &&
+			    (!('promotion' in moves[i]) ||
+			    move.promotion === moves[i].promotion)) {
+			  move_obj = moves[i];
+			  break;
+			}
+		  }
+		}
 
-        /* convert the pretty move object to an ugly move object */
-        for (var i = 0, len = moves.length; i < len; i++) {
-          if (move.from === algebraic(moves[i].from) &&
-              move.to === algebraic(moves[i].to) &&
-              (!('promotion' in moves[i]) ||
-              move.promotion === moves[i].promotion)) {
-            move_obj = moves[i];
-            break;
-          }
+        /* failed to find move */
+        if (!move_obj) {
+          return null;
         }
-      }
-
-      /* failed to find move */
-      if (!move_obj) {
-        return null;
-      }
-
+	  }
+	  
       /* need to make a copy of move because we can't generate SAN after the
        * move is made
        */

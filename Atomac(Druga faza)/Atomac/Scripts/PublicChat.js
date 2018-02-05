@@ -10,6 +10,11 @@ $(function () {
             + '</strong>: ' + htmlEncode(message) + '</li>');
     };
 
+    chat.client.addNewMessageToGamePane = function (nick, message,color) {
+        $('#GameDiscussion').append('<li style="color:'+color+'"><strong>' + htmlEncode(nick)
+            + '</strong>: ' + htmlEncode(message) + '</li>');
+    };
+
     chat.client.sendTeamRequest = function (username, teamName) {
         let yes = function () {
             chat.server.approveTeamRequest(username, teamName, "yes");
@@ -269,7 +274,7 @@ $(function () {
                 $('#message').val('').focus();
             });
             $('#sendmessageInGame').click(function () {
-                chat.server.sendMessageInGame($('#uName').val(), $('#messageInGame').val());
+                chat.server.sendMessageInGame($('#uNameGame').val(), $('#messageInGame').val(), $('#myGameId').val(), $('#myTeamId').val());
                 $('#messageInGame').val('').focus();
             });
             poveziDugmiceZaOnlineKorisnike(chat);
@@ -376,7 +381,6 @@ function ValidacijaGameRequest(userEmail) {
 
 function SendRequest(chat, rcvMail, teamName)
 {
-    //let teamName = $('#teamName').val();
     chat.server.sendTeamRequest(rcvMail, teamName);
 }
 

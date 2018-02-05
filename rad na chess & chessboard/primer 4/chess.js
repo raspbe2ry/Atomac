@@ -852,6 +852,7 @@ var Chess = function(fen) {
 	
 	if (move.from === 'spare') {
 	  board[move.to] = { type: move.piece, color: move.color };
+	  ep_square = EMPTY;
 	} else {
 	  board[move.to] = board[move.from];
 	  board[move.from] = null;

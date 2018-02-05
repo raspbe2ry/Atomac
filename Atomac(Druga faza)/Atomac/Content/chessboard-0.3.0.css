@@ -9,19 +9,27 @@
  */
 
 /* clearfix */
-.clearfix-7da63 {
+.cbjs-clearfix {
   clear: both;
 }
 
 /* board */
-.board-b72b1 {
+.cbjs-board {
+  display: inline-block;
   border: 2px solid #404040;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
 }
 
+.cbjs-chessboard {
+  display: flex;
+  flex-direction: row;
+  width: 142%;
+  min-width: 320px;
+}
+
 /* square */
-.square-55d63 {
+.cbjs-square {
   float: left;
   position: relative;
 
@@ -35,36 +43,71 @@
 }
 
 /* white square */
-.white-1e1d7 {
+.cbjs-white {
   background-color: #f0d9b5;
   color: #b58863;
 }
 
 /* black square */
-.black-3c85d {
+.cbjs-black {
   background-color: #b58863;
   color: #f0d9b5;
 }
 
 /* highlighted square */
-.highlight1-32417, .highlight2-9c5d2 {
+.cbjs-highlight1,
+.cbjs-highlight2 {
   -webkit-box-shadow: inset 0 0 3px 3px yellow;
   -moz-box-shadow: inset 0 0 3px 3px yellow;
   box-shadow: inset 0 0 3px 3px yellow;
 }
 
 /* notation */
-.notation-322f9 {
+.cbjs-notation {
   cursor: default;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   position: absolute;
 }
-.alpha-d2270 {
+
+.cbjs-alpha {
   bottom: 1px;
   right: 3px;
 }
-.numeric-fc462 {
+
+.cbjs-numeric {
   top: 2px;
   left: 2px;
 }
+
+.cbjs-spare-pieces {
+  display: inline-block;
+  overflow-y: scroll;
+}
+
+.cbjs-spare-pieces > img {
+  display: block;
+}
+
+/* sve ispod ide u drugi css, ovde je samo test */
+
+.mainContainer, .sideContainer {
+	float: left;
+	margin: 0 auto;
+	border: 1px solid black;
+	padding: 10px 5px;
+	background-color: lightseagreen;
+}
+
+.mainContainer {
+	width: 68%;
+}
+
+.sideContainer {
+	width: 28%;
+}
+
+.bigBoardContainer, .smallBoardContainer {
+	width: 75%;
+}
+

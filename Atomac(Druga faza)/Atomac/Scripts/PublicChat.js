@@ -11,62 +11,36 @@ $(function () {
     };
 
     chat.client.sendTeamRequest = function (username, teamName) {
-        var elm = '<div id="prijemZahtevaZaTim" style="width:300px; height:200px; background-color:#aabbcc">New invitation</div>';
-        $('#ZahteviZaTim').append(elm);
-        $('#prijemZahtevaZaTim').append('<p>User ' + htmlEncode(username)
-            + ' has sent you team invitation. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
-            + 'Do you accept it? <button class="prihvatiZahtev" value="Yes">Yes</button>'
-            + ' <button class="prihvatiZahtev" value="No">No</button>');
-        $('.prihvatiZahtev').click(function () {
-            if (this.value == "Yes") {
-                $('#prijemZahtevaZaTim').remove();
-                chat.server.approveTeamRequest(username, teamName, "yes");
-            }
-            else {
-                $('#prijemZahtevaZaTim').remove();
-                chat.server.approveTeamRequest(username, teamName, "no");
-            }
-
-        });
+        let yes = function () {
+            chat.server.approveTeamRequest(username, teamName, "yes");
+        }
+        let no = function () {
+            chat.server.approveTeamRequest(username, teamName, "no");
+        }
+        document.body.appendChild(GlobalPopUp("User " + htmlEncode(username) + " has sent you team invitation. Team name is: " + htmlEncode(teamName) + ".", "Do you accept it?", YesNoPopUp(yes, no)));
+        $('#myModal').modal('show');
     };
 
     chat.client.sendActivateTeamRequest = function (username, teamName) {
-        $('#ZahteviZaAktivacijuTima').append('<div id="prijemZahtevaZaAktivacijuTima" style="width:300px; height:200px; background-color:#aabbcc">New invitation</div>');
-        $('#prijemZahtevaZaAktivacijuTima').append('<p>User ' + htmlEncode(username)
-            + ' has sent you team activation invite. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
-            + 'Do you accept it? <button class="prihvatiZahtev" value="Yes">Yes</button>'
-            + ' <button class="prihvatiZahtev" value="No">No</button>');
-        $('.prihvatiZahtev').click(function () {
-            if (this.value == "Yes") {
-                $('#prijemZahtevaZaAktivacijuTima').remove();
-                chat.server.approveActivateTeamRequest(username, teamName, "yes");
-            }
-            else {
-                $('#prijemZahtevaZaAktivacijuTima').remove();
-                chat.server.approveActivateTeamRequest(username, teamName, "no");
-            }
-
-        });
+                let yes = function () {
+                    chat.server.approveActivateTeamRequest(username, teamName, "yes");
+                }
+                let no = function () {
+                    chat.server.approveActivateTeamRequest(username, teamName, "no");
+                }
+                document.body.appendChild(GlobalPopUp("User " + htmlEncode(username) + " has sent you team activation invite. Team name is: " + htmlEncode(teamName) + ".", "Do you accept it?", YesNoPopUp(yes, no)));
+                $('#myModal').modal('show');
     };
 
     chat.client.sendGameRequest = function (teamName, username, oppTeamName) {
-        var elm = '<div id="prijemZahtevaZaIgru" style="width:300px; height:200px; background-color:#aabbcc">New invitation</div>';
-        $('#ZahteviZaIgru').append(elm);
-        $('#prijemZahtevaZaIgru').append('<p>User ' + htmlEncode(username)
-            + ' has sent you game invitation. Team name is: ' + htmlEncode(teamName) + '.</p><br />'
-            + 'Do you accept it? <button class="prihvatiZahtev" value="Yes">Yes</button>'
-            + ' <button class="prihvatiZahtev" value="No">No</button>');
-        $('.prihvatiZahtev').click(function () {
-            if (this.value == "Yes") {
-                $('#prijemZahtevaZaIgru').remove();
-                chat.server.approveGameRequest(teamName, username, oppTeamName, "yes");
-            }
-            else {
-                $('#prijemZahtevaZaIgru').remove();
-                chat.server.approveGameRequest(teamName, username, oppTeamName, "no");
-            }
-
-        });
+        let yes = function () {
+            chat.server.approveGameRequest(teamName, username, oppTeamName, "yes");
+        }
+        let no = function () {
+            chat.server.approveGameRequest(teamName, username, oppTeamName, "no");
+        }
+        document.body.appendChild(GlobalPopUp("User " + htmlEncode(username) + " has sent you game invitation. Team name is: " + htmlEncode(teamName) + ".", "Do you accept it?", YesNoPopUp(yes, no)));
+        $('#myModal').modal('show');
     };
 
     chat.client.reloadRecentByLogIn = function () {
@@ -310,26 +284,19 @@ function poveziDugmiceZaOnlineKorisnike(chat) {
     $('.pDugme').click(function () {
         //u about.cshtml treba da se doda input jedan gde se unosi naziv. taj input ima id=teamName
         if (ValidacijaRecentTable(this.id)) {
-            let popup = document.getElementById('myModal');
-            if (popup != undefined || popup != null) {
-                popup.remove();
-                document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
+            let x = this.id;
+            let sendFun = function (teamName) {
+                SendRequest(chat, x, teamName);
             }
-            else {
-                document.body.appendChild(CreatePopUp(chat, this.id, "proba", "Send request", true));
-            }
+            document.body.appendChild(
+                GlobalPopUp("Team creation", "Write team name in input field", SendRequestPopUp(sendFun)));
+            $('#myModal').modal('show');
         }
         else {
-            let popup = document.getElementById('myModal');
-            if (popup != undefined || popup != null) {
-                popup.remove();
-                document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
-                    "You two are already teammates.", false));
-            }
-            else {
-                document.body.appendChild(CreatePopUp(null, this.id, "proba1", "It is not possible to send request to " + this.dataset.nickname + ". " +
-                    "You two are already teammates.", false));
-            }
+            document.body.appendChild(
+                GlobalPopUp("Team creation", "It is not possible to send request to " + this.dataset.nickname + ". You two are already teammates."
+                , InfoPopUp()));
+            $('#myModal').modal('show');
         }
     });
 }
@@ -362,14 +329,10 @@ function poveziDugmiceZaOpponentTeams(chat) {
         }
         else
         {
-            let popup = document.getElementById('myModal');
-            if (popup != undefined || popup != null) {
-                popup.remove();
-                document.body.appendChild(CreatePopUp(null, null, "Impossible to send request", "You are not capiten of the selected team or you don't have activated team", false));
-            }
-            else {
-                document.body.appendChild(CreatePopUp(null, null, "Impossible to send request", "You are not capiten of the selected team or you don't have activated team", false));
-            }
+            document.body.appendChild(
+                GlobalPopUp("Game Invitation", "It is not possible to send game invitation. Either you are not captain or you dont have activated team."
+                , InfoPopUp()));
+            $('#myModal').modal('show');
         }
     });
 }
@@ -411,9 +374,9 @@ function ValidacijaGameRequest(userEmail) {
     return false;
 }
 
-function SendRequest(chat, rcvMail)
+function SendRequest(chat, rcvMail, teamName)
 {
-    let teamName = $('#teamName').val();
+    //let teamName = $('#teamName').val();
     chat.server.sendTeamRequest(rcvMail, teamName);
 }
 
@@ -433,11 +396,13 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     div2.appendChild(div3);
     var div4=document.createElement('div');
     div4.className="modal-header";
-    var btn1=document.createElement('input');
-    btn1.type='button';
-    btn1.class="close";
+    var btn1=document.createElement('span');
+    btn1.class = "close"; //
+    btn1.style.cssFloat = "right";
+    btn1.style.fontSize = '32px';
+    btn1.addEventListener('onmouseover', function (e) { e.currentTarget.style.cursor = 'grab'; })
     btn1.dataset.dismiss='modal';
-   // btn1.value = htmlEncode("&times;");
+    btn1.innerHTML = '\u02DF';
     div4.appendChild(btn1);
     var h4=document.createElement('h4');
     h4.innerHTML=name;
@@ -465,7 +430,10 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     btn2.class="btn btn-default";
     btn2.dataset.dismiss='modal';
     btn2.value = "Close";
-    //btn2.addEventListener('click', function () { $('#myModal').remove()});
+    btn2.addEventListener('click', function () {
+        $('#myModal').remove();
+        $('.modal-backdrop').remove();
+    });
     if (boolButtonText) {
         var btn3 = document.createElement('input');
         btn3.type = 'button';
@@ -478,6 +446,121 @@ function CreatePopUp(chat, rcvMail, name, modalText, buttonText)
     div6.appendChild(btn2);
     div3.appendChild(div6);
     return div1;
+}
+
+function GlobalPopUp(headerText, bodyText, footerStrategy)
+{
+    var div1 = document.createElement('div');
+    div1.id = "myModal";
+    div1.className = "modal fade";
+    div1.setAttribute('role', 'dialog');
+    div1.setAttribute('data', 'deletePopUp: true');
+    var div2 = document.createElement('div');
+    div2.className = "modal-dialog";
+    div1.appendChild(div2);
+    var div3 = document.createElement('div');
+    div3.className = "modal-content";
+    div2.appendChild(div3);
+    var div4 = document.createElement('div');
+    div4.className = "modal-header";
+    var btn1 = document.createElement('span');
+    btn1.class = "close"; //
+    btn1.style.cssFloat = "right";
+    btn1.style.fontSize = '32px';
+    btn1.addEventListener('onmouseover', function (e) { e.currentTarget.style.cursor = 'grab'; })
+    btn1.dataset.dismiss = 'modal';
+    btn1.innerHTML = '\u02DF';
+    div4.appendChild(btn1);
+    var h4 = document.createElement('h4');
+    h4.innerHTML = headerText;
+    div4.appendChild(h4);
+    div3.appendChild(div4);
+    var div5 = document.createElement('div');
+    div5.class = "modal-body";
+    var p = document.createElement('p');
+    p.innerHTML = bodyText;
+    div5.appendChild(p);
+    div3.appendChild(div5);
+    var div6 = document.createElement('div');
+    div6.className = "modal-footer";
+    div6.appendChild(footerStrategy);
+    div3.appendChild(div6);
+    return div1;
+}
+
+function YesNoPopUp(yesFun, noFun)
+{
+    var div = document.createElement('div');
+    yesBtn = document.createElement('input');
+    yesBtn.type = 'button';
+    yesBtn.value = "Yes";
+    yesBtn.class = "btn btn-default";
+    yesBtn.dataset.dismiss = 'modal';
+    yesBtn.addEventListener('click', function()
+    {
+        $('#myModal').remove();
+        $('.modal-backdrop').remove();
+        yesFun();
+    });
+    noBtn = document.createElement('input');
+    noBtn.type = 'button';
+    noBtn.value = "No";
+    noBtn.class = "btn btn-default";
+    noBtn.dataset.dismiss = 'modal';
+    noBtn.addEventListener('click', function () {
+        $('#myModal').remove();
+        $('.modal-backdrop').remove();
+        noFun();
+    });
+    div.appendChild(yesBtn);
+    div.appendChild(noBtn);
+    return div;
+}
+
+function SendRequestPopUp(sendReqFun) {
+    var div = document.createElement('div');
+    var inputText = document.createElement('input');
+    inputText.type = 'text';
+    inputText.id = "teamName";
+    sendBtn = document.createElement('input');
+    sendBtn.type = 'button';
+    sendBtn.value = "Send";
+    sendBtn.class = "btn btn-default";
+    sendBtn.dataset.dismiss = 'modal';
+    sendBtn.addEventListener('click', function () {
+        $('#myModal').remove();
+        $('.modal-backdrop').remove();
+        sendReqFun(inputText.value);
+    });
+    closeBtn = document.createElement('input');
+    closeBtn.type = 'button';
+    closeBtn.value = "Close";
+    closeBtn.class = "btn btn-default";
+    closeBtn.dataset.dismiss = 'modal';
+    closeBtn.addEventListener('click', function () {
+        $('#myModal').remove();
+        $('.modal-backdrop').remove();
+    });
+    div.appendChild(inputText);
+    div.appendChild(sendBtn);
+    div.appendChild(closeBtn);
+    return div;
+}
+
+function InfoPopUp()
+{
+    var div = document.createElement('div');
+    closeBtn = document.createElement('input');
+    closeBtn.type = 'button';
+    closeBtn.value = "Close";
+    closeBtn.class = "btn btn-default";
+    closeBtn.dataset.dismiss = 'modal';
+    closeBtn.addEventListener('click', function () {
+        $('#myModal').remove();
+        $('.modal-backdrop').remove();
+    });
+    div.appendChild(closeBtn);
+    return div;
 }
 
 function LoadTables()

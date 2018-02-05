@@ -201,22 +201,22 @@ var MINIMUM_JQUERY_VERSION = '1.7.0',
 // use unique class names to prevent clashing with anything else on the page
 // and simplify selectors
 var CSS = {
-  alpha: 'alpha-d2270',
-  black: 'black-3c85d',
-  board: 'board-b72b1',
-  chessboard: 'chessboard-63f37',
-  clearfix: 'clearfix-7da63',
-  highlight1: 'highlight1-32417',
-  highlight2: 'highlight2-9c5d2',
-  notation: 'notation-322f9',
-  numeric: 'numeric-fc462',
-  piece: 'piece-417db',
-  row: 'row-5277c',
-  sparePieces: 'spare-pieces-7492f',
-  sparePiecesBottom: 'spare-pieces-bottom-ae20f',
-  sparePiecesTop: 'spare-pieces-top-4028b',
-  square: 'square-55d63',
-  white: 'white-1e1d7'
+  alpha: 'cbjs-alpha',
+  black: 'cbjs-black',
+  board: 'cbjs-board',
+  chessboard: 'cbjs-chessboard',
+  clearfix: 'cbjs-clearfix',
+  highlight1: 'cbjs-highlight1',
+  highlight2: 'cbjs-highlight2',
+  notation: 'cbjs-notation',
+  numeric: 'cbjs-numeric',
+  piece: 'cbjs-piece',
+  row: 'cbjs-row',
+  sparePieces: 'cbjs-spare-pieces',
+  sparePiecesRight: 'cbjs-spare-pieces-right',
+  sparePiecesLeft: 'cbjs-spare-pieces-left',
+  square: 'cbjs-square',
+  white: 'cbjs-white'
 };
 
 //------------------------------------------------------------------------------
@@ -227,8 +227,8 @@ var CSS = {
 var containerEl,
   boardEl,
   draggedPieceEl,
-  sparePiecesTopEl,
-  sparePiecesBottomEl;
+  sparePiecesLeftEl,
+  sparePiecesRightEl;
 
 // constructor return object
 var widget = {};
@@ -427,15 +427,14 @@ function expandConfig() {
   if (cfg.dropOffBoard !== 'trash') {
     cfg.dropOffBoard = 'snapback';
   }
-
-  // default for sparePieces is false
-  if (cfg.sparePieces !== true) {
-    cfg.sparePieces = false;
+  
+  // set spare piece arrays to null if not provided
+  if (cfg.spareWhitePieces === undefined) {
+	  cfg.spareWhitePieces = null;
   }
-
-  // draggable must be true if sparePieces is enabled
-  if (cfg.sparePieces === true) {
-    cfg.draggable = true;
+  
+  if (cfg.spareBlackPieces === undefined) {
+	  cfg.spareBlackPieces = null;
   }
 
   // default piece theme is wikipedia
@@ -525,15 +524,6 @@ function createElIds() {
       SQUARE_ELS_IDS[square] = square + '-' + createId();
     }
   }
-
-  // spare pieces
-  var pieces = 'KQRBNP'.split('');
-  for (var i = 0; i < pieces.length; i++) {
-    var whitePiece = 'w' + pieces[i];
-    var blackPiece = 'b' + pieces[i];
-    SPARE_PIECE_ELS_IDS[whitePiece] = whitePiece + '-' + createId();
-    SPARE_PIECE_ELS_IDS[blackPiece] = blackPiece + '-' + createId();
-  }
 }
 
 //------------------------------------------------------------------------------
@@ -543,17 +533,13 @@ function createElIds() {
 function buildBoardContainer() {
   var html = '<div class="' + CSS.chessboard + '">';
 
-  if (cfg.sparePieces === true) {
-    html += '<div class="' + CSS.sparePieces + ' ' +
-      CSS.sparePiecesTop + '"></div>';
-  }
+  html += '<div class="' + CSS.sparePieces + ' ' +
+    CSS.sparePiecesLeft + '"></div>';
 
   html += '<div class="' + CSS.board + '"></div>';
 
-  if (cfg.sparePieces === true) {
-    html += '<div class="' + CSS.sparePieces + ' ' +
-      CSS.sparePiecesBottom + '"></div>';
-  }
+  html += '<div class="' + CSS.sparePieces + ' ' +
+    CSS.sparePiecesRight + '"></div>';
 
   html += '</div>';
 
@@ -638,6 +624,8 @@ function buildBoard(orientation) {
 }
 
 function buildPieceImgSrc(piece) {
+  piece = piece.substring(0, 2); // remove the spare piece id (bP0 -> bP)
+  
   if (typeof cfg.pieceTheme === 'function') {
     return cfg.pieceTheme(piece);
   }
@@ -651,15 +639,29 @@ function buildPieceImgSrc(piece) {
   return '';
 }
 
-function buildPiece(piece, hidden, id) {
+function buildPiece(piece, hidden, id, spare) {
+  let i = 0;
+  if (spare === true) {
+    while (SPARE_PIECE_ELS_IDS[piece + i] !== undefined)
+	  ++i;
+    SPARE_PIECE_ELS_IDS[piece + i] = id;
+  }
   var html = '<img src="' + buildPieceImgSrc(piece) + '" ';
   if (id && typeof id === 'string') {
     html += 'id="' + id + '" ';
   }
+  
   html += 'alt="" ' +
-  'class="' + CSS.piece + '" ' +
-  'data-piece="' + piece + '" ' +
-  'style="width: ' + SQUARE_SIZE + 'px;' +
+  'class="' + CSS.piece + '" ';
+  
+  if (spare === true) {
+	html += 'data-piece="' + piece + i + '" ';
+  }
+  else {
+	html += 'data-piece="' + piece + '" ';
+  }
+  
+  html += 'style="width: ' + SQUARE_SIZE + 'px;' +
   'height: ' + SQUARE_SIZE + 'px;';
   if (hidden === true) {
     html += 'display:none;';
@@ -669,18 +671,30 @@ function buildPiece(piece, hidden, id) {
   return html;
 }
 
-function buildSparePieces(color) {
-  var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP'];
-  if (color === 'black') {
-    pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP'];
-  }
-
+// build spare pieces from an array of pieces
+function buildSparePieces(pieces) {
+  if (pieces === null)
+	return;
+	
   var html = '';
   for (var i = 0; i < pieces.length; i++) {
-    html += buildPiece(pieces[i], false, SPARE_PIECE_ELS_IDS[pieces[i]]);
+    html += buildPiece(pieces[i], false, createId(), true);
   }
 
   return html;
+}
+
+function addSparePiece(piece, color) {
+  if (CURRENT_ORIENTATION[0] === color) {
+	sparePiecesRightEl.append(buildPiece(piece, false, createId(), true));
+  } else {
+	sparePiecesLeftEl.append(buildPiece(piece, false, createId(), true));
+  }
+}
+
+function removeSparePiece(piece) {
+  $('#' + SPARE_PIECE_ELS_IDS[piece]).remove();
+  delete SPARE_PIECE_ELS_IDS[piece];
 }
 
 //------------------------------------------------------------------------------
@@ -793,21 +807,29 @@ function doAnimations(a, oldPos, newPos) {
 
   for (var i = 0; i < a.length; i++) {
     // clear a piece
-    if (a[i].type === 'clear') {
+    if (a[i].type === 'clear' && a[i].piece.length === 2) {
       $('#' + SQUARE_ELS_IDS[a[i].square] + ' .' + CSS.piece)
         .fadeOut(cfg.trashSpeed, onFinish);
     }
 
     // add a piece (no spare pieces)
+	/*
     if (a[i].type === 'add' && cfg.sparePieces !== true) {
       $('#' + SQUARE_ELS_IDS[a[i].square])
         .append(buildPiece(a[i].piece, true))
         .find('.' + CSS.piece)
         .fadeIn(cfg.appearSpeed, onFinish);
     }
+	ovo mozda treba, proveriti sa promocijama */
 
     // add a piece from a spare piece
-    if (a[i].type === 'add' && cfg.sparePieces === true) {
+    if (a[i].type === 'add' && a[i].piece.length > 2) {
+	  for (var k = 0; k < a.length; ++k) {
+		if (k !== i && a[k].square === a[i].square
+			&& a[k].piece.length > 2 && a[k].piece.substring(0, 2) === a[i].piece) {
+		  a[i].piece = a[k].piece; // mozda se menja i na 'spare' i na 'add', ispitati detaljno
+		}
+	  }
       animateSparePieceToSquare(a[i].piece, a[i].square, onFinish);
     }
 
@@ -979,15 +1001,13 @@ function drawBoard() {
   boardEl.html(buildBoard(CURRENT_ORIENTATION));
   drawPositionInstant();
 
-  if (cfg.sparePieces === true) {
-    if (CURRENT_ORIENTATION === 'white') {
-      sparePiecesTopEl.html(buildSparePieces('black'));
-      sparePiecesBottomEl.html(buildSparePieces('white'));
-    }
-    else {
-      sparePiecesTopEl.html(buildSparePieces('white'));
-      sparePiecesBottomEl.html(buildSparePieces('black'));
-    }
+  if (CURRENT_ORIENTATION === 'white') {
+    sparePiecesLeftEl.html(buildSparePieces(cfg.spareBlackPieces));
+    sparePiecesRightEl.html(buildSparePieces(cfg.spareWhitePieces));
+  }
+  else {
+    sparePiecesLeftEl.html(buildSparePieces(cfg.spareWhitePieces));
+    sparePiecesRightEl.html(buildSparePieces(cfg.spareBlackPieces));
   }
 }
 
@@ -1332,6 +1352,10 @@ widget.highlight = function() {
 };
 */
 
+widget.addSparePiece = addSparePiece;
+
+widget.removeSparePiece = removeSparePiece;
+
 // move pieces
 widget.move = function() {
   // no need to throw an error here; just do nothing
@@ -1451,12 +1475,6 @@ widget.resize = function() {
     width: SQUARE_SIZE
   });
 
-  // spare pieces
-  if (cfg.sparePieces === true) {
-    containerEl.find('.' + CSS.sparePieces)
-      .css('paddingLeft', (SQUARE_SIZE + BOARD_BORDER_SIZE) + 'px');
-  }
-
   // redraw the board
   drawBoard();
 };
@@ -1517,18 +1535,12 @@ function touchstartSquare(e) {
 }
 
 function mousedownSparePiece(e) {
-  // do nothing if sparePieces is not enabled
-  if (cfg.sparePieces !== true) return;
-
   var piece = $(this).attr('data-piece');
 
   beginDraggingPiece('spare', piece, e.pageX, e.pageY);
 }
 
 function touchstartSparePiece(e) {
-  // do nothing if sparePieces is not enabled
-  if (cfg.sparePieces !== true) return;
-
   var piece = $(this).attr('data-piece');
 
   e = e.originalEvent;
@@ -1671,10 +1683,8 @@ function initDom() {
   containerEl.html(buildBoardContainer());
   boardEl = containerEl.find('.' + CSS.board);
 
-  if (cfg.sparePieces === true) {
-    sparePiecesTopEl = containerEl.find('.' + CSS.sparePiecesTop);
-    sparePiecesBottomEl = containerEl.find('.' + CSS.sparePiecesBottom);
-  }
+  sparePiecesLeftEl = containerEl.find('.' + CSS.sparePiecesLeft);
+  sparePiecesRightEl = containerEl.find('.' + CSS.sparePiecesRight);
 
   // create the drag piece
   var draggedPieceId = createId();

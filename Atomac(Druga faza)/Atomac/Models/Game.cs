@@ -17,8 +17,6 @@ namespace Atomac.Models
         [Required]
         public DateTime Date { get; set; }
 
-        public int Points { get; set; }
-
         public int Tokens { get; set; }
 
         public int Duration { get; set; }
@@ -53,7 +51,8 @@ namespace Atomac.Models
     public enum GStatus  //game status
     {
         Created = 1, 
-        Playing = 2
+        Playing = 2,
+        Finished = 3
     }
 
     public enum GTStatus  //game team status

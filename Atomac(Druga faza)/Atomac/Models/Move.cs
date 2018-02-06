@@ -12,18 +12,22 @@ namespace Atomac.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Required]
         public Board Board { get; set; }
-        [Required]
+        public string Color { get; set; } //koja boja je odigrala potez
+        public string Captured { get; set; } //ako je figura uzeta, koja je
         public string State { get; set; }
-        [Required]
-        public string White { get; set; }  //koje figure beli ima u rezervi
-        [Required]
-        public string Black { get; set; }  //koje figure crni ima u rezervi
+        public IList<string> White { get; set; }  //koje figure beli ima u rezervi
+        public IList<string> Black { get; set; }  //koje figure crni ima u rezervi
 
         public int GameId { get; set; }
         [ForeignKey ("GameId")]
         public virtual Game Game { get; set; }
+
+        public Move()
+        {
+            White = new List<string>();
+            Black = new List<string>();
+        }
     }
 
     public enum Board

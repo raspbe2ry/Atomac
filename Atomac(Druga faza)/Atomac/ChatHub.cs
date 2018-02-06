@@ -12,6 +12,8 @@ using RedisDataLayer;
 using System.IO;
 using System.Text;
 using System.Runtime.Serialization.Json;
+using System.Web.Helpers;
+using Newtonsoft.Json.Linq;
 
 namespace Atomac.Controllers
 {
@@ -437,6 +439,88 @@ namespace Atomac.Controllers
             string listOfRules = rf.GetHashAttributeValue(hashTeam, "rules");
             if(rf.CheckIfKeyExists(listOfRules))
                 rf.RemoveAllFromList(listOfRules);
+        }
+
+        public Task MoveFigure(string move)
+        {
+            JObject jObject = JObject.Parse(move);
+            JToken d = jObject;
+            Move m = new Move();
+            m.Captured = (string)d["Captured"];
+            m.Color = (string)d["Color"];
+            m.GameId = Int32.Parse((string)d["GameId"]);
+            m.State = (string)d["State"];
+            m.Black = d["Black"].ToObject<List<string>>();
+            m.White = d["White"].ToObject<List<string>>();
+            m.Board = (Board)Int32.Parse((string)d["Board"]);
+            Game g = dbContext.Games.Where(x => x.Id == m.GameId).First();
+            m.Game = g;
+            //g.Moves.Add(m);
+            dbContext.Moves.Add(m);
+            dbContext.SaveChanges();
+
+            List<string> playersEmails = EmailsFromPlayersInGame(g.Id);
+            return Clients.Users(playersEmails).MoveFigureOnTable(move);
+        }
+
+        //ciji je gm.TeamId je pobedio (f-ja se poziva kad neko napravi mat)
+        public Task FinishGame(DTOGameMini gm)
+        {
+            Game g = dbContext.Games.Where(x => x.Id == Int32.Parse(gm.Id)).First();
+            g.Status = GStatus.Finished;
+            int rnewT1 = 0;
+            int rnewT2 = 0;
+            int rnewP11 = 0;
+            int rnewP12 = 0;
+            int rnewP21 = 0;
+            int rnewP22 = 0;
+            if (gm.TeamId == g.Team1Id.ToString())
+            {
+                rnewT1 = CountNewRanking(true, g.Team1.Points, g.Team2.Points);
+                rnewP11 = CountNewRanking(true, g.Team1.Capiten.Points, g.Team2.Capiten.Points);
+                rnewP12 = CountNewRanking(true, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points);
+
+                rnewT2 = CountNewRanking(false, g.Team1.Points, g.Team2.Points);
+                rnewP21 = CountNewRanking(false, g.Team1.Capiten.Points, g.Team2.Capiten.Points);
+                rnewP22 = CountNewRanking(false, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points);
+            }
+            else
+            {
+                rnewT1 = CountNewRanking(false, g.Team1.Points, g.Team2.Points);
+                rnewP11 = CountNewRanking(false, g.Team1.Capiten.Points, g.Team2.Capiten.Points);
+                rnewP12 = CountNewRanking(false, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points);
+
+                rnewT2 = CountNewRanking(true, g.Team1.Points, g.Team2.Points);
+                rnewP21 = CountNewRanking(true, g.Team1.Capiten.Points, g.Team2.Capiten.Points);
+                rnewP22 = CountNewRanking(true, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points);
+            }
+            g.Team1.Points = rnewT1;
+            g.Team2.Points = rnewT2;
+            g.Team1.Capiten.Points = rnewP11;
+            g.Team1.TeamMember.Points = rnewP12;
+            g.Team2.Capiten.Points = rnewP21;
+            g.Team2.TeamMember.Points = rnewP22;
+
+            dbContext.SaveChanges();
+
+            List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gm.Id));
+            return Clients.Users(playersEmails).FinishGame();
+        }
+
+        //rold je stari rating
+        //k je koeficijent, racuna se sa k=20
+        //ropp je protivnicki rating
+        //w je 1.0 ili 0.5; //1.0 za pobedu/poraz a 0.5 za remi; ako je poraz onda se to sto se dobije na desnoj strani oduzima od rold
+        //double w = 1.0; //kod nas je uvek pobeda i poraz u atomcu, nema remi (w=1.0 uvek)
+        //formula je rnew = rold +ili- k/2 * (w+(1.0/2.0)*(abs(rold-ropp))/200)
+        private int CountNewRanking(bool win, int rold, int ropp)
+        {
+            int k = 20;
+            double diffInRating = (k / 2) * (1.0 + 0.5 * (Math.Abs(rold - ropp) / 200));
+            if(win)
+                return (rold + (int)Math.Round(diffInRating));
+            else
+                return (rold - (int)Math.Round(diffInRating));
         }
     }
 }

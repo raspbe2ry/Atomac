@@ -8,7 +8,6 @@ namespace Atomac.DTO
     public class DTOGameMini
     {
         public string Id { get; set; }
-        public string Points { get; set; }
         public string Tokens { get; set; }
         public string Duration { get; set; }
         public string TeamId { get; set; }

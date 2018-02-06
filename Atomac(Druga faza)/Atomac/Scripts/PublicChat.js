@@ -242,7 +242,7 @@ $(function () {
         }
     };
 
-        chat.client.sendStartGame = function (dtoGame) {
+    chat.client.sendStartGame = function (dtoGame) {
             $('#leftSide').empty();
             $('#rightTop').empty();
             //ovo ispod odvojiti u posebnu funkciju
@@ -264,23 +264,47 @@ $(function () {
             rightBottom.classList.add("chatContainer");
 
             LoadTables();
-        };
+    };
 
-        $('#message').focus();
+    chat.client.moveFigureOnTable = function (Move) {
+        let dtoMove = JSON.parse(Move);
+        let myId = $('#myId').val();
+        let myCapId = $('#myCapitenId').val();
+        let myTeamId = $('#myTeamId').val();
+        let izazivaci = $('#firstTeam').val();
+        if (myId === myCapId) {
+            if (dtoMove.Board == "1") {
+                board.move(dtoMove.From, dtoMove.To, dtoMove.Piece);
+            }
+            else {
+                board.position(dtoMove.State);
+            }
+        }
+        else {
+            if (dtoMove.Board != "1") {
+                board.move(dtoMove.From, dtoMove.To, dtoMove.Piece);
+            }
+            else {
+                board.position(dtoMove.State);
+            }
+        }
+    }
 
-        $.connection.hub.start().done(function () {
-            $('#sendmessage').click(function () {
-                chat.server.send($('#uName').val(), $('#message').val());
-                $('#message').val('').focus();
-            });
-            $('#sendmessageInGame').click(function () {
-                chat.server.sendMessageInGame($('#uNameGame').val(), $('#messageInGame').val(), $('#myGameId').val(), $('#myTeamId').val());
-                $('#messageInGame').val('').focus();
-            });
-            poveziDugmiceZaOnlineKorisnike(chat);
-            poveziDugmiceZaRecentTeams(chat);
-            poveziDugmiceZaOpponentTeams(chat);
+    $('#message').focus();
+
+    $.connection.hub.start().done(function () {
+        $('#sendmessage').click(function () {
+            chat.server.send($('#uName').val(), $('#message').val());
+            $('#message').val('').focus();
         });
+        $('#sendmessageInGame').click(function () {
+            chat.server.sendMessageInGame($('#uNameGame').val(), $('#messageInGame').val(), $('#myGameId').val(), $('#myTeamId').val());
+            $('#messageInGame').val('').focus();
+        });
+        poveziDugmiceZaOnlineKorisnike(chat);
+        poveziDugmiceZaRecentTeams(chat);
+        poveziDugmiceZaOpponentTeams(chat);
+    });
 
 });
 
@@ -569,22 +593,44 @@ function InfoPopUp()
 
 function LoadTables()
 {
-    mainBoard = new MainChessBoard(
-                    'glavnaTabla',
-                     '/Content/img/chesspieces/wikipedia/{piece}.png',
-                    ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
-                    ['bP', 'bQ', 'bP']
-                );
+    let mainContainerId = 'glavnaTabla';
+    let sideContainerId = 'sporednaTabla';
 
-    sideBoard = new SideChessBoard(
-                    'sporednaTabla',
-                    '/Content/img/chesspieces/wikipedia/{piece}.png',
-                    ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
-                    ['bP', 'bQ', 'bP']
-                );
+    let myId = $('#myId').val();
+    let myCapId = $('#myCapitenId').val();
+    let myTeamId = $('#myTeamId').val();
+    let izazivaci = $('#firstTeam').val();
+
+    let sideBoard = null;
+    let mainBoard = null;
+    if (myId === myCapId) {
+        if (myTeamId == izazivaci) {
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'black');
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], sideBoard, 'white');
+        }
+        else {
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'white');
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], sideBoard, 'black');
+        }
+    }
+    else {
+        if (myTeamId == izazivaci) {
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'white');
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], sideBoard, 'black');
+        }
+        else {
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'black');
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], sideBoard, 'white');
+        }
+    }
 
     $(window).resize(() => {
         mainBoard.resize();
         sideBoard.resize();
     });
+
+}
+
+function MoveFigure(moveObject) {
+    chat.server.moveFigure(JSON.stringify(moveObject));
 }

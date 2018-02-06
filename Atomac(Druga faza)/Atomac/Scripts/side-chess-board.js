@@ -1,14 +1,14 @@
 
-function SideChessBoard(containerId, styleUrl, whitePieces, blackPieces) {
+function SideChessBoard(containerId, styleUrl, whitePieces, blackPieces, player) {
 	
 	let board = new ChessBoard(containerId, {
-		orientation: 'black',
+        orientation: player,
 		position: 'start',
 		showNotation: false,
 		draggable: false,
 		pieceTheme: styleUrl,
-		spareWhitePieces: whitePieces,
-		spareBlackPieces: blackPieces
+        sparePiecesWhite: whitePieces,
+        sparePiecesBlack: blackPieces
 	});
 	
 	return board;

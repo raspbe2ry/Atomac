@@ -14,9 +14,14 @@ namespace Atomac.DTO
 
         public int Id { get; set; }
         public Board Board { get; set; }
-        public string State { get; set; }
-        public string White { get; set; }  //koje figure beli ima u rezervi
-        public string Black { get; set; }  //koje figure crni ima u rezervi
+        public string Color { get; set; } //koja boja je odigrala potez
+        public string From { get; set; }
+        public string To { get; set; }
+        public string Piece { get; set; }
+        public string Captured { get; set; } //ako je figura uzeta, koja je
+        public string State { get; set; } //fen string sa stanjem
+        public IEnumerable<string> White { get; set; }  //koje figure beli ima u rezervi
+        public IEnumerable<string> Black { get; set; }  //koje figure crni ima u rezervi
         public int GameId { get; set; }
 
         public DTOMove GetById(int id)

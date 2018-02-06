@@ -14,7 +14,6 @@ namespace Atomac.DTO
 
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public int Points { get; set; }
         public int Tokens { get; set; }
         public int Duration { get; set; }
         public GStatus Status { get; set; }

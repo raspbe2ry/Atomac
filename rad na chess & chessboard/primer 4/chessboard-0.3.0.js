@@ -429,12 +429,12 @@ function expandConfig() {
   }
   
   // set spare piece arrays to null if not provided
-  if (cfg.spareWhitePieces === undefined) {
-	  cfg.spareWhitePieces = null;
+  if (cfg.sparePiecesWhite === undefined) {
+	cfg.sparePiecesWhite = [];
   }
   
-  if (cfg.spareBlackPieces === undefined) {
-	  cfg.spareBlackPieces = null;
+  if (cfg.sparePiecesBlack === undefined) {
+	cfg.sparePiecesBlack = [];
   }
 
   // default piece theme is wikipedia
@@ -690,11 +690,33 @@ function addSparePiece(piece, color) {
   } else {
 	sparePiecesLeftEl.append(buildPiece(piece, false, createId(), true));
   }
+  if (color === 'w') {
+	cfg.sparePiecesWhite.push(piece);
+  } else {
+	cfg.sparePiecesBlack.push(piece);
+  }
 }
 
 function removeSparePiece(piece) {
   $('#' + SPARE_PIECE_ELS_IDS[piece]).remove();
   delete SPARE_PIECE_ELS_IDS[piece];
+  
+  let color = piece[0];
+  let figure = piece.substring(0, 2);
+  if (color === 'w') {
+	cfg.sparePiecesWhite = removeFigureFromArray(cfg.sparePiecesWhite, figure);
+  } else {
+	cfg.sparePiecesBlack = removeFigureFromArray(cfg.sparePiecesBlack, figure);
+  }
+}
+
+function removeFigureFromArray(arr, figure) {
+  let deleteIndex = arr.indexOf(figure);
+  if (deleteIndex > -1) {
+	return [...arr.splice(0, deleteIndex - 1), ...arr.splice(deleteIndex + 1, arr.length - 1)];
+  } else {
+	return arr;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1002,12 +1024,12 @@ function drawBoard() {
   drawPositionInstant();
 
   if (CURRENT_ORIENTATION === 'white') {
-    sparePiecesLeftEl.html(buildSparePieces(cfg.spareBlackPieces));
-    sparePiecesRightEl.html(buildSparePieces(cfg.spareWhitePieces));
+    sparePiecesLeftEl.html(buildSparePieces(cfg.sparePiecesBlack));
+    sparePiecesRightEl.html(buildSparePieces(cfg.sparePiecesWhite));
   }
   else {
-    sparePiecesLeftEl.html(buildSparePieces(cfg.spareWhitePieces));
-    sparePiecesRightEl.html(buildSparePieces(cfg.spareBlackPieces));
+    sparePiecesLeftEl.html(buildSparePieces(cfg.sparePiecesWhite));
+    sparePiecesRightEl.html(buildSparePieces(cfg.sparePiecesBlack));
   }
 }
 
@@ -1355,6 +1377,18 @@ widget.highlight = function() {
 widget.addSparePiece = addSparePiece;
 
 widget.removeSparePiece = removeSparePiece;
+
+widget.getWhiteSparePieces = () => {
+  return cfg.sparePiecesWhite;
+}
+
+widget.getBlackSparePieces = () => {
+  return cfg.sparePiecesBlack;
+}
+
+widget.setOnDropFunction = (onDropFun) => {
+  cfg.onDrop = onDropFun;
+}
 
 // move pieces
 widget.move = function() {

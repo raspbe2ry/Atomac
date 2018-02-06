@@ -62,9 +62,8 @@
 <div id="rightBottom">
         <input type="text" id="messageInGame" />
         <input type="button" id="sendmessageInGame" value="Send" />
-        <input type="hidden" id="displayname" />
-        <input type="hidden" id="uName" value=@ViewBag.NickName />
-        <ul id="discussion"></ul>
+        <input type="hidden" id="uNameGame" value=@ViewBag.NickName />
+        <ul id="GameDiscussion" style="overflow:auto"></ul>
 </div>
 
 <input type="hidden" id="myCapitenId" value=@ViewBag.CapId />

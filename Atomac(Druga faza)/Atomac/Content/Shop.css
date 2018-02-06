@@ -1,0 +1,17 @@
+﻿.Table{
+    background-color:greenyellow;
+    max-height: 150px;
+    overflow: auto;
+    margin-top: 25px;
+    border-radius: 20px;
+    width: 700px;
+}
+
+.Figure{
+    background-color: lightblue;
+    max-height: 150px;
+    overflow: auto;
+    margin-top: 25px;
+    border-radius: 20px;
+    width: 700px;
+}

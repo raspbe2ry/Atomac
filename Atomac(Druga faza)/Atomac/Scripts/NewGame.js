@@ -1,6 +1,5 @@
 ﻿function DTOGameCreationObject() {
     this.Id = $('#myGameId').val();
-    this.Points = "";
     this.Tokens = $('#tokens').val();
     this.Duration = $('#duration').val();
     this.TeamId = $('#myTeamId').val();

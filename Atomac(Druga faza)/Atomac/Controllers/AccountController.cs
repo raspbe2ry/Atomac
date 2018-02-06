@@ -12,6 +12,7 @@ using Atomac.Models;
 using System.Data.Entity;
 using Microsoft.AspNet.SignalR;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Atomac.Controllers
 {
@@ -203,7 +204,25 @@ namespace Atomac.Controllers
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     using (ApplicationDbContext db = new ApplicationDbContext())
                     {
+                        Type parentType = typeof(Artifact);
+                        Assembly assembly = Assembly.GetExecutingAssembly();
+                        Type[] types = assembly.GetTypes();
+                        IEnumerable<Type> subclasses = types.Where(t => t.BaseType == parentType);
+
                         ApplicationUser user1 = db.Users.Where(m => m.Email == model.Email).First();
+                        foreach(Type type in subclasses)
+                        {
+                            List<Artifact> arList = db.Artifacts.Where(x => x.Style == "default").ToList();
+                            foreach(Artifact ar in arList)
+                            {
+                                Stuff s = new Stuff();
+                                s.Artifact = ar;
+                                s.Owner = user1;
+                                s.Activity = true;
+                                user1.Stuffs.Add(s);
+                                ar.Stuffs.Add(s);
+                            }
+                        }
                         user1.Status = PStatus.Active;
                         db.SaveChanges();
                         IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();

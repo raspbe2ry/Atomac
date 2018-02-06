@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Atomac.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,10 +18,18 @@ namespace Atomac.Models
         public string Style { get; set; }
 
         [Required]
-        public bool Activity { get; set; }
+        public int Prize { get; set; }
 
-        public string OwnerId { get; set; }
-        [ForeignKey("OwnerId")]
-        public virtual ApplicationUser Owner { get; set; }
+        public virtual ICollection<Stuff> Stuffs { get; set; }
+
+        public Artifact()
+        {
+            Stuffs = new List<Stuff>();
+        }
+
+        public virtual DTOArtifact GetDTOArtifact()
+        {
+            return null;
+        }
     }
 }

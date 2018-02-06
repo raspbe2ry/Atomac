@@ -7,7 +7,15 @@ using System.Web;
 namespace Atomac.DTO
 {
     [Serializable]
-    public class DTOArtifact
+    public abstract class DTOArtifact
     {
+        protected ApplicationDbContext dbContext = new ApplicationDbContext();
+
+        public int Id { get; set; }
+        public string Style { get; set; }
+        public ICollection<DTOStuff> Stuffs { get; set; }
+
+        public abstract DTOArtifact GetById(int id);
+
     }
 }

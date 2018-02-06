@@ -20,6 +20,8 @@ namespace Atomac
             CreateMap<Rules, DTORules>();
             CreateMap<ATable, DTOTable>();
             CreateMap<AFigure, DTOFigure>();
+            CreateMap<Artifact, DTOArtifact>();
+            CreateMap<Stuff, DTOStuff>();
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Atomac.Models
         public PStatus Status{ get; set; }
 
         //NavigationProperty
-        public virtual ICollection<Artifact> Artifacts { get; set; }
+        public virtual ICollection<Stuff> Stuffs { get; set; }
         public virtual ICollection<Message> Messages { get; set; }
 
         [InverseProperty("TeamMember")]
@@ -43,7 +43,7 @@ namespace Atomac.Models
 
         public ApplicationUser()
         {
-            Artifacts = new List<Artifact>();
+            Stuffs = new List<Stuff>();
             Messages = new List<Message>();
             Teams = new List<Team>();
             AdminedTeams = new List<Team>(); //ako se obrise gore treba da se obrise i ovde
@@ -100,6 +100,8 @@ namespace Atomac.Models
         public virtual DbSet<Move> Moves { get; set; }
         public virtual DbSet<Rules> Ruless { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
+        public virtual DbSet<Stuff> Stuffs { get; set; }
 
+        public System.Data.Entity.DbSet<Atomac.Models.Artifact> Artifacts { get; set; }
     }
 }

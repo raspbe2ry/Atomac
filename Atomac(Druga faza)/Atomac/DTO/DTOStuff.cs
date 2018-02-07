@@ -16,6 +16,7 @@ namespace Atomac.DTO
         public bool Activity { get; set; }
         public string ArtifactId { get; set; }
         public string OwnerId { get; set; }
+        public DTOArtifactMini Artifact { get; set; }
 
         public DTOStuff GetById(int id)
         {

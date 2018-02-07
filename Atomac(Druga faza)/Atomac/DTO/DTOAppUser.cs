@@ -25,9 +25,9 @@ namespace Atomac.DTO
         public int Draws { get; set; }
         public int Losses { get; set; }
         public PStatus Status { get; set; }
-        public ICollection<DTOArtifact> Artifacts { get; set; }
         public ICollection<DTOTeam> Teams { get; set; }
         public ICollection<DTOTeam> AdminedTeams { get; set; }
+        public ICollection<DTOStuff> Stuffs { get; set; }
 
         public DTOAppUser GetById(string id)
         {

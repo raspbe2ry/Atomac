@@ -605,22 +605,22 @@ function LoadTables()
     let mainBoard = null;
     if (myId === myCapId) {
         if (myTeamId == izazivaci) {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'black');
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], sideBoard, 'white');
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'black');
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], sideBoard, 'white');
         }
         else {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'white');
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], sideBoard, 'black');
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'white');
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], sideBoard, 'black');
         }
     }
     else {
         if (myTeamId == izazivaci) {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'white');
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], sideBoard, 'black');
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'white');
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], sideBoard, 'black');
         }
         else {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'black');
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], sideBoard, 'white');
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'black');
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], sideBoard, 'white');
         }
     }
 

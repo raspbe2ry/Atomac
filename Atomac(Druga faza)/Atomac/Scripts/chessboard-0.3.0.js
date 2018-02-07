@@ -684,11 +684,12 @@ function buildSparePieces(pieces) {
   return html;
 }
 
-function addSparePiece(piece, color) {
+function addSparePiece(piece) {
+  let color = piece.substring(0, 1);
   if (CURRENT_ORIENTATION[0] === color) {
-	sparePiecesRightEl.append(buildPiece(piece, false, createId(), true));
+    sparePiecesRightEl.append(buildPiece(piece, false, createId(), true));
   } else {
-	sparePiecesLeftEl.append(buildPiece(piece, false, createId(), true));
+    sparePiecesLeftEl.append(buildPiece(piece, false, createId(), true));
   }
   if (color === 'w') {
 	cfg.sparePiecesWhite.push(piece);
@@ -698,6 +699,14 @@ function addSparePiece(piece, color) {
 }
 
 function removeSparePiece(piece) {
+  /*
+    if (piece.length === 2) {
+      let i = 0;
+      while (SPARE_PIECE_ELS_IDS[piece + i] === undefined)
+        ++i;
+      piece = piece + i;
+    }
+  */
   $('#' + SPARE_PIECE_ELS_IDS[piece]).remove();
   delete SPARE_PIECE_ELS_IDS[piece];
   
@@ -1023,6 +1032,7 @@ function drawBoard() {
   boardEl.html(buildBoard(CURRENT_ORIENTATION));
   drawPositionInstant();
 
+  SPARE_PIECE_ELS_IDS = {};
   if (CURRENT_ORIENTATION === 'white') {
     sparePiecesLeftEl.html(buildSparePieces(cfg.sparePiecesBlack));
     sparePiecesRightEl.html(buildSparePieces(cfg.sparePiecesWhite));

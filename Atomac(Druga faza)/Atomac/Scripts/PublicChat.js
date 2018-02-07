@@ -284,10 +284,14 @@ $(function () {
             }
             else {
                 //sideBoard.position(dtoMove.State.slice());
-                sideBoard.position(dtoMove.State);
+                if (dtoMove.From === 'spare') {
+                    sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
+                }
+                sideBoard.position(dtoMove.State, false);
+                sideBoard.resize();
                 if (dtoMove.Captured !== "") {
                     let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
-                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase(), capturedColor);
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase());
                 }
             }
         }
@@ -297,10 +301,14 @@ $(function () {
             }
             else {
                 //sideBoard.position(dtoMove.State.slice());
-                sideBoard.position(dtoMove.State);
+                if (dtoMove.From === 'spare') {
+                    sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
+                }
+                sideBoard.position(dtoMove.State, false);
+                sideBoard.resize();
                 if (dtoMove.Captured !== "") {
                     let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
-                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase(), capturedColor);
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase());
                 }
             }
         }

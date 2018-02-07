@@ -49,10 +49,11 @@ function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoa
             board.removeSparePiece(piece);
         } else if (move.captured !== undefined) {
             let capturedColor = (move.color === 'w') ? 'b' : 'w';
-            sideBoard.addSparePiece(capturedColor + move.captured.toUpperCase(), capturedColor);
+            sideBoard.addSparePiece(capturedColor + move.captured.toUpperCase());
         }
         //board.position(game.fen().slice());
-        board.position(game.fen());
+        board.position(game.fen(), false);
+        board.resize();
         return move;
     }
 

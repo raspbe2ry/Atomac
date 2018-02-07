@@ -266,28 +266,117 @@ $(function () {
             LoadTables();
     };
 
-    chat.client.moveFigureOnTable = function (Move) {
-        let dtoMove = JSON.parse(Move);
+    chat.client.moveFigureOnTable = function (move, sndEmail) {
         let myId = $('#myId').val();
+        if (myId === sndEmail) {
+            return;
+        }
+        let dtoMove = JSON.parse(move);
         let myCapId = $('#myCapitenId').val();
-        let myTeamId = $('#myTeamId').val();
-        let izazivaci = $('#firstTeam').val();
+        //let myTeamId = $('#myTeamId').val();
+        //let izazivaci = $('#firstTeam').val();
+        if (move.From === 'spare') {
+            dtoMove.Piece = move.Piece.substring(0, 1);
+        }
         if (myId === myCapId) {
             if (dtoMove.Board == "1") {
-                board.move(dtoMove.From, dtoMove.To, dtoMove.Piece);
+                mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
             }
             else {
-                board.position(dtoMove.State);
+                //sideBoard.position(dtoMove.State.slice());
+                if (dtoMove.From === 'spare') {
+                    sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
+                }
+                sideBoard.position(dtoMove.State, false);
+                sideBoard.resize();
+                if (dtoMove.Captured !== "") {
+                    let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase());
+                }
             }
         }
         else {
             if (dtoMove.Board != "1") {
-                board.move(dtoMove.From, dtoMove.To, dtoMove.Piece);
+                mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
             }
             else {
-                board.position(dtoMove.State);
+                //sideBoard.position(dtoMove.State.slice());
+                if (dtoMove.From === 'spare') {
+                    sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
+                }
+                sideBoard.position(dtoMove.State, false);
+                sideBoard.resize();
+                if (dtoMove.Captured !== "") {
+                    let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase());
+                }
             }
         }
+    }
+
+    chat.client.moveFigureAndFinishGame = function (move, sndEmail, sndTeamId, poruka) {
+        let headerText = poruka;
+        let bodyText = "";
+        let myId = $('#myId').val();
+        let myTeamId = $('#myTeamId').val();
+        if (myTeamId === sndTeamId) {
+            if (poruka === "Checkmate")
+                bodyText = "Your team has won this game. Congratulations!";
+            else
+                bodyText = "Fair and square. It's tie game.";
+        }
+        else {
+            if (poruka === "Checkmate")
+                bodyText = "Your team has lost this game. Better luck next time!";
+            else
+                bodyText = "Fair and square. It's tie game.";
+        }
+        if (myId === sndEmail) {
+            document.body.appendChild(GlobalPopUp(headerText, bodyText, InfoPopUpForFinishGame()));
+            $('#myModal').modal('show');
+            return;
+        }
+        let dtoMove = JSON.parse(move);
+        let myCapId = $('#myCapitenId').val();
+        if (move.From === 'spare') {
+            dtoMove.Piece = move.Piece.substring(0, 1);
+        }
+        if (myId === myCapId) {
+            if (dtoMove.Board == "1") {
+                mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
+            }
+            else {
+
+                if (dtoMove.From === 'spare') {
+                    sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
+                }
+                sideBoard.position(dtoMove.State, false);
+                sideBoard.resize();
+                if (dtoMove.Captured !== "") {
+                    let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase());
+                }
+            }
+        }
+        else {
+            if (dtoMove.Board != "1") {
+                mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
+            }
+            else {
+                if (dtoMove.From === 'spare') {
+                    sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
+                }
+                sideBoard.position(dtoMove.State, false);
+                sideBoard.resize();
+                if (dtoMove.Captured !== "") {
+                    let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase());
+                }
+            }
+        }
+        document.body.appendChild(GlobalPopUp(headerText, bodyText, InfoPopUpForFinishGame()));
+        $('#myModal').modal('show');
+        return;
     }
 
     $('#message').focus();
@@ -591,6 +680,29 @@ function InfoPopUp()
     return div;
 }
 
+function InfoPopUpForFinishGame() {
+    var div = document.createElement('div');
+    closeBtn = document.createElement('input');
+    closeBtn.type = 'button';
+    closeBtn.value = "Close";
+    closeBtn.class = "btn btn-default";
+    closeBtn.dataset.dismiss = 'modal';
+    closeBtn.addEventListener('click', function () {
+        $('#myModal').remove();
+        $('.modal-backdrop').remove();
+        //treba da se izvrsi prebacivanje 
+        setTimeout(function () {
+            var query = "http://localhost:59310/Home/About";
+            document.location.href = query;
+        }, 1000);
+    });
+    div.appendChild(closeBtn);
+    return div;
+}
+
+var sideBoard = null;
+var mainBoard = null;
+
 function LoadTables()
 {
     let mainContainerId = 'glavnaTabla';
@@ -601,8 +713,6 @@ function LoadTables()
     let myTeamId = $('#myTeamId').val();
     let izazivaci = $('#firstTeam').val();
 
-    let sideBoard = null;
-    let mainBoard = null;
     if (myId === myCapId) {
         if (myTeamId == izazivaci) {
             sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'black');
@@ -633,4 +743,8 @@ function LoadTables()
 
 function MoveFigure(moveObject) {
     chat.server.moveFigure(JSON.stringify(moveObject));
+}
+
+function MoveFigureAndFinishGame(moveObject, poruka) {
+    chat.server.moveFigureAndFinishGame(JSON.stringify(moveObject), poruka);
 }

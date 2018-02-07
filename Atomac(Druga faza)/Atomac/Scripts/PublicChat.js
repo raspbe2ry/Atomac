@@ -266,26 +266,42 @@ $(function () {
             LoadTables();
     };
 
-    chat.client.moveFigureOnTable = function (Move) {
-        let dtoMove = JSON.parse(Move);
+    chat.client.moveFigureOnTable = function (move, sndEmail) {
         let myId = $('#myId').val();
+        if (myId === sndEmail) {
+            return;
+        }
+        let dtoMove = JSON.parse(move);
         let myCapId = $('#myCapitenId').val();
-        let myTeamId = $('#myTeamId').val();
-        let izazivaci = $('#firstTeam').val();
+        //let myTeamId = $('#myTeamId').val();
+        //let izazivaci = $('#firstTeam').val();
+        if (move.From === 'spare') {
+            dtoMove.Piece = move.Piece.substring(0, 1);
+        }
         if (myId === myCapId) {
             if (dtoMove.Board == "1") {
-                board.move(dtoMove.From, dtoMove.To, dtoMove.Piece);
+                mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
             }
             else {
-                board.position(dtoMove.State);
+                //sideBoard.position(dtoMove.State.slice());
+                sideBoard.position(dtoMove.State);
+                if (dtoMove.Captured !== "") {
+                    let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase(), capturedColor);
+                }
             }
         }
         else {
             if (dtoMove.Board != "1") {
-                board.move(dtoMove.From, dtoMove.To, dtoMove.Piece);
+                mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
             }
             else {
-                board.position(dtoMove.State);
+                //sideBoard.position(dtoMove.State.slice());
+                sideBoard.position(dtoMove.State);
+                if (dtoMove.Captured !== "") {
+                    let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase(), capturedColor);
+                }
             }
         }
     }
@@ -591,6 +607,9 @@ function InfoPopUp()
     return div;
 }
 
+var sideBoard = null;
+var mainBoard = null;
+
 function LoadTables()
 {
     let mainContainerId = 'glavnaTabla';
@@ -601,8 +620,6 @@ function LoadTables()
     let myTeamId = $('#myTeamId').val();
     let izazivaci = $('#firstTeam').val();
 
-    let sideBoard = null;
-    let mainBoard = null;
     if (myId === myCapId) {
         if (myTeamId == izazivaci) {
             sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/wikipedia/{piece}.png', [], [], 'black');

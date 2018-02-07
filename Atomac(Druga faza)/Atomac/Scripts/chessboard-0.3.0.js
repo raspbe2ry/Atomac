@@ -1390,6 +1390,8 @@ widget.setOnDropFunction = (onDropFun) => {
   cfg.onDrop = onDropFun;
 }
 
+widget.makeMove = cfg.makeMove;
+
 // move pieces
 widget.move = function() {
   // no need to throw an error here; just do nothing

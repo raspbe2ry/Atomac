@@ -61,7 +61,7 @@ namespace Atomac.Controllers
                 team.Capiten = capiten;
                 team.TeamMember = player2;
                 team.Name = teamName;
-                team.Points = 0;
+                team.Points = 1500;
                 team.Status = TStatus.Online;
                 capiten.AdminedTeams.Add(team);
                 player2.Teams.Add(team);
@@ -157,6 +157,9 @@ namespace Atomac.Controllers
                 dbContext.Games.Add(game);
 
                 c1.Status = TStatus.Busy;
+                //ovo da li treba?
+                c1.GamesAsFirst.Add(game);
+                c2.GamesAsSecond.Add(game);
                 c2.Status = TStatus.Busy;
                 dbContext.SaveChanges();
 
@@ -443,6 +446,7 @@ namespace Atomac.Controllers
 
         public Task MoveFigure(string move)
         {
+            string userEmail = Context.Request.User.Identity.Name;
             JObject jObject = JObject.Parse(move);
             JToken d = jObject;
             Move m = new Move();
@@ -455,12 +459,12 @@ namespace Atomac.Controllers
             m.Board = (Board)Int32.Parse((string)d["Board"]);
             Game g = dbContext.Games.Where(x => x.Id == m.GameId).First();
             m.Game = g;
-            //g.Moves.Add(m);
+            g.Moves.Add(m);
             dbContext.Moves.Add(m);
             dbContext.SaveChanges();
 
             List<string> playersEmails = EmailsFromPlayersInGame(g.Id);
-            return Clients.Users(playersEmails).MoveFigureOnTable(move);
+            return Clients.Users(playersEmails).MoveFigureOnTable(move, userEmail);
         }
 
         //ciji je gm.TeamId je pobedio (f-ja se poziva kad neko napravi mat)

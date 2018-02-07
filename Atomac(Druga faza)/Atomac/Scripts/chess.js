@@ -664,7 +664,7 @@ var Chess = function(fen) {
       var disambiguator = get_disambiguator(move, sloppy);
 
       if (move.piece !== PAWN) {
-        output += move.piece.toUpperCase() + disambiguator;
+          output += move.piece.substring(0, 1).toUpperCase() + disambiguator;
       }
 
       if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
@@ -850,8 +850,8 @@ var Chess = function(fen) {
     var them = swap_color(us);
     push(move);
 	
-	if (move.from === 'spare') {
-	  board[move.to] = { type: move.piece, color: move.color };
+    if (move.from === 'spare') {
+        board[move.to] = { type: move.piece.substring(0, 1), color: move.color };
 	  ep_square = EMPTY;
 	} else {
 	  board[move.to] = board[move.from];

@@ -224,6 +224,11 @@ namespace Atomac.Controllers
                             }
                         }
                         user1.Status = PStatus.Active;
+                        user1.Title = Title.ClassC;
+                        user1.Points = 1500;
+                        user1.Tokens = 1000;
+                        user1.Wins = 0;
+                        user1.Losses = 0;
                         db.SaveChanges();
                         IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
                         List<Team> teamList = db.Teams.Where(p => p.Capiten.Email == model.Email || p.TeamMember.Email == model.Email).ToList();

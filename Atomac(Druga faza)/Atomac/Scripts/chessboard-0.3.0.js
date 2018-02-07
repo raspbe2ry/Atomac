@@ -718,14 +718,11 @@ function removeSparePiece(piece) {
 	cfg.sparePiecesBlack = removeFigureFromArray(cfg.sparePiecesBlack, figure);
   }
 }
-
+    
 function removeFigureFromArray(arr, figure) {
   let deleteIndex = arr.indexOf(figure);
-  if (deleteIndex > -1) {
-	return [...arr.splice(0, deleteIndex - 1), ...arr.splice(deleteIndex + 1, arr.length - 1)];
-  } else {
-	return arr;
-  }
+  arr.splice(deleteIndex, 1);
+  return arr;
 }
 
 //------------------------------------------------------------------------------

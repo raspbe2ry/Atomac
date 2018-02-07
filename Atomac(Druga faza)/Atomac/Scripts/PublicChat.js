@@ -314,6 +314,71 @@ $(function () {
         }
     }
 
+    chat.client.moveFigureAndFinishGame = function (move, sndEmail, sndTeamId, poruka) {
+        let headerText = poruka;
+        let bodyText = "";
+        let myId = $('#myId').val();
+        let myTeamId = $('#myTeamId').val();
+        if (myTeamId === sndTeamId) {
+            if (poruka === "Checkmate")
+                bodyText = "Your team has won this game. Congratulations!";
+            else
+                bodyText = "Fair and square. It's tie game.";
+        }
+        else {
+            if (poruka === "Checkmate")
+                bodyText = "Your team has lost this game. Better luck next time!";
+            else
+                bodyText = "Fair and square. It's tie game.";
+        }
+        if (myId === sndEmail) {
+            document.body.appendChild(GlobalPopUp(headerText, bodyText, InfoPopUpForFinishGame()));
+            $('#myModal').modal('show');
+            return;
+        }
+        let dtoMove = JSON.parse(move);
+        let myCapId = $('#myCapitenId').val();
+        if (move.From === 'spare') {
+            dtoMove.Piece = move.Piece.substring(0, 1);
+        }
+        if (myId === myCapId) {
+            if (dtoMove.Board == "1") {
+                mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
+            }
+            else {
+
+                if (dtoMove.From === 'spare') {
+                    sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
+                }
+                sideBoard.position(dtoMove.State, false);
+                sideBoard.resize();
+                if (dtoMove.Captured !== "") {
+                    let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase());
+                }
+            }
+        }
+        else {
+            if (dtoMove.Board != "1") {
+                mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
+            }
+            else {
+                if (dtoMove.From === 'spare') {
+                    sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
+                }
+                sideBoard.position(dtoMove.State, false);
+                sideBoard.resize();
+                if (dtoMove.Captured !== "") {
+                    let capturedColor = (dtoMove.Color === 'w') ? 'b' : 'w';
+                    mainBoard.addSparePiece(capturedColor + dtoMove.Captured.toUpperCase());
+                }
+            }
+        }
+        document.body.appendChild(GlobalPopUp(headerText, bodyText, InfoPopUpForFinishGame()));
+        $('#myModal').modal('show');
+        return;
+    }
+
     $('#message').focus();
 
     $.connection.hub.start().done(function () {
@@ -615,6 +680,26 @@ function InfoPopUp()
     return div;
 }
 
+function InfoPopUpForFinishGame() {
+    var div = document.createElement('div');
+    closeBtn = document.createElement('input');
+    closeBtn.type = 'button';
+    closeBtn.value = "Close";
+    closeBtn.class = "btn btn-default";
+    closeBtn.dataset.dismiss = 'modal';
+    closeBtn.addEventListener('click', function () {
+        $('#myModal').remove();
+        $('.modal-backdrop').remove();
+        //treba da se izvrsi prebacivanje 
+        setTimeout(function () {
+            var query = "http://localhost:59310/Home/About";
+            document.location.href = query;
+        }, 1000);
+    });
+    div.appendChild(closeBtn);
+    return div;
+}
+
 var sideBoard = null;
 var mainBoard = null;
 
@@ -658,4 +743,8 @@ function LoadTables()
 
 function MoveFigure(moveObject) {
     chat.server.moveFigure(JSON.stringify(moveObject));
+}
+
+function MoveFigureAndFinishGame(moveObject, poruka) {
+    chat.server.moveFigureAndFinishGame(JSON.stringify(moveObject), poruka);
 }

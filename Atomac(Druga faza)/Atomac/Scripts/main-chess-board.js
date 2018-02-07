@@ -75,6 +75,9 @@ function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoa
                 return 'snapback';
             }
             let move = playMove(source, target, piece);
+            if (move === 'snapback') {
+                return move;
+            }
             let moveObject = new DTOMoveCreationObject(move, board, game);
             if (move.captured !== undefined) {
                 moveObject.Captured = move.captured;
@@ -87,7 +90,25 @@ function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoa
             else {
                 moveObject.Board = "2";
             }
-            MoveFigure(moveObject);
+            if (game.game_over() === true) {
+                var poruka = "";
+                if (game.in_checkmate()) {
+                    poruka = "Checkmate";
+                }
+                else if (game.in_stalemate()) {
+                    poruka = "Stalemate";
+                }
+                else if (game.insufficient_material()) {
+                    poruka = "Insuficient material";
+                }
+                else if (game.in_threefold_repetition()) {
+                    poruka = "Threefold repetition";
+                }
+                MoveFigureAndFinishGame(moveObject, poruka);
+            }
+            else {
+                MoveFigure(moveObject);
+            }
         },
 		onMouseoutSquare: (square, piece) => {
 			removeGreySquares();

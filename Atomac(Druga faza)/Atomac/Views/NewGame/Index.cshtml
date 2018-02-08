@@ -26,8 +26,7 @@
                 </td>
             </tr>
         </thead>
-        <tbody id="tableBody" style="background-color: white">
-        </tbody>
+        <tbody id="tableBody" style="background-color: white"></tbody>
     </table>
 </div>
 
@@ -58,14 +57,15 @@
     </div>
 </div>
 
-            <!-- ovaj cet da se prepravi da bude samo za partiju -->
+<!-- ovaj cet da se prepravi da bude samo za partiju -->
 <div id="rightBottom">
-        <input type="text" id="messageInGame" />
-        <input type="button" id="sendmessageInGame" value="Send" />
-        <input type="hidden" id="uNameGame" value=@ViewBag.NickName />
-        <ul id="GameDiscussion" style="overflow:auto"></ul>
+    <input type="text" id="messageInGame" />
+    <input type="button" id="sendmessageInGame" value="Send" />
+    <input type="hidden" id="uNameGame" value=@ViewBag.NickName />
+    <ul id="GameDiscussion" style="overflow:auto"></ul>
 </div>
 
+<input type="hidden" id="myId" value=@User.Identity.Name />
 <input type="hidden" id="myCapitenId" value=@ViewBag.CapId />
 <input type="hidden" id="myGameId" value=@Model.Id />
 <input type="hidden" id="myTeamId" value=@ViewBag.MyTeamId />
@@ -74,31 +74,31 @@
 
 
 @section Scripts
-{   
+{
     @Styles.Render("~/Content/chessboard")
     @Scripts.Render("~/bundles/chessboardGamePlay")
     @Scripts.Render("~/bundles/chessboard")
-<script src="~/Scripts/PublicChat.js"></script>
-<script src="~/Scripts/NewGame.js"></script>
+    <script src="~/Scripts/PublicChat.js"></script>
+    <script src="~/Scripts/NewGame.js"></script>
 
     @*<script>
-    let mainBoard = new MainChessBoard(
-	'glavnaTabla',
-     '@Url.Content("~/Content/img/chesspieces/wikipedia/{piece}.png")',
-    ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
-    ['bP', 'bQ', 'bP']
-    );
+            let mainBoard = new MainChessBoard(
+            'glavnaTabla',
+             '@Url.Content("~/Content/img/chesspieces/wikipedia/{piece}.png")',
+            ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
+            ['bP', 'bQ', 'bP']
+            );
 
-    let sideBoard = new SideChessBoard(
-    'sporednaTabla',
-    '@Url.Content("~/Content/img/chesspieces/wikipedia/{piece}.png")',
-    ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
-    ['bP', 'bQ', 'bP']
-    );
+            let sideBoard = new SideChessBoard(
+            'sporednaTabla',
+            '@Url.Content("~/Content/img/chesspieces/wikipedia/{piece}.png")',
+            ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
+            ['bP', 'bQ', 'bP']
+            );
 
-    $(window).resize(() => {
-    mainBoard.resize();
-    sideBoard.resize();
-    });
-</script>*@
+            $(window).resize(() => {
+            mainBoard.resize();
+            sideBoard.resize();
+            });
+        </script>*@
 }

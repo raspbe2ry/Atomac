@@ -202,7 +202,7 @@ var MINIMUM_JQUERY_VERSION = '1.7.0',
 // and simplify selectors
 var CSS = {
   alpha: 'cbjs-alpha',
-  black: 'cbjs-black',
+  black: cfg.tableContext.table+'-black',
   board: 'cbjs-board',
   chessboard: 'cbjs-chessboard',
   clearfix: 'cbjs-clearfix',
@@ -216,7 +216,7 @@ var CSS = {
   sparePiecesRight: 'cbjs-spare-pieces-right',
   sparePiecesLeft: 'cbjs-spare-pieces-left',
   square: 'cbjs-square',
-  white: 'cbjs-white'
+  white: cfg.tableContext.table+'-white'
 };
 
 //------------------------------------------------------------------------------

@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Atomac.Models;
 using Atomac.DTO;
+using System.Web.Script.Serialization;
 
 namespace Atomac.Controllers
 {
@@ -26,6 +27,15 @@ namespace Atomac.Controllers
             DTOAppUser user = new DTOAppUser();
             user=user.GetById(applicationUser.Id);
             return View(user);
-        }       
+        }
+        
+        //Get Profile/MyTableContext
+        public string MyTableContext()
+        {
+            string userEmail = HttpContext.Request.Params.Get("userEmail");
+            DTOTableContext dto = new DTOTableContext(userEmail);
+            var json = new JavaScriptSerializer().Serialize(dto);
+            return json;
+        }
     }
 }

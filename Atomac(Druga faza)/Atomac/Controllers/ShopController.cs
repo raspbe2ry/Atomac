@@ -10,6 +10,7 @@ using Atomac.Models;
 using Atomac.DTO;
 using Atomac.ViewModels;
 using System.Reflection;
+using System.Web.Script.Serialization;
 
 namespace Atomac.Controllers
 {
@@ -62,6 +63,11 @@ namespace Atomac.Controllers
                 }
                 lista.Add(lt);
             }
+
+            DTOTableContext dt = new DTOTableContext(User.Identity.Name);
+            var json=new JavaScriptSerializer().Serialize(dt);
+            ViewBag.TableContext = json;
+
             return View(lista);
         }
 

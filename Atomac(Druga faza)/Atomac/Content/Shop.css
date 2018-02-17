@@ -1,6 +1,6 @@
 ﻿.Table{
     background-color:greenyellow;
-    max-height: 150px;
+    max-height: 200px;
     overflow: auto;
     margin-top: 25px;
     border-radius: 20px;
@@ -9,7 +9,7 @@
 
 .Figure{
     background-color: lightblue;
-    max-height: 150px;
+    max-height: 200px;
     overflow: auto;
     margin-top: 25px;
     border-radius: 20px;

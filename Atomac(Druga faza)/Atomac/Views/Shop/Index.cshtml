@@ -4,66 +4,79 @@
     ViewBag.Title = "Index";
 }
 
+
+<link href="~/Content/Profile.css" rel="stylesheet" />
 <link href="~/Content/Shop.css" rel="stylesheet" />
+<link href="~/Content/chessboard-0.3.0.css" rel="stylesheet" />
 
 <h2>SHOP</h2>
 
-@foreach (var lis in Model)
-{
-    <h2>@lis.name</h2>
+<div id="tableSide"></div>
 
-    <div class="@lis.name">
+<div id="leftSide">
+    @foreach (var lis in Model)
+    {
+        <h2>@lis.name</h2>
 
-        <table class="table">
-            <tr>
-                <th>
-                    Style
-                </th>
-                <th>
-                    Tokens
-                </th>
-                <th>
-                    Status
-                </th>
-                <th></th>
-            </tr>
+        <div class="@lis.name">
 
-            @foreach (var item in lis.shopModels)
-            {
+            <table class="table">
                 <tr>
-                    <td>
-                        @item.Style
-                    </td>
-                    <td>
-                        @item.Prize
-                    </td>
-                    <td>
-                        @{
-                            if (item.Status == Atomac.ViewModels.AStatus.NotActive)
-                            {
-                                <input type="button" value="Activate" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" class="actBtn" id="@item.Id" />
-                            }
-                            if (item.Status == Atomac.ViewModels.AStatus.NeedToBuy)
-                            {
-                                <input type="button" class="buyBtn" value="Buy" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" id="@item.Id" />
-                            }
-                            if (item.Status == Atomac.ViewModels.AStatus.Active)
-                            {
-                                <input type="button" class="dacBtn" value="Deactivate" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" id="@item.Id" />
-                            }
-                        }
-                    </td>
+                    <th>
+                        Style
+                    </th>
+                    <th>
+                        Tokens
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th></th>
                 </tr>
-                            }
 
-        </table>
-    </div>
-}
+                @foreach (var item in lis.shopModels)
+                {
+                    <tr>
+                        <td>
+                            @item.Style
+                        </td>
+                        <td>
+                            @item.Prize
+                        </td>
+                        <td>
+                            @{
+                                if (item.Status == Atomac.ViewModels.AStatus.NotActive)
+                                {
+                                    <input type="button" value="Activate" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" class="actBtn" id="@item.Id" />
+                                }
+                                if (item.Status == Atomac.ViewModels.AStatus.NeedToBuy)
+                                {
+                                    <input type="button" class="buyBtn" value="Buy" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" id="@item.Id" />
+                                }
+                                if (item.Status == Atomac.ViewModels.AStatus.Active)
+                                {
+                                    <input type="button" class="dacBtn" value="Deactivate" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" id="@item.Id" />
+                                }
+                            }
+                        </td>
+                    </tr>
+                                }
+
+            </table>
+        </div>
+                                }
+</div>
 
 <hidden id="userId" value="@ViewBag.UserId"></hidden>
 
+
+
 @section scripts
 {
+<script src="~/Scripts/PublicChat.js"></script>
+<script src="~/Scripts/chessboard-0.3.0.js"></script>
+<script src="~/Scripts/chess.js"></script>
+<script src="~/Scripts/side-chess-board.js"></script>
     <script>
         var buyButtons = document.getElementsByClassName("buyBtn");
         var i;
@@ -174,6 +187,9 @@
             alert(msg);
         }
 
+        var pom= JSON.parse(@ViewBag.TableContext);
+        sideBoard = new SideChessBoard('tableSide', '/Content/img/chesspieces/' + pom.figure + '/{piece}.png', [], [], 'black', pom);
+
     </script>
-    <script src="~/Scripts/PublicChat.js"></script>
+
 }

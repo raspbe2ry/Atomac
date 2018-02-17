@@ -12,7 +12,7 @@ function DTOMoveCreationObject(move, board, game) {
     this.Color = move.color;
 }
 
-function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoard, player) {
+function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoard, player, tableContext) {
 	let game = new Chess();
 
 	let removeGreySquares = () => {
@@ -57,7 +57,8 @@ function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoa
         return move;
     }
 
-	 board = new ChessBoard(containerId, {
+    board = new ChessBoard(containerId, {
+        tableContext: tableContext,
 		orientation: (player === 'black') ? 'black' : 'white',
 		position: 'start',
 		showNotation: false,

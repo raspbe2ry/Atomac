@@ -705,32 +705,54 @@ var mainBoard = null;
 
 function LoadTables()
 {
-    let mainContainerId = 'glavnaTabla';
-    let sideContainerId = 'sporednaTabla';
-
     let myId = $('#myId').val();
     let myCapId = $('#myCapitenId').val();
     let myTeamId = $('#myTeamId').val();
     let izazivaci = $('#firstTeam').val();
 
+    $.ajax(
+         {
+             type: "GET", 
+             url: "http://localhost:59310/Profile/MyTableContext",
+             data: {userEmail: myId},
+             contentType: "application/json; charset=utf-8",
+             processdata: true,
+             dataType: "json",
+             success: function (msg) 
+             {
+                 LoadTablesResult(msg, myId, myCapId, myTeamId, izazivaci);
+             },
+             error: function (jqXHR, textStatus, errorThrown) 
+             {
+                 alert("Some error");
+             }
+         }
+     );
+}
+
+function LoadTablesResult(msg, myId, myCapId, myTeamId, izazivaci)
+{
+    let mainContainerId = 'glavnaTabla';
+    let sideContainerId = 'sporednaTabla';
+
     if (myId === myCapId) {
         if (myTeamId == izazivaci) {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'black');
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], sideBoard, 'white');
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/'+msg.figure+'/{piece}.png', [], [], 'black', msg);
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'white', msg);
         }
         else {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'white');
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], sideBoard, 'black');
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], 'white', msg);
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'black', msg);
         }
     }
     else {
         if (myTeamId == izazivaci) {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'white');
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], sideBoard, 'black');
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], 'white', msg);
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'black', msg);
         }
         else {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], 'black');
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/leipzig/{piece}.png', [], [], sideBoard, 'white');
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], 'black', msg);
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'white', msg);
         }
     }
 
@@ -738,7 +760,6 @@ function LoadTables()
         mainBoard.resize();
         sideBoard.resize();
     });
-
 }
 
 function MoveFigure(moveObject) {

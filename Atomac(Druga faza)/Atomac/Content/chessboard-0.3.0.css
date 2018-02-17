@@ -44,13 +44,13 @@
 }
 
 /* white square */
-.cbjs-white {
+.default-white {
   background-color: #f0d9b5;
   color: #b58863;
 }
 
 /* black square */
-.cbjs-black {
+.default-black {
   background-color: #b58863;
   color: #f0d9b5;
 }
@@ -110,4 +110,59 @@
 
 .bigBoardContainer, .smallBoardContainer {
 	width: 75%;
+}
+
+
+
+/* OUR COLORS*/
+
+/* white square */
+.Amazon-white {
+  background-color: #c7d4e8;
+  color: #b58863;
+}
+
+/* black square */
+.Amazon-black {
+  background-color: #510e0e;
+  color: #f0d9b5;
+}
+
+
+/* white square */
+.China-white {
+  background-color: #d4f4ed;
+  color: #b58863;
+}
+
+/* black square */
+.China-black {
+  background-color: #93512a;
+  color: #f0d9b5;
+}
+
+
+/* white square */
+.Desert-white {
+  background-color: #efe881;
+  color: #b58863;
+}
+
+/* black square */
+.Desert-black {
+  background-color: #380e35;
+  color: #f0d9b5;
+}
+
+
+/* white square */
+.Paris-white {
+  background-color: #e8edc7;
+  color: #b58863;
+}
+
+/* black square */
+.Paris-black {
+  background-color: #113fa9;
+  color: #f0d9b5;
 }

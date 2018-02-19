@@ -9,7 +9,7 @@
 <link href="~/Content/Shop.css" rel="stylesheet" />
 <link href="~/Content/chessboard-0.3.0.css" rel="stylesheet" />
 
-<h2>SHOP</h2>
+<h1>SHOP</h1>
 
 <div id="tableSide"></div>
 
@@ -21,7 +21,7 @@
         <div class="@lis.name">
 
             <table class="table">
-                <tr>
+                <tr class="headTr" style="font-size:30px;">
                     <th>
                         Style
                     </th>
@@ -36,7 +36,9 @@
 
                 @foreach (var item in lis.shopModels)
                 {
-                    <tr>
+                    string val = @item.Style;
+                    string className= @lis.name + "Row";
+                    <tr class= @className; style="font-size:22px"  data-val=@val>
                         <td>
                             @item.Style
                         </td>
@@ -47,15 +49,15 @@
                             @{
                                 if (item.Status == Atomac.ViewModels.AStatus.NotActive)
                                 {
-                                    <input type="button" value="Activate" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" class="actBtn" id="@item.Id" />
+                                    <input type="button" value="Activate" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" class="actBtn shopBtn" id="@item.Id" />
                                 }
                                 if (item.Status == Atomac.ViewModels.AStatus.NeedToBuy)
                                 {
-                                    <input type="button" class="buyBtn" value="Buy" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" id="@item.Id" />
+                                    <input type="button" class="buyBtn shopBtn" value="Buy" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" id="@item.Id" />
                                 }
                                 if (item.Status == Atomac.ViewModels.AStatus.Active)
                                 {
-                                    <input type="button" class="dacBtn" value="Deactivate" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" id="@item.Id" />
+                                    <input type="button" class="dacBtn shopBtn" value="Deactivate" data-id="@item.Id" data-style="@item.Style" data-prize="@item.Prize" id="@item.Id" />
                                 }
                             }
                         </td>
@@ -109,7 +111,7 @@
         }
 
         //iz stanja za kupovinu
-        function ChangeArtifactNotActive(msg)  
+        function ChangeArtifactNotActive(msg)
         {
             var str = "" + msg;
             var btn = document.getElementById(str);
@@ -187,8 +189,36 @@
             alert(msg);
         }
 
-        var pom= JSON.parse(@ViewBag.TableContext);
+        
+        var pom = JSON.parse('@Html.Raw(ViewBag.TableContext)');
         sideBoard = new SideChessBoard('tableSide', '/Content/img/chesspieces/' + pom.figure + '/{piece}.png', [], [], 'black', pom);
+
+        sels = document.getElementsByTagName('tr');
+        var i;
+        for (i = 0; i < sels.length; i++) {
+            if (sels[i].className != "headTr") {
+                sels[i].addEventListener('click', function (e) {
+                    if (e.currentTarget.className.indexOf("Figure") !== -1)
+                        pom.figure = e.currentTarget.dataset.val;
+                    if (e.currentTarget.className.indexOf("Table") !== -1)
+                        pom.table = e.currentTarget.dataset.val;
+
+                    document.getElementById("tableSide").innerHTML = "";
+                    sideBoard = new SideChessBoard('tableSide', '/Content/img/chesspieces/' + pom.figure + '/{piece}.png', [], [], 'black', pom);
+                });
+                sels[i].addEventListener('mouseover', function (e) {
+                    e.currentTarget.dataset.oldColor = e.currentTarget.style.backgroundColor;
+                    e.currentTarget.style.backgroundColor = '#e3e5e8';
+                });
+                sels[i].addEventListener('mouseout', function (e) {
+                    e.currentTarget.style.backgroundColor=e.currentTarget.dataset.oldColor;
+                });
+
+            }
+        }
+        
+
+
 
     </script>
 

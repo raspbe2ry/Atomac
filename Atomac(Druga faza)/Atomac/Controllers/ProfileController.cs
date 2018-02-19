@@ -26,6 +26,11 @@ namespace Atomac.Controllers
             }
             DTOAppUser user = new DTOAppUser();
             user=user.GetById(applicationUser.Id);
+
+            DTOTableContext dt = new DTOTableContext(User.Identity.Name);
+            var json = new JavaScriptSerializer().Serialize(dt);
+            ViewBag.TableContext = json;
+
             return View(user);
         }
         

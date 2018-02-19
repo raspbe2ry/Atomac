@@ -49,6 +49,9 @@ namespace Atomac
             bundles.Add(new ScriptBundle("~/Content/gamePlace").Include(
                     "~/Content/GamePlace.css"
                 ));
+
+            bundles.Add(new ScriptBundle("~/bundles/shop").Include(
+            "~/Scripts/Shop.js"));
         }
     }
 }

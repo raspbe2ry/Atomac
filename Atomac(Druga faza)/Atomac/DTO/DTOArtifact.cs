@@ -17,6 +17,5 @@ namespace Atomac.DTO
         public ICollection<DTOStuff> Stuffs { get; set; }
 
         public abstract DTOArtifact GetById(int id);
-
     }
 }

@@ -15,6 +15,5 @@ namespace Atomac.DTO
             var figure = dbContext.AFigures.Find(id);
             return Mapper.Map<DTOFigure>(figure);
         }
-
     }
 }

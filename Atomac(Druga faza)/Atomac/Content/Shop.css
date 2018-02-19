@@ -1,6 +1,11 @@
-﻿.Table{
+﻿body{
+    font-family:'Segoe UI Emoji';
+    background-color:#d1a268;
+}
+
+.Table{
     background-color:greenyellow;
-    max-height: 200px;
+    max-height: 300px;
     overflow: auto;
     margin-top: 25px;
     border-radius: 20px;
@@ -9,9 +14,32 @@
 
 .Figure{
     background-color: lightblue;
-    max-height: 200px;
+    max-height: 300px;
     overflow: auto;
     margin-top: 25px;
     border-radius: 20px;
     width: 700px;
+}
+
+.shopBtn{
+    border-radius:3px;
+    background-color:#d1b1a5;
+    font-family:'Segoe UI Emoji';
+}
+
+.shopBtn:hover{
+    border-radius:3px;
+    background-color:#a38a80;
+    font-family:'Segoe UI Emoji';
+}
+
+h1{
+    color:brown;
+    left:70%;
+    font-family:'Gloucester MT';
+    font-size:72px;
+}
+
+h2{
+    color:brown;
 }

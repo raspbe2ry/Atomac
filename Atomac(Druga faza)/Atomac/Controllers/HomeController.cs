@@ -33,10 +33,9 @@ namespace Atomac.Controllers
             return View();
         }
 
-        public ActionResult Contact()
+        [HttpGet]
+        public ActionResult Rankings()
         {
-            ViewBag.Message = "Your contact page.";
-
             return View();
         }
     }

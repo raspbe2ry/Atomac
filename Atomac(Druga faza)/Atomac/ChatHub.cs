@@ -546,7 +546,6 @@ namespace Atomac.Controllers
         //ciji je gm.TeamId je pobedio (f-ja se poziva kad neko napravi mat)
         private string FinishGame(Game g, string finisher, string poruka, bool timeOut)
         {
-            //Game g = dbContext.Games.Where(x => x.Id == Int32.Parse(gm.Id)).First();
             g.Status = GStatus.Finished;
             int rnewT1 = 0;
             int rnewT2 = 0;
@@ -554,7 +553,6 @@ namespace Atomac.Controllers
             int rnewP12 = 0;
             int rnewP21 = 0;
             int rnewP22 = 0;
-            //if (gm.TeamId == g.Team1Id.ToString())
             double w = 0.5;
             string teamId;
             if (poruka.Equals("Checkmate"))
@@ -564,24 +562,59 @@ namespace Atomac.Controllers
                 winner = false;
             if (finisher.Equals(g.Team1.Capiten.Email) || finisher.Equals(g.Team1.TeamMember.Email))
             {
-                rnewT1 = CountNewRanking(winner, g.Team1.Points, g.Team2.Points,w);
-                rnewP11 = CountNewRanking(winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
-                rnewP12 = CountNewRanking(winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
+                rnewT1 = CountNewRanking(winner, g.Team1.Points, g.Team2.Points, w);
+                rnewP11 = CountNewRanking(winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points, w);
+                rnewP12 = CountNewRanking(winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points, w);
 
-                rnewT2 = CountNewRanking(!winner, g.Team1.Points, g.Team2.Points,w);
-                rnewP21 = CountNewRanking(!winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
-                rnewP22 = CountNewRanking(!winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
-                if (winner)
+                rnewT2 = CountNewRanking(!winner, g.Team1.Points, g.Team2.Points, w);
+                rnewP21 = CountNewRanking(!winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points, w);
+                rnewP22 = CountNewRanking(!winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points, w);
+
+                SetTitle(rnewP11, g.Team1.Capiten);
+                SetTitle(rnewP12, g.Team1.TeamMember);
+                SetTitle(rnewP21, g.Team2.Capiten);
+                SetTitle(rnewP22, g.Team2.TeamMember);
+
+                if (w==0.5)
                 {
-                    teamId = g.Team1.Id.ToString();
-                    g.StatusT1 = GTStatus.Winner;
-                    g.StatusT2 = GTStatus.Losser;
+                    teamId = g.Team1.Id.ToString(); //u sustini je nevazno koji tim jer jer je remi, samo je poruka bitna. Ali ipak postavljeno
+                    g.Team1.Capiten.Draws++;
+                    g.Team1.TeamMember.Draws++;
+                    g.Team2.Capiten.Draws++;
+                    g.Team2.TeamMember.Draws++;
+                    g.StatusT1 = GTStatus.Draw;
+                    g.StatusT2 = GTStatus.Draw;
                 }
                 else
                 {
-                    teamId = g.Team2.Id.ToString();
-                    g.StatusT2 = GTStatus.Winner;
-                    g.StatusT1 = GTStatus.Losser;
+                    if (winner)
+                    {
+                        teamId = g.Team1.Id.ToString();
+                        g.Team1.Capiten.Wins++;
+                        g.Team1.TeamMember.Wins++;
+                        g.Team2.Capiten.Losses++;
+                        g.Team2.TeamMember.Losses++;
+                        g.StatusT1 = GTStatus.Winner;
+                        g.StatusT2 = GTStatus.Losser;
+                        g.Team1.Capiten.Tokens += g.Tokens;
+                        g.Team1.TeamMember.Tokens += g.Tokens;
+                        g.Team2.Capiten.Tokens -= g.Tokens;
+                        g.Team2.TeamMember.Tokens -= g.Tokens;
+                    }
+                    else
+                    {
+                        teamId = g.Team2.Id.ToString();
+                        g.Team1.Capiten.Losses++;
+                        g.Team1.TeamMember.Losses++;
+                        g.Team2.Capiten.Wins++;
+                        g.Team2.TeamMember.Wins++;
+                        g.StatusT2 = GTStatus.Winner;
+                        g.StatusT1 = GTStatus.Losser;
+                        g.Team2.Capiten.Tokens += g.Tokens;
+                        g.Team2.TeamMember.Tokens += g.Tokens;
+                        g.Team1.Capiten.Tokens -= g.Tokens;
+                        g.Team1.TeamMember.Tokens -= g.Tokens;
+                    }
                 }
             }
             else
@@ -593,17 +626,52 @@ namespace Atomac.Controllers
                 rnewT2 = CountNewRanking(winner, g.Team1.Points, g.Team2.Points,w);
                 rnewP21 = CountNewRanking(winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
                 rnewP22 = CountNewRanking(winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
-                if (winner)
+
+                SetTitle(rnewP11, g.Team1.Capiten);
+                SetTitle(rnewP12, g.Team1.TeamMember);
+                SetTitle(rnewP21, g.Team2.Capiten);
+                SetTitle(rnewP22, g.Team2.TeamMember);
+
+                if (w == 0.5)
                 {
-                    teamId = g.Team2.Id.ToString();
-                    g.StatusT2 = GTStatus.Winner;
-                    g.StatusT1 = GTStatus.Losser;
+                    teamId = g.Team2.Id.ToString(); //u sustini je nevazno koji tim jer jer je remi, samo je poruka bitna. Ali ipak postavljeno
+                    g.Team1.Capiten.Draws++;
+                    g.Team1.TeamMember.Draws++;
+                    g.Team2.Capiten.Draws++;
+                    g.Team2.TeamMember.Draws++;
+                    g.StatusT1 = GTStatus.Draw;
+                    g.StatusT2 = GTStatus.Draw;
                 }
                 else
                 {
-                    teamId = g.Team1.Id.ToString();
-                    g.StatusT1 = GTStatus.Winner;
-                    g.StatusT2 = GTStatus.Losser;
+                    if (winner)
+                    {
+                        teamId = g.Team2.Id.ToString();
+                        g.Team2.Capiten.Wins++;
+                        g.Team2.TeamMember.Wins++;
+                        g.Team1.Capiten.Losses++;
+                        g.Team1.TeamMember.Losses++;
+                        g.StatusT2 = GTStatus.Winner;
+                        g.StatusT1 = GTStatus.Losser;
+                        g.Team2.Capiten.Tokens += g.Tokens;
+                        g.Team2.TeamMember.Tokens += g.Tokens;
+                        g.Team1.Capiten.Tokens -= g.Tokens;
+                        g.Team1.TeamMember.Tokens -= g.Tokens;
+                    }
+                    else
+                    {
+                        teamId = g.Team1.Id.ToString();
+                        g.Team2.Capiten.Losses++;
+                        g.Team2.TeamMember.Losses++;
+                        g.Team1.Capiten.Wins++;
+                        g.Team1.TeamMember.Wins++;
+                        g.StatusT1 = GTStatus.Winner;
+                        g.StatusT2 = GTStatus.Losser;
+                        g.Team1.Capiten.Tokens += g.Tokens;
+                        g.Team1.TeamMember.Tokens += g.Tokens;
+                        g.Team2.Capiten.Tokens -= g.Tokens;
+                        g.Team2.TeamMember.Tokens -= g.Tokens;
+                    }
                 }
             }
             g.Team1.Points = rnewT1;
@@ -640,6 +708,30 @@ namespace Atomac.Controllers
                 return (rold + (int)Math.Round(diffInRating));
             else
                 return (rold - (int)Math.Round(diffInRating));
+        }
+
+        private void SetTitle(int ranking, ApplicationUser au)
+        { 
+            if (ranking >= 2600)
+                au.Title = Title.GrandMaster;
+            else if (ranking >= 2400)
+                au.Title = Title.SeniorMaster;
+            else if (ranking >= 2200)
+                au.Title = Title.Master;
+            else if (ranking >= 2000)
+                au.Title = Title.Expert;
+            else if (ranking >= 1800)
+                au.Title = Title.ClassA;
+            else if (ranking >= 1600)
+                au.Title = Title.ClassB;
+            else if (ranking >= 1400)
+                au.Title = Title.ClassC;
+            else if (ranking >= 1200)
+                au.Title = Title.ClassD;
+            else if (ranking >= 1000)
+                au.Title = Title.Amateur;
+            else if (ranking >= 0)
+                au.Title = Title.Novice;
         }
     }
 }

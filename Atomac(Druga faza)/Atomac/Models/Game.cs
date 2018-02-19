@@ -60,6 +60,7 @@ namespace Atomac.Models
         Prepare=1, //admin selektuje zeljena pravila
         Ready=2, // admin je selektovao pravila
         Winner=3, 
-        Losser=4
+        Losser=4,
+        Draw=5
     }
 }

@@ -43,12 +43,14 @@ namespace Atomac
                         "~/Scripts/chessboard-0.3.0.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/chessboardGamePlay").Include(
-            "~/Scripts/main-chess-board.js",
-            "~/Scripts/side-chess-board.js"));
+                "~/Scripts/main-chess-board.js",
+                "~/Scripts/side-chess-board.js"));
 
             bundles.Add(new ScriptBundle("~/Content/gamePlace").Include(
-                    "~/Content/GamePlace.css"
-                ));
+                "~/Content/GamePlace.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/timer").Include(
+                "~/Scripts/easytimer.js"));
         }
     }
 }

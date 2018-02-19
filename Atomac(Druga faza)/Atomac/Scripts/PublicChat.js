@@ -2,6 +2,8 @@
 var mainBoard;
 var sideBoard;
 
+let serverUrl = 'http://192.168.1.3:5656/';
+
 $(function () {
     chat = $.connection.chatHub;
 
@@ -93,7 +95,7 @@ $(function () {
         setTimeout(function () {
             var objResult = JSON.parse(result);
             var id = objResult.Id;
-            var query = "http://localhost:59310/NewGame/Index" + "//?id=" + id;
+            var query = serverUrl + "NewGame/Index" + "//?id=" + id;
             document.location.href = query;
         }, 3000);
     };
@@ -245,45 +247,86 @@ $(function () {
     chat.client.sendStartGame = function (dtoGame) {
             $('#leftSide').empty();
             $('#rightTop').empty();
+
             //ovo ispod odvojiti u posebnu funkciju
-            var leftSide = document.getElementById('leftSide');
-            leftSide.classList.add("mainContainer");
-            var glavnaTabla=document.createElement("div");
+            let leftSide = document.getElementById('leftSide');
+
+            let mainTimerMe = document.createElement("div");
+            mainTimerMe.className = "timerContainer";
+            mainTimerMe.id = "mainTimerMe";
+            let mainTimerOpponent = document.createElement("div");
+            mainTimerOpponent.className = "timerContainer";
+            mainTimerOpponent.id = "mainTimerOpponent";
+            let glavnaTabla = document.createElement("div");
             glavnaTabla.className = "bigBoardContainer";
             glavnaTabla.id = "glavnaTabla";
+            leftSide.appendChild(mainTimerOpponent);
             leftSide.appendChild(glavnaTabla);
+            leftSide.appendChild(mainTimerMe);
 
-            var rightTop = document.getElementById("rightTop");
-            rightTop.classList.add("sideContainer");
-            var malaTabla = document.createElement("div");
+            let rightTop = document.getElementById("rightTop");
+
+            let sideTimerMe = document.createElement("div");
+            sideTimerMe.className = "timerContainer";
+            sideTimerMe.id = "sideTimerMe";
+            let sideTimerOpponent = document.createElement("div");
+            sideTimerOpponent.className = "timerContainer";
+            sideTimerOpponent.id = "sideTimerOpponent";
+            let malaTabla = document.createElement("div");
             malaTabla.className = "smallBoardContainer";
             malaTabla.id = "sporednaTabla";
+            rightTop.appendChild(sideTimerOpponent);
             rightTop.appendChild(malaTabla);
+            rightTop.appendChild(sideTimerMe);
 
-            var rightBottom = document.getElementById("rightBottom");
+            let rightBottom = document.getElementById("rightBottom");
             rightBottom.classList.add("chatContainer");
 
-            LoadTables();
+            mainTimerMeEl = $('#mainTimerMe');
+            mainTimerOpponentEl = $('#mainTimerOpponent');
+            sideTimerMeEl = $('#sideTimerMe');
+            sideTimerOpponentEl = $('#sideTimerOpponent');
+
+            let rules = {
+                droppedCheck: dtoGame.Rules.DroppedCheck,
+                droppedCheckMate: dtoGame.Rules.DroppedCheckMate,
+                droppedPawnOnFirstLine: dtoGame.Rules.DroppedPawnOnFirstLine,
+                droppedPawnOnLastLine: dtoGame.Rules.DroppedPawnOnLastLine,
+                droppedFigureOnLastLine: dtoGame.Rules.DroppedFigureOnLastLine,
+                duration: dtoGame.Duration
+            };
+
+            LoadTables(rules);
     };
 
-    chat.client.moveFigureOnTable = function (move, sndEmail) {
+    chat.client.moveFigureOnTable = function (move, sndEmail, sndTeamId) {
         let myId = $('#myId').val();
         if (myId === sndEmail) {
+            mainTimerMe.pause();
+            mainTimerOpponent.start({ countdown: true });
             return;
         }
         let dtoMove = JSON.parse(move);
         let myCapId = $('#myCapitenId').val();
-        //let myTeamId = $('#myTeamId').val();
-        //let izazivaci = $('#firstTeam').val();
+        let myTeamId = $('#myTeamId').val();
         if (move.From === 'spare') {
             dtoMove.Piece = move.Piece.substring(0, 1);
         }
         if (myId === myCapId) {
             if (dtoMove.Board == "1") {
+                mainTimerOpponent.pause();
+                mainTimerMe.start({ countdown: true });
                 mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
             }
             else {
-                //sideBoard.position(dtoMove.State.slice());
+                if (myTeamId === sndTeamId) {
+                    sideTimerMe.pause();
+                    sideTimerOpponent.start({ countdown: true });
+                }
+                else {
+                    sideTimerOpponent.pause();
+                    sideTimerMe.start({ countdown: true });
+                }
                 if (dtoMove.From === 'spare') {
                     sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
                 }
@@ -297,10 +340,19 @@ $(function () {
         }
         else {
             if (dtoMove.Board != "1") {
+                mainTimerOpponent.pause();
+                mainTimerMe.start({ countdown: true });
                 mainBoard.makeMove(dtoMove.From, dtoMove.To, dtoMove.Color + dtoMove.Piece.toUpperCase());
             }
             else {
-                //sideBoard.position(dtoMove.State.slice());
+                if (myTeamId === sndTeamId) {
+                    sideTimerMe.pause();
+                    sideTimerOpponent.start({ countdown: true });
+                }
+                else {
+                    sideTimerOpponent.pause();
+                    sideTimerMe.start({ countdown: true });
+                }
                 if (dtoMove.From === 'spare') {
                     sideBoard.removeSparePiece(dtoMove.Color + dtoMove.Piece.toUpperCase());
                 }
@@ -331,11 +383,15 @@ $(function () {
             else
                 bodyText = "Fair and square. It's tie game.";
         }
+
+        stopTime();
+
         if (myId === sndEmail) {
             document.body.appendChild(GlobalPopUp(headerText, bodyText, InfoPopUpForFinishGame()));
             $('#myModal').modal('show');
             return;
         }
+
         let dtoMove = JSON.parse(move);
         let myCapId = $('#myCapitenId').val();
         if (move.From === 'spare') {
@@ -374,6 +430,25 @@ $(function () {
                 }
             }
         }
+
+        document.body.appendChild(GlobalPopUp(headerText, bodyText, InfoPopUpForFinishGame()));
+        $('#myModal').modal('show');
+        return;
+    }
+
+    chat.client.timeOutAndFinishGame = function (sndTeamId)
+    {
+        let headerText = "Time is out!";
+        let bodyText = "";
+        let myTeamId = $('#myTeamId').val();
+        if (myTeamId === sndTeamId) {
+                bodyText = "Your team has won this game. Congratulations!";
+        }
+        else {
+                bodyText = "Your team has lost this game. Better luck next time!";
+        }
+        stopTime();
+
         document.body.appendChild(GlobalPopUp(headerText, bodyText, InfoPopUpForFinishGame()));
         $('#myModal').modal('show');
         return;
@@ -381,7 +456,7 @@ $(function () {
 
     $('#message').focus();
 
-    $.connection.hub.start().done(function () {
+    $.connection.hub.start({ countdown: true }).done(function () {
         $('#sendmessage').click(function () {
             chat.server.send($('#uName').val(), $('#message').val());
             $('#message').val('').focus();
@@ -692,7 +767,7 @@ function InfoPopUpForFinishGame() {
         $('.modal-backdrop').remove();
         //treba da se izvrsi prebacivanje 
         setTimeout(function () {
-            var query = "http://localhost:59310/Home/About";
+            var query = serverUrl + "Home/About";
             document.location.href = query;
         }, 1000);
     });
@@ -703,7 +778,16 @@ function InfoPopUpForFinishGame() {
 var sideBoard = null;
 var mainBoard = null;
 
-function LoadTables()
+let mainTimerMe = null;
+let mainTimerOpponent = null;
+let sideTimerMe = null;
+let sideTimerOpponent = null;
+let mainTimerMeEl = null;
+let mainTimerOpponentEl = null;
+let sideTimerMeEl = null;
+let sideTimerOpponentEl = null;
+
+function LoadTables(rules)
 {
     let myId = $('#myId').val();
     let myCapId = $('#myCapitenId').val();
@@ -713,14 +797,14 @@ function LoadTables()
     $.ajax(
          {
              type: "GET", 
-             url: "http://localhost:59310/Profile/MyTableContext",
+             url: serverUrl + "Profile/MyTableContext",
              data: {userEmail: myId},
              contentType: "application/json; charset=utf-8",
              processdata: true,
              dataType: "json",
              success: function (msg) 
              {
-                 LoadTablesResult(msg, myId, myCapId, myTeamId, izazivaci);
+                 LoadTablesResult(msg, myId, myCapId, myTeamId, izazivaci, rules);
              },
              error: function (jqXHR, textStatus, errorThrown) 
              {
@@ -730,29 +814,31 @@ function LoadTables()
      );
 }
 
-function LoadTablesResult(msg, myId, myCapId, myTeamId, izazivaci)
+function LoadTablesResult(msg, myId, myCapId, myTeamId, izazivaci, rules)
 {
     let mainContainerId = 'glavnaTabla';
     let sideContainerId = 'sporednaTabla';
 
+    initTimers(rules.duration);
+
     if (myId === myCapId) {
         if (myTeamId == izazivaci) {
-            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/'+msg.figure+'/{piece}.png', [], [], 'black', msg);
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'white', msg);
+            sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], 'black', msg);
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'white', msg, rules);
         }
         else {
             sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], 'white', msg);
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'black', msg);
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'black', msg, rules);
         }
     }
     else {
         if (myTeamId == izazivaci) {
             sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], 'white', msg);
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'black', msg);
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'black', msg, rules);
         }
         else {
             sideBoard = new SideChessBoard(sideContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], 'black', msg);
-            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'white', msg);
+            mainBoard = new MainChessBoard(mainContainerId, '/Content/img/chesspieces/' + msg.figure + '/{piece}.png', [], [], sideBoard, 'white', msg, rules);
         }
     }
 
@@ -760,6 +846,52 @@ function LoadTablesResult(msg, myId, myCapId, myTeamId, izazivaci)
         mainBoard.resize();
         sideBoard.resize();
     });
+}
+
+function initTimers(duration) {
+    mainTimerMe = new Timer({ countdown: true, startValues: { minutes: duration } });
+    mainTimerOpponent = new Timer({ countdown: true, startValues: { minutes: duration } });
+    sideTimerMe = new Timer({ countdown: true, startValues: { minutes: duration } });
+    sideTimerOpponent = new Timer({ countdown: true, startValues: { minutes: duration } });
+
+    mainTimerMe.addEventListener('secondsUpdated', (e) => {
+        updateTimers();
+    });
+    mainTimerOpponent.addEventListener('secondsUpdated', (e) => {
+        updateTimers();
+    });
+    sideTimerMe.addEventListener('secondsUpdated', (e) => {
+        updateTimers();
+    });
+    sideTimerOpponent.addEventListener('secondsUpdated', (e) => {
+        updateTimers();
+    });
+
+    updateTimers();
+
+    mainTimerMe.addEventListener("targetAchieved", (e) => {
+        chat.server.timeOutAndFinishGame($('#myGameId').val(), "Checkmate");
+        stopTime();
+    });
+}
+
+function updateTimers() {
+    mainMeValues = mainTimerMe.getTimeValues();
+    mainOpponentValues = mainTimerOpponent.getTimeValues();
+    sideMeValues = sideTimerMe.getTimeValues();
+    sideOpponentValues = sideTimerOpponent.getTimeValues();
+
+    mainTimerMeEl.html("<h2>" + mainMeValues.toString(['minutes', 'seconds']) + "</h2>");
+    mainTimerOpponentEl.html("<h2>" + mainOpponentValues.toString(['minutes', 'seconds']) + "</h2>");
+    sideTimerMeEl.html("<h2>" + sideMeValues.toString(['minutes', 'seconds']) + "</h2>");
+    sideTimerOpponentEl.html("<h2>" + sideOpponentValues.toString(['minutes', 'seconds']) + "</h2>");
+}
+
+function stopTime() {
+    mainTimerMe.pause();
+    mainTimerOpponent.pause();
+    sideTimerMe.pause();
+    sideTimerOpponent.pause();
 }
 
 function MoveFigure(moveObject) {

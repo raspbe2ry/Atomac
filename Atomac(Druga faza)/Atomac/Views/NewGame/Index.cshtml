@@ -8,7 +8,9 @@
     ViewBag.Title = "Atomac - Nova Igra";
 }
 
-<div id="leftSide">
+@Styles.Render("~/Content/chessboard")
+
+<div id="leftSide" class="mainContainer">
     <table id="ruleTable">
         <thead>
             <tr>
@@ -30,7 +32,7 @@
     </table>
 </div>
 
-<div id="rightTop">
+<div id="rightTop" class="sideContainer">
     <div class="row">
         <div class="col-md-4">
             <div>
@@ -58,7 +60,7 @@
 </div>
 
 <!-- ovaj cet da se prepravi da bude samo za partiju -->
-<div id="rightBottom">
+<div id="rightBottom" class="chatContainer">
     <input type="text" id="messageInGame" />
     <input type="button" id="sendmessageInGame" value="Send" />
     <input type="hidden" id="uNameGame" value=@ViewBag.NickName />
@@ -75,30 +77,11 @@
 
 @section Scripts
 {
-    @Styles.Render("~/Content/chessboard")
+
     @Scripts.Render("~/bundles/chessboardGamePlay")
     @Scripts.Render("~/bundles/chessboard")
+    @Scripts.Render("~/bundles/timer")
     <script src="~/Scripts/PublicChat.js"></script>
     <script src="~/Scripts/NewGame.js"></script>
 
-    @*<script>
-            let mainBoard = new MainChessBoard(
-            'glavnaTabla',
-             '@Url.Content("~/Content/img/chesspieces/wikipedia/{piece}.png")',
-            ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
-            ['bP', 'bQ', 'bP']
-            );
-
-            let sideBoard = new SideChessBoard(
-            'sporednaTabla',
-            '@Url.Content("~/Content/img/chesspieces/wikipedia/{piece}.png")',
-            ['wQ', 'wP', 'wP', 'wB', 'wN', 'wR'],
-            ['bP', 'bQ', 'bP']
-            );
-
-            $(window).resize(() => {
-            mainBoard.resize();
-            sideBoard.resize();
-            });
-        </script>*@
 }

@@ -6,10 +6,11 @@
     z-index: 1000;
 }
 
-#ruleTable tr td{
+#ruleTable tr td {
     border: 1px black solid ;
 }
 
+/*
 #leftSide{
     float: left;
     width: 70%;
@@ -26,7 +27,7 @@
     background-color:antiquewhite;
     margin-right: 0px;
     clear:right;
-}
+}*/
 
 #rightBottom{
     float: right;

@@ -1,4 +1,5 @@
-﻿#tableSide{
+﻿
+#tableSide{
     top:20%;
     bottom:20%;
     right: 5%;
@@ -10,5 +11,5 @@
 
 #leftSide{
     float: left;
-    width:60%;
+    width: 60%;
 }

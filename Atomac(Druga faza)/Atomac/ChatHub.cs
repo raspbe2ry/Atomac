@@ -28,15 +28,15 @@ namespace Atomac.Controllers
 
             Message mes = new Message();
             mes.LinkTag = false;
-            ApplicationUser us=dbContext.Users.Where(b => b.NickName == nick).FirstOrDefault();
+            ApplicationUser us = dbContext.Users.Where(b => b.NickName == nick).FirstOrDefault();
             mes.SenderId = us.Id;
             mes.Text = message;
             mes.Time = DateTime.Now;
             dbContext.Messages.Add(mes);
             dbContext.SaveChanges();
 
-             return Clients.All.addNewMessageToPage(nick, message);
-        } 
+            return Clients.All.addNewMessageToPage(nick, message);
+        }
 
         public Task SendTeamRequest(string receiverMail, string teamName)
         {
@@ -74,7 +74,7 @@ namespace Atomac.Controllers
         public Task SendActivateTeamRequest(string captainMail, string teamMemberMail, string teamName)
         {
             string userName = Context.Request.User.Identity.Name;
-            if(userName == captainMail)
+            if (userName == captainMail)
             {
                 //mi smo kapiten pa saljemo zahtev drugom clanu tima
                 return Clients.User(teamMemberMail).sendActivateTeamRequest(userName, teamName);
@@ -131,7 +131,7 @@ namespace Atomac.Controllers
             return Clients.All.ActivateTeam(result);
         }
 
-        public Task SendGameRequest(string sndTeamName, string sndCptEmail,string rcvTeamName, string rcvCptEmail)
+        public Task SendGameRequest(string sndTeamName, string sndCptEmail, string rcvTeamName, string rcvCptEmail)
         {
             return Clients.User(rcvCptEmail).sendGameRequest(sndTeamName, sndCptEmail, rcvTeamName);
         }
@@ -166,7 +166,7 @@ namespace Atomac.Controllers
                 AddGameToRedisDB(game);
 
                 DTOGame dGame = new DTOGame();
-                dGame=dGame.GetById(game.Id);
+                dGame = dGame.GetById(game.Id);
                 List<DTOAppUser> playersInfos = GetUsersInfos(challenger, challenged);
                 List<string> playersEmails = new List<string>();
                 foreach (DTOAppUser au in playersInfos)
@@ -192,10 +192,10 @@ namespace Atomac.Controllers
             foreach (Team t in tList)
             {
                 DTOAppUser cap = new DTOAppUser();
-                cap=cap.GetById(t.CapitenId);
+                cap = cap.GetById(t.CapitenId);
                 rList.Add(cap);
                 DTOAppUser tm = new DTOAppUser();
-                tm=tm.GetById(t.TeamMemberId);
+                tm = tm.GetById(t.TeamMemberId);
                 rList.Add(tm);
             }
             return rList;
@@ -292,18 +292,52 @@ namespace Atomac.Controllers
 
         public Task SubmitChanges(DTOGameMini gm)
         {
-            int res =  AddSubmitedGameChangesToRedisDB(gm);
+            int res = AddSubmitedGameChangesToRedisDB(gm);
             //treba da se vidi status da li da se redirektujemo ili da se vrati stranica
-            if(res==1)
+            if (res == 1)
             {
                 //poslati svima submit prvog
                 List<string> playersEmails = GetPlayersEmailsForTeam(Int32.Parse(gm.TeamId));
                 return Clients.Users(playersEmails).SendSubmitOfOne();
             }
-            else if(res==2)
+            else if (res == 2)
             {
                 //poslati svima da je sve ok->prelazak na igru
                 //dodati pravila iz redisa u bazu(staviti i status igre->to mozda u start game)
+
+                string hashGame = rf.MakeHashId("game", gm.Id);
+                string team1 = rf.GetHashAttributeValue(hashGame, "t1");
+                string rules = rf.MakeHashId(rf.MakeHashId(hashGame, team1), "rules");
+
+                Game g = dbContext.Games.Find(Int32.Parse(gm.Id));
+                g.Duration = Int32.Parse(gm.Duration);
+                g.Tokens = Int32.Parse(gm.Tokens);
+
+                Rules r = new Rules();
+                if (gm.DroppedPawnOnLastLine.Equals("yes"))
+                    r.DroppedPawnOnLastLine = true;
+                else r.DroppedPawnOnLastLine = false;
+
+                if (gm.DroppedPawnOnFirstLine.Equals("yes"))
+                    r.DroppedPawnOnFirstLine = true;
+                else r.DroppedPawnOnFirstLine = false;
+
+                if (gm.DroppedFigureOnLastLine.Equals("yes"))
+                    r.DroppedFigureOnLastLine = true;
+                else r.DroppedFigureOnLastLine = false;
+
+                if (gm.DroppedCheckMate.Equals("yes"))
+                    r.DroppedCheckMate = true;
+                else r.DroppedCheckMate = false;
+
+                if (gm.DroppedCheck.Equals("yes"))
+                    r.DroppedCheck = true;
+                else r.DroppedCheck = false;
+
+                dbContext.Ruless.Add(r);
+                g.Rules = r;
+                dbContext.SaveChanges();
+
                 List<string> playersEmails = EmailsFromPlayersInGame(Int32.Parse(gm.Id));
                 DTOGame dGame = new DTOGame();
                 dGame = dGame.GetById(Int32.Parse(gm.Id));
@@ -425,11 +459,11 @@ namespace Atomac.Controllers
         private bool CheckRules(string team1, string team2)
         {
             int length = (int)rf.GetListCount(team1);
-            for(int i=0; i<length; i++)
+            for (int i = 0; i < length; i++)
             {
                 string ruleT1 = rf.GetItemFromList(team1, i);
                 string ruleT2 = rf.GetItemFromList(team2, i);
-                if(!String.Equals(ruleT1,ruleT2))
+                if (!String.Equals(ruleT1, ruleT2))
                 {
                     return false;
                 }
@@ -440,7 +474,7 @@ namespace Atomac.Controllers
         private void DeleteSetOfRules(string hashTeam)
         {
             string listOfRules = rf.GetHashAttributeValue(hashTeam, "rules");
-            if(rf.CheckIfKeyExists(listOfRules))
+            if (rf.CheckIfKeyExists(listOfRules))
                 rf.RemoveAllFromList(listOfRules);
         }
 
@@ -462,8 +496,13 @@ namespace Atomac.Controllers
             g.Moves.Add(m);
             dbContext.Moves.Add(m);
             dbContext.SaveChanges();
+            string teamId = "";
+            if (userEmail.Equals(g.Team1.Capiten.Email) || userEmail.Equals(g.Team1.TeamMember.Email))
+                teamId = g.Team1.Id.ToString();
+            else teamId = g.Team2.Id.ToString();
+
             List<string> playersEmails = EmailsFromPlayersInGame(g.Id);
-            return Clients.Users(playersEmails).MoveFigureOnTable(move, userEmail);
+            return Clients.Users(playersEmails).MoveFigureOnTable(move, userEmail, teamId);
         }
 
         public Task MoveFigureAndFinishGame(string move, string poruka)
@@ -485,14 +524,27 @@ namespace Atomac.Controllers
             dbContext.Moves.Add(m);
             dbContext.SaveChanges();
 
-            string teamId = FinishGame(g, userEmail, poruka);
+            string teamId = FinishGame(g, userEmail, poruka, false);
 
             List<string> playersEmails = EmailsFromPlayersInGame(g.Id);
             return Clients.Users(playersEmails).MoveFigureAndFinishGame(move, userEmail, teamId, poruka);
         }
 
+        public Task TimeOutAndFinishGame(string gameId, string poruka)
+        {
+            string userEmail = Context.Request.User.Identity.Name;
+            int gId = Int32.Parse(gameId);
+            Game g = dbContext.Games.Where(x => x.Id == gId).First();
+
+            string teamId = FinishGame(g, userEmail, poruka, true);
+
+            List<string> playersEmails = EmailsFromPlayersInGame(g.Id);
+            return Clients.Users(playersEmails).TimeOutAndFinishGame(teamId);
+
+        }
+
         //ciji je gm.TeamId je pobedio (f-ja se poziva kad neko napravi mat)
-        private string FinishGame(Game g, string finisher, string poruka)
+        private string FinishGame(Game g, string finisher, string poruka, bool timeOut)
         {
             //Game g = dbContext.Games.Where(x => x.Id == Int32.Parse(gm.Id)).First();
             g.Status = GStatus.Finished;
@@ -507,27 +559,52 @@ namespace Atomac.Controllers
             string teamId;
             if (poruka.Equals("Checkmate"))
                 w = 1.0;
+            bool winner=true;
+            if (timeOut)
+                winner = false;
             if (finisher.Equals(g.Team1.Capiten.Email) || finisher.Equals(g.Team1.TeamMember.Email))
             {
-                rnewT1 = CountNewRanking(true, g.Team1.Points, g.Team2.Points,w);
-                rnewP11 = CountNewRanking(true, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
-                rnewP12 = CountNewRanking(true, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
+                rnewT1 = CountNewRanking(winner, g.Team1.Points, g.Team2.Points,w);
+                rnewP11 = CountNewRanking(winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
+                rnewP12 = CountNewRanking(winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
 
-                rnewT2 = CountNewRanking(false, g.Team1.Points, g.Team2.Points,w);
-                rnewP21 = CountNewRanking(false, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
-                rnewP22 = CountNewRanking(false, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
-                teamId = g.Team1.Id.ToString();
+                rnewT2 = CountNewRanking(!winner, g.Team1.Points, g.Team2.Points,w);
+                rnewP21 = CountNewRanking(!winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
+                rnewP22 = CountNewRanking(!winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
+                if (winner)
+                {
+                    teamId = g.Team1.Id.ToString();
+                    g.StatusT1 = GTStatus.Winner;
+                    g.StatusT2 = GTStatus.Losser;
+                }
+                else
+                {
+                    teamId = g.Team2.Id.ToString();
+                    g.StatusT2 = GTStatus.Winner;
+                    g.StatusT1 = GTStatus.Losser;
+                }
             }
             else
             {
-                rnewT1 = CountNewRanking(false, g.Team1.Points, g.Team2.Points,w);
-                rnewP11 = CountNewRanking(false, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
-                rnewP12 = CountNewRanking(false, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
+                rnewT1 = CountNewRanking(!winner, g.Team1.Points, g.Team2.Points,w);
+                rnewP11 = CountNewRanking(!winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
+                rnewP12 = CountNewRanking(!winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
 
-                rnewT2 = CountNewRanking(true, g.Team1.Points, g.Team2.Points,w);
-                rnewP21 = CountNewRanking(true, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
-                rnewP22 = CountNewRanking(true, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
-                teamId = g.Team2.Id.ToString();
+                rnewT2 = CountNewRanking(winner, g.Team1.Points, g.Team2.Points,w);
+                rnewP21 = CountNewRanking(winner, g.Team1.Capiten.Points, g.Team2.Capiten.Points,w);
+                rnewP22 = CountNewRanking(winner, g.Team1.TeamMember.Points, g.Team2.TeamMember.Points,w);
+                if (winner)
+                {
+                    teamId = g.Team2.Id.ToString();
+                    g.StatusT2 = GTStatus.Winner;
+                    g.StatusT1 = GTStatus.Losser;
+                }
+                else
+                {
+                    teamId = g.Team1.Id.ToString();
+                    g.StatusT1 = GTStatus.Winner;
+                    g.StatusT2 = GTStatus.Losser;
+                }
             }
             g.Team1.Points = rnewT1;
             g.Team2.Points = rnewT2;

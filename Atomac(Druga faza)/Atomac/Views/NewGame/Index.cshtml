@@ -84,4 +84,15 @@
     <script src="~/Scripts/PublicChat.js"></script>
     <script src="~/Scripts/NewGame.js"></script>
 
+    <script>
+        $(document).ready(function () {
+            var myId=$("#myId").val();
+            var capId=$("#myCapitenId").val();
+            if (myId != capId) {
+                $('#ruleTable').css({ "pointer-events": "none", "opacity": "0.7" });
+                $('#okButton').css({ "pointer-events": "none", "opacity": "0.7" });
+            }
+        });
+    </script>
+
 }

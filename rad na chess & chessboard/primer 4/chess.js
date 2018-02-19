@@ -974,7 +974,6 @@ var Chess = function(fen) {
       board[index] = {type: PAWN, color: them};
     }
 
-
     if (move.flags & (BITS.KSIDE_CASTLE | BITS.QSIDE_CASTLE)) {
       var castling_to, castling_from;
       if (move.flags & BITS.KSIDE_CASTLE) {

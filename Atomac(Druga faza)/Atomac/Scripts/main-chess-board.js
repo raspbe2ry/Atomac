@@ -1,3 +1,4 @@
+
 function DTOMoveCreationObject(move, board, game) {
     this.Id = "";
     this.Board = ""; //1-T1,2-T2 //nadji tablu
@@ -12,8 +13,96 @@ function DTOMoveCreationObject(move, board, game) {
     this.Color = move.color;
 }
 
-function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoard, player, tableContext) {
+function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoard, player, tableContext, ruleSet) {
 	let game = new Chess();
+	let moveValidator = createValidator();
+    
+	function createValidator() {
+	    let rules = [];
+	    let ruleInd = 0;
+
+	    if (ruleSet.droppedCheck === false) {
+	        rules[ruleInd++] = new Rule(() => {
+	            if (game.in_check()) {
+	                game.undo();
+	                return false;
+	            }
+	        }, null);
+	    }
+
+	    if (ruleSet.droppedCheckMate === false) {
+	        let newNext = (ruleInd > 0) ? rules[ruleInd - 1] : null;
+	        rules[ruleInd++] = new Rule(() => {
+	            if (game.in_checkmate()) {
+	                game.undo();
+	                return false;
+	            }
+	        }, newNext);
+	    }
+
+	    if (ruleSet.droppedPawnOnFirstLine === false) {
+	        let newNext = (ruleInd > 0) ? rules[ruleInd - 1] : null;
+	        rules[ruleInd++] = new Rule(() => {
+	            let moveHistory = game.history({ verbose: true });
+	            let lastMove = moveHistory[moveHistory.length - 1];
+	            let lastMoveTo = lastMove.to[1];
+	            
+	            if (lastMove.piece[0] === 'p'
+                    && (lastMove.color === 'w' && lastMoveTo === '1'
+                        || lastMove.color === 'b' && lastMoveTo === '8')) {
+	                game.undo();
+	                return false;
+	            }
+	        }, newNext);
+	    }
+
+	    if (ruleSet.droppedPawnOnLastLine === false) {
+	        let newNext = (ruleInd > 0) ? rules[ruleInd - 1] : null;
+	        rules[ruleInd++] = new Rule(() => {
+	            let moveHistory = game.history({ verbose: true });
+	            let lastMove = moveHistory[moveHistory.length - 1];
+	            let lastMoveTo = lastMove.to[1];
+
+	            if (lastMove.piece[0] === 'p'
+                    && (lastMove.color === 'w' && lastMoveTo === '8'
+                        || lastMove.color === 'b' && lastMoveTo === '1')) {
+	                game.undo();
+	                return false;
+	            }
+	        }, newNext);
+	    }
+
+	    if (ruleSet.droppedFigureOnLastLine === false) {
+	        let newNext = (ruleInd > 0) ? rules[ruleInd - 1] : null;
+	        rules[ruleInd++] = new Rule(() => {
+	            let moveHistory = game.history({ verbose: true });
+	            let lastMove = moveHistory[moveHistory.length - 1];
+	            let lastMoveTo = lastMove.to[1];
+
+	            if (lastMove.piece[0] !== 'p'
+                    && (lastMove.color === 'w' && lastMoveTo === '8'
+                        || lastMove.color === 'b' && lastMoveTo === '1')) {
+	                game.undo();
+	                return false;
+	            }
+	        }, newNext);
+	    }
+
+	    return rules[ruleInd - 1];
+	};
+
+	function Rule(validator, next) {
+	    this.validate = () => {
+	        if (validator() === false) {
+	            return false;
+	        }
+
+	        if (this.next !== null && this.next !== undefined) {
+	            return this.next.validate();
+	        }
+	    };
+	    this.next = next;
+	};
 
 	let removeGreySquares = () => {
 		$('#' + containerId + ' .cbjs-square').css('background', '');
@@ -31,7 +120,7 @@ function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoa
 	};
 
     var board = null;
-
+    
     let playMove = (source, target, piece) => {
         $('#' + containerId + ' .cbjs-square').css('background', '');
 
@@ -40,18 +129,19 @@ function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoa
             to: target,
             color: piece.substring(0, 1),
             piece: piece.substring(1, 3).toLowerCase(),
-            promotion: 'q' // ovo treba da se prosiri
+            promotion: 'p'
         });
 
-        if (move === null) {
+        if (move === null || (move.from === 'spare' && moveValidator.validate() === false)) {
             return 'snapback';
-        } else if (move.from === 'spare') {
+        }
+
+        if (move.from === 'spare') {
             board.removeSparePiece(piece);
         } else if (move.captured !== undefined) {
             let capturedColor = (move.color === 'w') ? 'b' : 'w';
             sideBoard.addSparePiece(capturedColor + move.captured.toUpperCase());
         }
-        //board.position(game.fen().slice());
         board.position(game.fen(), false);
         board.resize();
         return move;

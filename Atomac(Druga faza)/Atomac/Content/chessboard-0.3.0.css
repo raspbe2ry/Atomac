@@ -16,7 +16,6 @@
 /* board */
 .cbjs-board {
   display: inline-block;
-  height: 70%;
   border: 2px solid #404040;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
@@ -83,6 +82,13 @@
 
 .cbjs-spare-pieces {
   display: inline-block;
+}
+
+.cbjs-spare-pieces-left {
+  overflow-y: scroll;
+}
+
+.cbjs-spare-pieces-right {
   overflow-y: scroll;
 }
 
@@ -101,18 +107,16 @@
 }
 
 .mainContainer {
-	width: 68%;
+	width: 55%;
 }
 
 .sideContainer {
-	width: 28%;
+	width: 40%;
 }
 
 .bigBoardContainer, .smallBoardContainer {
 	width: 75%;
 }
-
-
 
 /* OUR COLORS*/
 

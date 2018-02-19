@@ -168,7 +168,7 @@ function AddTokensForRow() {
 }
 
 function AddDurationForRow() {
-    var array = ["5", "10", "15", "20", "30"];
+    var array = ["1", "5", "10", "15", "20", "30"];
 
     var row = document.createElement('tr');
     var td1 = document.createElement('td');
@@ -189,11 +189,11 @@ function AddDurationForRow() {
     row.appendChild(td2);
     var td3 = document.createElement('td');
     td3.id = "t1Duration";
-    td3.innerHTML = "5";
+    td3.innerHTML = "1";
     row.appendChild(td3);
     var td4 = document.createElement('td');
     td4.id = "t2Duration";
-    td4.innerHTML = "5";
+    td4.innerHTML = "1";
     row.appendChild(td4);
     $('#tableBody').append(row);
 }

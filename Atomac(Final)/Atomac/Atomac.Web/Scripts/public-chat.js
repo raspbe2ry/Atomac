@@ -2,7 +2,7 @@
 var mainBoard;
 var sideBoard;
 
-let serverUrl = 'http://localhost:2862/';
+let serverUrl = 'http://10.66.48.215:2862/';
 
 $(function () {
     chat = $.connection.chatHub;

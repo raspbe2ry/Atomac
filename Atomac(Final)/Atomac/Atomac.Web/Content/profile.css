@@ -1,22 +1,20 @@
 ﻿
-#tableSide{
-    top:20%;
-    bottom:20%;
+#tableSide {
+    top: 20%;
+    bottom: 20%;
     right: 5%;
-    background-color:antiquewhite;
     position: fixed;
-    width: 35vw;
-    height: 35vw;
+    width: 40%;
 }
 
-#leftSide{
+#leftSide {
     float: left;
     width: 60%;
 }
 
-h1{
-    color:brown;
-    margin-left:25%;
-    font-family:'Gloucester MT';
-    font-size:72px;
+h1 {
+    color: brown;
+    margin-left: 25%;
+    font-family: 'Gloucester MT';
+    font-size: 72px;
 }

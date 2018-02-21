@@ -1,38 +1,38 @@
-﻿body {
-    background-color:#d1a268;
+﻿
+body {
+    background-color: #d1a268;
 }
 
-h1{
-    color:#2d2010;
-    margin-left:20%;
+h1 {
+    color: #2d2010;
+    margin-left: 20%;
     position: relative;
-    font-family:'Gloucester MT';
-    font-size:66px;
+    font-family: 'Gloucester MT';
+    font-size: 66px;
 }
 
-.lablel1{
-    text-align:center;
+.lablel1 {
+    text-align: center;
 }
 
-label{
+label {
     left: 5%;
     position: relative;
-    font-family:;
     font-size: 22px;
-    font-style:oblique;
-    width:15%;
-    text-align:left;
+    font-style: oblique;
+    width: 15%;
+    text-align: left;
     padding-right: 15px;
 }
 
-span{
+span {
     left: 4%;
     position: relative;
-    font-family:'Segoe UI Emoji';
+    font-family: 'Segoe UI Emoji';
     font-size: 22px;
 }
 
-.numbers{
+.numbers {
     width: 128px;
     line-height: 128px;
     border-radius: 50%;
@@ -43,38 +43,37 @@ span{
     position: relative;
 }
 
-.numbersImg{
-    object-fit:scale-down;
+.numbersImg {
+    object-fit: scale-down;
 }
 
-#points{
-    background-color:cadetblue;
-            display: inline-block;
+#points {
+    background-color: cadetblue;
+    display: inline-block;
 }
 
-#tokens{
-    background-color:chartreuse;
-        display: inline-block;
-        margin-left: 5%;
-        margin-right: 5%;
+#tokens {
+    background-color: chartreuse;
+    display: inline-block;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
-#title{
-    background-color:coral;
-        display: inline-block;
+#title {
+    background-color: coral;
+    display: inline-block;
 }
 
-#tableSide{
-    top:20%;
-    bottom:20%;
+#tableSide {
+    top: 20%;
+    bottom: 20%;
     right: 5%;
-    background-color:antiquewhite;
     position: fixed;
     width: 35vw;
     height: 35vw;
 }
 
-#leftSide{
+#leftSide {
     float: left;
-    width:60%;
+    width: 60%;
 }

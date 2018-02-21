@@ -1,0 +1,11 @@
+glavna pozadina - #fce2a2
+pozadina diva - #fae6be
+pozadina poddiva - #faf0c8
+banner pozadina - #413214
+banner hover - #504b3c
+light fg - #ffeaca
+light fg hover - #f08c5a
+dark fg hover - #ffdc96
+light border/fg - #a58c5a
+dark border/fg - #231e14
+highlight - #c8dcb4

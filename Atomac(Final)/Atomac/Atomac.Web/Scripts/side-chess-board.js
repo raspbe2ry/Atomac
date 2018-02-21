@@ -9,7 +9,8 @@ function SideChessBoard(containerId, styleUrl, whitePieces, blackPieces, player,
 		draggable: false,
 		pieceTheme: styleUrl,
         sparePiecesWhite: whitePieces,
-        sparePiecesBlack: blackPieces
+        sparePiecesBlack: blackPieces,
+        squareSize: 31
 	});
 	
 	return board;

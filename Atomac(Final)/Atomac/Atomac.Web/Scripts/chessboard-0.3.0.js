@@ -241,7 +241,7 @@ var ANIMATION_HAPPENING = false,
   BOARD_BORDER_SIZE = 2,
   CURRENT_ORIENTATION = 'white',
   CURRENT_POSITION = {},
-  SQUARE_SIZE,
+  SQUARE_SIZE = cfg.squareSize,
   DRAGGED_PIECE,
   DRAGGED_PIECE_LOCATION,
   DRAGGED_PIECE_SOURCE,
@@ -506,18 +506,18 @@ function calculateSquareSize(boardType) {
   }
 
   // pad one pixel
-  var boardWidth = containerWidth - 1;
+  var boardWidth = containerWidth - 1 - 2 * SQUARE_SIZE;
 
   while (boardWidth % 8 !== 0 && boardWidth > 0) {
     boardWidth--;
   }
 
   let sqSize = boardWidth / 8;
-  if (boardType === "main") {
-      return (sqSize > 57) ? 57 : sqSize;
-  } else if (boardType === "side") {
-      return (sqSize > 31) ? 31 : sqSize;
-  }
+  //if (boardType === "main") {
+  //    return (sqSize > 57) ? 57 : sqSize;
+  //} else if (boardType === "side") {
+  //    return (sqSize > 31) ? 31 : sqSize;
+  //}
 
   return sqSize;
 }
@@ -1511,12 +1511,21 @@ widget.position = function(position, useAnimation) {
 };
 
 widget.resize = function(boardType) {
-  // calulate the new square size
-  SQUARE_SIZE = calculateSquareSize(boardType);
-
+    // calulate the new square size
+    
+    //SQUARE_SIZE = calculateSquareSize(boardType);
+    if (SQUARE_SIZE === undefined) {
+        if (boardType === "main") {
+            SQUARE_SIZE = 57;
+        } else if (boardType === "side") {
+            SQUARE_SIZE = 31;
+        } else {
+            SQUARE_SIZE = 50;
+        }
+    }
   // set board width
   boardEl.css('width', (SQUARE_SIZE * 8) + 'px');
-
+    
   containerEl.css('width', (SQUARE_SIZE * 10 + 38) + 'px');
   let sparePiecesStyle = {
       width: (SQUARE_SIZE + 17) + 'px',
@@ -1530,7 +1539,7 @@ widget.resize = function(boardType) {
     height: SQUARE_SIZE,
     width: SQUARE_SIZE
   });
-
+  
   // redraw the board
   drawBoard();
 };

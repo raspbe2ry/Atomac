@@ -232,7 +232,8 @@ function MainChessBoard(containerId, styleUrl, whitePieces, blackPieces, sideBoa
 			board.position(game.fen());
 		},
 		sparePiecesWhite: whitePieces,
-		sparePiecesBlack: blackPieces
+		sparePiecesBlack: blackPieces,
+        squareSize: 57
 	});
 
 	return board;

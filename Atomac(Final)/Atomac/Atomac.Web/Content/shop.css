@@ -1,0 +1,54 @@
+﻿
+body {
+    font-family: 'Segoe UI Emoji';
+    background-color: #d1a268;
+}
+
+.Table, .Figure {
+    max-height: 300px;
+    overflow: auto;
+    margin-top: 25px;
+    margin-bottom: 50px;
+    border-radius: 20px;
+    width: 700px;
+}
+
+.Table {
+    background-color: greenyellow;
+}
+
+.Figure {
+    background-color: lightblue;
+}
+
+.shopBtn {
+    border-radius: 3px;
+    background-color: #d1b1a5;
+    font-family: 'Segoe UI Emoji';
+}
+
+.shopBtn:hover {
+    border-radius: 3px;
+    background-color: #a38a80;
+    font-family: 'Segoe UI Emoji';
+}
+
+h1 {
+    color: brown;
+    left: 70%;
+    font-family: 'Gloucester MT';
+    font-size: 72px;
+}
+
+h2 {
+    color: brown;
+}
+
+#tokensId {
+    position: fixed;
+    height: 5%;
+    background-color: red;
+    margin-top: -7%;
+    margin-left: 80%;
+    margin-right: 5%;
+}

@@ -1,0 +1,72 @@
+
+html, body {
+	width: 98%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	
+	background-color: #fce2a2;
+}
+
+.mainContainer {
+	width: 100%;
+	height: 100%;
+}
+
+.mainGameContainer {
+	float: left;
+	width: 60%;
+	height: 100%;
+	margin: 0 10px;
+}
+
+.sideGameContainer {
+	width: 100%;
+	height: 60%;
+	
+	border: 1px solid #a58c5a;
+	border-radius: 3px;
+}
+
+.statusContainer {
+	float: right;
+	width: 35%;
+}
+
+.rulesAndBigBoardContainer {
+	display: block;
+	width: 75%;
+	
+	margin: 0 auto;
+}
+
+.smallBoardContainer {
+	display: block;
+	width: 70%;
+	
+	margin: 5px auto;
+}
+
+.timerContainer {
+	width: 100%;
+	height: 10%;
+	min-height: 50px;
+	max-height: 100px;
+	
+	background-color: #fae6be;
+	border: 1px solid #a58c5a;
+	border-radius: 3px;
+}
+
+.chatContainer {
+	width: 100%;
+	height: 40%;
+	
+	background-color: #fae6be;
+	border: 1px solid #a58c5a;
+	border-radius: 3px;
+}
+
+#glavnaTabla, #sporednaTabla {
+	width: 80%;
+}

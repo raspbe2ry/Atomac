@@ -1,0 +1,79 @@
+﻿
+body {
+    background-color: #d1a268;
+}
+
+h1 {
+    color: #2d2010;
+    margin-left: 20%;
+    position: relative;
+    font-family: 'Gloucester MT';
+    font-size: 66px;
+}
+
+.lablel1 {
+    text-align: center;
+}
+
+label {
+    left: 5%;
+    position: relative;
+    font-size: 22px;
+    font-style: oblique;
+    width: 15%;
+    text-align: left;
+    padding-right: 15px;
+}
+
+span {
+    left: 4%;
+    position: relative;
+    font-family: 'Segoe UI Emoji';
+    font-size: 22px;
+}
+
+.numbers {
+    width: 128px;
+    line-height: 128px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 30px;
+    border: 2px solid #666;
+    left: 4%;
+    position: relative;
+}
+
+.numbersImg {
+    object-fit: scale-down;
+}
+
+#points {
+    background-color: cadetblue;
+    display: inline-block;
+}
+
+#tokens {
+    background-color: chartreuse;
+    display: inline-block;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+#title {
+    background-color: coral;
+    display: inline-block;
+}
+
+#tableSide {
+    top: 20%;
+    bottom: 20%;
+    right: 5%;
+    position: fixed;
+    width: 35vw;
+    height: 35vw;
+}
+
+#leftSide {
+    float: left;
+    width: 60%;
+}

@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "Rankings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Styles.Render("~/Content/datatables")
+<link href="~/Content/Rankings.css" rel="stylesheet" />
+
+<h2>@ViewBag.Title.</h2>
+
+<div class="rankTableDiv">
+    <table id="ranking-table" class="rankTable">
+        <!-- ovde crta datatable -->
+    </table>
+</div>
+
+<div class="myClassRankingDiv">
+    <table id="myClassRanking" class="rankTable">
+        <!-- ovde crta datatable -->
+    </table>
+</div>
+
+@section scripts
+{
+
+    @Scripts.Render("~/bundles/datatables")
+
+    <script type="text/javascript">
+
+        var rankAllUsers;
+        var myClassRank;
+
+        $(() => {
+            rankAllUsers = {
+                dt: null,
+                init: () => {
+                    dt = $('#ranking-table').dataTable({
+                        "serverSide": true,
+                        "processing": true,
+                        //"autoWidth": false,
+                        "pageLength": 10,
+                        "dom": 'ftp',
+                        "language": {
+                            "paginate": {
+                                "next": "<span>→</span>", //Sledeća
+                                "previous": "<span>←</span>" //Prethodna
+                            }
+                        },
+                        "ajax": {
+                            "url": "@Url.Action("GetAllUsers", "DataTables")",
+                            "type": "POST"
+                        },
+                        "columns": [
+                            //{ "title": "Rank", "data": "rank", "searchable": false, "sortable": true },
+                            { "title": "Username", "data": "nickName", "searchable": true, "sortable": true },
+                            { "title": "Title", "data": "title", "searchable": false, "sortable": true },
+                            { "title": "Points", "data": "points", "searchable": false, "sortable": true },
+                            //{ "title": "Wins", "data": "wins", "searchable": false, "sortable": true },
+                            //{ "title": "Draws", "data": "draws", "searchable": false, "sortable": true },
+                            //{ "title": "Losses", "data": "losses", "searchable": false, "sortable": true }
+                        ]
+                    });
+                }
+            };
+
+            rankAllUsers.init();
+
+        });
+
+
+        $(() => {
+            myClassRank = {
+                dt: null,
+                init: () => {
+                    dt = $('#myClassRanking').dataTable({
+                        "serverSide": true,
+                        "processing": true,
+                        //"autoWidth": false,
+                        "pageLength": 10,
+                        "dom": 'ftp',
+                        "language": {
+                            "paginate": {
+                                "next": "<span>→</span>", //Sledeća
+                                "previous": "<span>←</span>" //Prethodna
+                            }
+                        },
+                        "ajax": {
+                            "url": "@Url.Action("RankingInMyClass", "DataTables")",
+                        "type": "POST"
+                    },
+                        "columns": [
+                            //{ "title": "Rank", "data": "rank", "searchable": false, "sortable": true },
+                            { "title": "Username", "data": "nickName", "searchable": true, "sortable": true },
+                            { "title": "Title", "data": "title", "searchable": false, "sortable": true },
+                            { "title": "Points", "data": "points", "searchable": false, "sortable": true },
+                            //{ "title": "Wins", "data": "wins", "searchable": false, "sortable": true },
+                            //{ "title": "Draws", "data": "draws", "searchable": false, "sortable": true },
+                            //{ "title": "Losses", "data": "losses", "searchable": false, "sortable": true }
+                        ]
+                });
+        }
+        };
+
+            myClassRank.init();
+
+        });
+
+
+    </script>
+    
+}

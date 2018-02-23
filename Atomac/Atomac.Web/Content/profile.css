@@ -1,0 +1,20 @@
+﻿
+#tableSide {
+    top: 20%;
+    bottom: 20%;
+    right: 5%;
+    position: fixed;
+    width: 40%;
+}
+
+#leftSide {
+    float: left;
+    width: 60%;
+}
+
+h1 {
+    color: brown;
+    margin-left: 25%;
+    font-family: 'Gloucester MT';
+    font-size: 72px;
+}

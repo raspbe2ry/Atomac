@@ -1,0 +1,8 @@
+GamePlace -> game-place
+GameTeamInfo - game-team-info
+MyChess -> chess-styles
+Shop -> shop
+RegisterPage -> register-page
+Rankings -> rankings
+ProfileDetails -> profile-details
+Profile -> profile
